@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DeclarativePM.Lib.Exceptions;
 
 namespace DeclarativePM.Lib.Models
@@ -44,6 +45,7 @@ namespace DeclarativePM.Lib.Models
             }
         }
 
+        private string _timeStampName;
         private DateTime? _timeStamp;
         public DateTime? TimeStamp
         {
@@ -63,6 +65,15 @@ namespace DeclarativePM.Lib.Models
             }
         }
         
+        public Dictionary<string, string> Resources
+        {
+            get
+            {
+                var except = new[] {_activity, _caseId, _timeStampName};
+                return (Dictionary<string, string>) Data.Where(d => !except.Contains(d.Key));
+            }
+        }
+        
         private Dictionary<string, string> Data { get; set; }
 
         public ImportedEventLog(Dictionary<string, string> data)
@@ -78,11 +89,16 @@ namespace DeclarativePM.Lib.Models
         {
             if (Data.ContainsKey(activity))
                 Activity = activity;
+            
             if (Data.ContainsKey(caseId))
                 CaseId = caseId;
+            
             if (timeStamp is null || !Data.ContainsKey(timeStamp)) return;
             if (DateTime.TryParse(Data[timeStamp], out var time))
+            {
                 TimeStamp = time;
+                _timeStampName = timeStamp;
+            }
         }
     }
 }
