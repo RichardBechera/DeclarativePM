@@ -4,5 +4,6 @@ namespace DeclarativePM.Lib
 {
     public class Class1
     {
+        
     }
 }
