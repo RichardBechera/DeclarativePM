@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,7 +32,7 @@ namespace DeclarativePM.Lib.Import
                 //if no headers were defined we name each column by number from 0 to lenght - 1
                 headers ??= Enumerable.Range(0, values.Length).Select(i => i.ToString()).ToArray();
                 //if some values are missing we use null instead
-                values = values.Select(v => missing.Contains(v) || string.IsNullOrWhiteSpace(v) ? null : v).ToArray();
+                values = values.Select(v => missing.Contains(v.ToLower()) || string.IsNullOrWhiteSpace(v) ? null : v).ToArray();
 
                 var labeledRow = headers.Zip(values).ToDictionary(k => k.First, v => v.Second);
                 

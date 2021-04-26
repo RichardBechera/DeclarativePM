@@ -19,7 +19,7 @@ namespace DeclarativePM.Lib.Models
             }
             private set
             {
-                if (value is not null && !_activity.Equals(value))
+                if (value is not null && _activity != value)
                 {
                     _activity = value;
                 }
@@ -38,7 +38,7 @@ namespace DeclarativePM.Lib.Models
             }
             private set
             {
-                if (value is not null && !_caseId.Equals(value))
+                if (value is not null && _caseId != value)
                 {
                     _caseId = value;
                 }
@@ -58,7 +58,7 @@ namespace DeclarativePM.Lib.Models
             }
             private set
             {
-                if (value is not null && !_timeStamp.Equals(value))
+                if (value is not null && _timeStamp != value)
                 {
                     _timeStamp = value;
                 }
@@ -70,7 +70,8 @@ namespace DeclarativePM.Lib.Models
             get
             {
                 var except = new[] {_activity, _caseId, _timeStampName};
-                return (Dictionary<string, string>) Data.Where(d => !except.Contains(d.Key));
+                return Data.Where(d => !except.Contains(d.Key))
+                    .ToDictionary(k => k.Key, v => v.Value);
             }
         }
         
