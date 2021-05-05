@@ -10,10 +10,18 @@ namespace DeclarativePM.Lib.Discovery
 {
     public class Discovery
     {
-        public void DiscoverModel(IEnumerable<ImportedEventLog> log)
+
+        public List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log)
         {
             var templates = GetTemplates();
+            return DiscoverModel(log, templates);
+        }
 
+        public List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log, List<Type> templates)
+        {
+            //check if wrong input wasn't sent
+            templates = templates.Where(t => t.IsValueType && t.IsAssignableTo(typeof(ITemplate))).ToList();
+            
             var longestCase = log.GroupBy(e => e.CaseId, e => e.CaseId,
                 (k, v) => v.Count()).Max();
             
@@ -26,16 +34,12 @@ namespace DeclarativePM.Lib.Discovery
             var bagOfActivities = log.Select(e => e.Activity).Distinct().ToArray();
 
             var combinations = neededCombinations.ToDictionary(c => c,
-                c => Combinations(c, bagOfActivities)
+                c => Combinations(c, bagOfActivities, false)
             );
 
             var candidates = GenerateCandidateConstraints(templates, combinations, longestCase);
             
-            var result = GetMatchingConstraints(log, candidates);
-            
-
-            Console.WriteLine();
-
+            return GetMatchingConstraints(log, candidates);
         }
 
         public List<ITemplate> GenerateCandidateConstraints(List<Type> templates, Dictionary<int, List<List<string>>> combinations, int longestCase)
@@ -114,18 +118,18 @@ namespace DeclarativePM.Lib.Discovery
 
             noInt = !template.IsAssignableTo(typeof(IExistenceTemplate));
 
-            var constructor = template.GetConstructor(options);
+            var constructor = options is null ? null : template.GetConstructor(options);
 
             return constructor;
         }
 
-        List<List<T>> Combinations<T>(int rest, T[] bag)
+        List<List<T>> Combinations<T>(int rest, T[] bag, bool repeat)
         {
             var res = new List<List<T>>();
             List<List<T>> recursive = null;
             
             if (rest != 1)
-                recursive = Combinations(rest - 1, bag);
+                recursive = Combinations(rest - 1, bag, repeat);
 
             foreach (var t in bag)
             {
@@ -134,8 +138,15 @@ namespace DeclarativePM.Lib.Discovery
                     res.Add(new List<T> {t} );
                     continue;
                 }
+
+                if (!repeat)
+                {
+                    res.AddRange(recursive?.Where(c => !c.Contains(t)).Select(c => new List<T>(c) {t}) ?? new List<List<T>>());
+                    continue;
+                }
+
                 res.AddRange(recursive?
-                    .Select(c => new List<T>(c) {t})!);
+                    .Select(c => new List<T>(c) {t}) ?? new List<List<T>>());
             }
             return res;
         }
