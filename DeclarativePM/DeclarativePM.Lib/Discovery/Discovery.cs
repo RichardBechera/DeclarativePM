@@ -18,8 +18,9 @@ namespace DeclarativePM.Lib.Discovery
                 (k, v) => v.Count()).Max();
             
             var neededCombinations = templates
-                .Select(t => t.GetField("NumberOfArguments", BindingFlags.Static | BindingFlags.Public)?.GetValue(null))
+                .Select(t => t.GetMethod("GetAmountOfArguments")?.Invoke(null, null) ?? -1)
                 .Cast<int>()
+                .Where(a => a >= 0)
                 .Distinct();
 
             var bagOfActivities = log.Select(e => e.Activity).Distinct().ToArray();
@@ -43,12 +44,11 @@ namespace DeclarativePM.Lib.Discovery
             
             foreach (var template in templates)
             {
-                var arguments = (int) template.GetField("NumberOfArguments", BindingFlags.Static | BindingFlags.Public)
-                    ?.GetValue(null)!;
+                var arguments = (int) template.GetMethod("GetAmountOfArguments")?.Invoke(null, null)!;
 
                 var constructor = GetTemplateConstructor(arguments, template, out bool noInt);
                 
-                if (constructor is null)
+                if (constructor is null || arguments < 0)
                 {
                     continue;
                 }
@@ -103,30 +103,18 @@ namespace DeclarativePM.Lib.Discovery
              .GetTypes()
              .Where(t => t.Namespace != null
                          && t.IsValueType 
-                         && t.Namespace.Equals(@"DeclarativePM.Lib.Declare_Templates"))
-             .Where(t =>
-             {
-                 var field = t.GetField("NumberOfArguments", BindingFlags.Static | BindingFlags.Public);
-                 return field is not null && field.FieldType == typeof(int) && field.GetValue(null) is not null;
-             })
+                         && t.Namespace.Equals(@"DeclarativePM.Lib.Declare_Templates")
+                         && t.IsAssignableTo(typeof(ITemplate)))
              .ToList();
 
         private ConstructorInfo GetTemplateConstructor(int arguments, Type template, out bool noInt)
         {
-            var paramsOption1 = new List<Type> { typeof(int) };
-            var paramsOption2 = new List<Type>();
-            noInt = false;
+            var methodInfo = template.GetMethod("GetConstructorOptions");
+            var options = (Type[]) methodInfo?.Invoke(null, null);
 
-            for (int i = 0; i < arguments; i++)
-            {
-                paramsOption1.Add(typeof(string));
-                paramsOption2.Add(typeof(string));
-            }
-                
-            var constructor = template.GetConstructor(paramsOption1.ToArray());
-            if (constructor is not null) return constructor;
-            noInt = true;
-            constructor = template.GetConstructor(paramsOption2.ToArray());
+            noInt = !template.IsAssignableTo(typeof(IExistenceTemplate));
+
+            var constructor = template.GetConstructor(options);
 
             return constructor;
         }

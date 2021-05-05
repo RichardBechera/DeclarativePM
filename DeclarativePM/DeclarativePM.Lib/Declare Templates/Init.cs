@@ -1,3 +1,4 @@
+using System;
 using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Declare_Templates
@@ -5,12 +6,15 @@ namespace DeclarativePM.Lib.Declare_Templates
     public struct Init: ITemplate
     {
         public string LogEvent;
-        public const int NumberOfArguments = 1;
         
         public Init(string logEvent)
         {
             LogEvent = logEvent;
         }
+        
+        public static int GetAmountOfArguments() => 1;
+
+        public static Type[] GetConstructorOptions() => new[] {typeof(string)};
 
         public LtlExpression GetExpression()
         {

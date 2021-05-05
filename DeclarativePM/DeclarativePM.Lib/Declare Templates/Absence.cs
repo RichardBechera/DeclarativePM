@@ -1,19 +1,23 @@
+using System;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
-    public struct Absence : ITemplate
+    public struct Absence : IExistenceTemplate
     {
         public int Occurances;
         public string LogEvent;
-        public const int NumberOfArguments = 1;
         
         public Absence(int occurances, string logEvent)
         {
             LogEvent = logEvent;
             Occurances = occurances;
         }
+
+        public static int GetAmountOfArguments() => 1;
+
+        public static Type[] GetConstructorOptions() => new[] {typeof(int), typeof(string)};
 
         public LtlExpression GetExpression()
         {

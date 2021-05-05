@@ -8,13 +8,17 @@ namespace DeclarativePM.Lib.Declare_Templates
     {
         public string LogEventA;
         public string LogEventB;
-        public const int NumberOfArguments = 2;
         
         public NotChainSuccession(string logEventA, string logEventB)
         {
             LogEventA = logEventA;
             LogEventB = logEventB;
         }
+        
+        public static int GetAmountOfArguments() => 2;
+
+        public static Type[] GetConstructorOptions() => new[] {typeof(string), typeof(string)};
+        
 
         public LtlExpression GetExpression()
         {
