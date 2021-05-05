@@ -25,5 +25,8 @@ namespace DeclarativePM.Lib.Declare_Templates
             return new LtlExpression(Operators.And, new AlternateResponse(LogEventA, LogEventB).GetExpression(),
                 new AlternatePrecedence(LogEventA, LogEventB).GetExpression());
         }
+        
+        public override string ToString() 
+            => $"AlternateSuccession(\"{LogEventA}\", \"{LogEventB}\")";
     }
 }

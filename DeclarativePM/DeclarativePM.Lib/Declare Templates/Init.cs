@@ -21,5 +21,8 @@ namespace DeclarativePM.Lib.Declare_Templates
             //A
             return new LtlExpression(LogEvent);
         }
+        
+        public override string ToString() 
+            => $"Init(\"{LogEvent}\")";
     }
 }

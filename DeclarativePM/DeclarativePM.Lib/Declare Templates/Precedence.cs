@@ -28,5 +28,8 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(Operators.Subsequent,
                     new LtlExpression(Operators.Not, new LtlExpression(LogEventB))));
         }
+        
+        public override string ToString() 
+            => $"Precedence(\"{LogEventA}\", \"{LogEventB}\")";
     }
 }

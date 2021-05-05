@@ -26,5 +26,8 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(LogEventA),
                 new LtlExpression(Operators.Next, new LtlExpression(LogEventB))));
         }
+        
+        public override string ToString() 
+            => $"ChainSuccession(\"{LogEventA}\", \"{LogEventB}\")";
     }
 }

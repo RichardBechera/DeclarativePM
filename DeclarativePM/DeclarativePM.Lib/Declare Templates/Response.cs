@@ -26,5 +26,8 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(Operators.Imply, new LtlExpression(LogEventA),
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB))));
         }
+        
+        public override string ToString() 
+            => $"Response(\"{LogEventA}\", \"{LogEventB}\")";
     }
 }

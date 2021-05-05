@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using DeclarativePM.Lib.Enums;
 
@@ -32,5 +33,23 @@ namespace DeclarativePM.Lib.Models
         public LtlExpression InnerRight { get; }
         
         public string Atom { get; }
+
+        public override string ToString()
+        {
+            return Operator switch
+            {
+                Operators.None => Atom,
+                Operators.Not => $"!({InnerLeft})",
+                Operators.Next => $"next({InnerLeft})",
+                Operators.Subsequent => $"subsequent({InnerLeft})",
+                Operators.Eventual => $"Eventual({InnerLeft})",
+                Operators.And => $"({InnerLeft} && {InnerRight})",
+                Operators.Or => $"({InnerLeft} || {InnerRight})",
+                Operators.Imply => $"({InnerLeft} => {InnerRight})",
+                Operators.Equivalence => $"({InnerLeft} <=> {InnerRight})",
+                Operators.Least => $"({InnerLeft} U {InnerRight})",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
     }
 }

@@ -25,5 +25,8 @@ namespace DeclarativePM.Lib.Declare_Templates
             return new LtlExpression(Operators.And, new Existence(Occurances, LogEvent).GetExpression(),
                 new Absence(Occurances + 1, LogEvent).GetExpression());
         }
+        
+        public override string ToString() 
+            => $"Exactly({Occurances}, \"{LogEvent}\")";
     }
 }

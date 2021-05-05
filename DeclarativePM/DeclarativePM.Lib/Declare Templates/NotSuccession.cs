@@ -29,5 +29,8 @@ namespace DeclarativePM.Lib.Declare_Templates
                     new LtlExpression(Operators.Eventual,
                     new LtlExpression(LogEventB)))));
         }
+        
+        public override string ToString() 
+            => $"NotSuccession(\"{LogEventA}\", \"{LogEventB}\")";
     }
 }

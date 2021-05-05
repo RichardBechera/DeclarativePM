@@ -23,5 +23,9 @@ namespace DeclarativePM.Lib.Declare_Templates
         {
             return new LtlExpression(Operators.Not, new Existence(Occurances, LogEvent).GetExpression());
         }
+
+        public override string ToString() 
+            => $"Absence({Occurances}, \"{LogEvent}\")";
+        
     }
 }

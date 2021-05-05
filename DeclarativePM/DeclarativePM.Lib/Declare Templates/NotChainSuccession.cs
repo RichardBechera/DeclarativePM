@@ -30,5 +30,8 @@ namespace DeclarativePM.Lib.Declare_Templates
                         new LtlExpression(Operators.Not,
                             new LtlExpression(LogEventB)))));
         }
+        
+        public override string ToString() 
+            => $"NotChainSuccession(\"{LogEventA}\", \"{LogEventB}\")";
     }
 }

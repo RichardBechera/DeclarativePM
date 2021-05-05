@@ -33,5 +33,8 @@ namespace DeclarativePM.Lib.Declare_Templates
                     new LtlExpression(Operators.Next, 
                         new Existence(Occurances - 1, LogEvent).GetExpression())));
         }
+        
+        public override string ToString() 
+            => $"Existence({Occurances}, \"{LogEvent}\")";
     }
 }
