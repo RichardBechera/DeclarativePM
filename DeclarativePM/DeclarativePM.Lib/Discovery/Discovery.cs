@@ -11,8 +11,6 @@ namespace DeclarativePM.Lib.Discovery
 {
     public class Discovery
     {
-
-        //TODO if many parameters, add class representing discovery parameters 
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
         /// </summary>
@@ -41,7 +39,7 @@ namespace DeclarativePM.Lib.Discovery
         {
             var temp = templates
                 .Where(t => t.IsValueType && t.IsAssignableTo(typeof(ITemplate)))
-                .Select(t => new ParametrisedTemplate(t, 100, 100))
+                .Select(t => new ParametrisedTemplate(t))
                 .ToList();
             return DiscoverModel(log, temp, true, poe, poi);
         }
@@ -66,6 +64,8 @@ namespace DeclarativePM.Lib.Discovery
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
+        /// <param name="isGeneralPoX">States whether POE and POI are used in general on on each template the same or
+        /// whether each template has it's own poe and poi</param>
         /// <param name="poe">Percentage of events. 100 for discovery on every event in an event log.
         /// For n where 0 < =n < 100, =n% of most frequent events in the log. </param>
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
@@ -74,21 +74,22 @@ namespace DeclarativePM.Lib.Discovery
         private List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log, List<ParametrisedTemplate> templates, 
             bool isGeneralPoX, decimal poe = 100, decimal poi = 100)
         {
-            var longestCase = log.GroupBy(e => e.CaseId, e => e.CaseId,
-                (k, v) => v.Count()).Max();
+            var importedEventLogs = log as ImportedEventLog[] ?? log.ToArray();
+            var longestCase = importedEventLogs.GroupBy(e => e.CaseId, e => e.CaseId,
+                (_, v) => v.Count()).Max();
             
             var argOnTemplates = templates
                 .Select(t => new {arguments = t.Template.GetMethod("GetAmountOfArguments")?
-                    .Invoke(null, null) ?? -1, poe = t.Poe, template = t.Template})
+                    .Invoke(null, null) ?? -1, poe = t.Poe, poi = t.Poi, template = t.Template})
                 .ToList();
                 
             
-            var instances = log.GroupBy(e => e.CaseId).ToList();
+            var instances = importedEventLogs.GroupBy(e => e.CaseId).ToList();
 
             var ordering = OrderedEvents(instances);
 
             Dictionary<int, List<List<string>>> combinations;
-            List<ITemplate> candidates;
+            List<ParametrisedTemplate> candidates;
             
             if (isGeneralPoX)
             {
@@ -100,19 +101,20 @@ namespace DeclarativePM.Lib.Discovery
                 var bagOfEvents = ReduceEvents(ordering, poe).ToArray();
                 combinations = neededCombinations.ToDictionary(c => c,
                     c => UtilMethods.Combinations(c, bagOfEvents, false));
-                candidates = GenerateCandidateConstraints(templates.Select(t => t.Template).ToList(), combinations, longestCase);
+                candidates = GenerateCandidateConstraints(templates, combinations, longestCase);
             }
             else
             {
-                candidates = new List<ITemplate>();
+                candidates = new List<ParametrisedTemplate>();
                 var neededCombinations = argOnTemplates
-                    .Select(v => new {args = (int) v.arguments, v.poe, v.template})
+                    .Select(v => new {args = (int) v.arguments, v.poe, v.poi, v.template})
                     .Where(a => a.args >= 0) //in case, shouldn't happen
                     .ToList();
                 foreach (var combination in neededCombinations)
                 {
                     var bagOfEvents = ReduceEvents(ordering, combination.poe).ToArray();
-                    candidates.AddRange(GenerateCandidateConstraints(combination.template, UtilMethods.Combinations(combination.args, bagOfEvents,false ), longestCase, combination.args));
+                    candidates.AddRange(GenerateCandidateConstraints(new ParametrisedTemplate(combination.template, combination.poe, combination.poi),
+                        UtilMethods.Combinations(combination.args, bagOfEvents,false ), longestCase, combination.args));
                 }
             }
             
@@ -128,33 +130,33 @@ namespace DeclarativePM.Lib.Discovery
         /// i.e. elements in one combination.</param>
         /// <param name="longestCase">Length of longest case in an event log on which candidates will be checked.</param>
         /// <returns>List of possible templates, candidates.</returns>
-        private List<ITemplate> GenerateCandidateConstraints(List<Type> templates, Dictionary<int, List<List<string>>> combinations, int longestCase)
+        private List<ParametrisedTemplate> GenerateCandidateConstraints(List<ParametrisedTemplate> templates, Dictionary<int, List<List<string>>> combinations, int longestCase)
         {
-            var candidates = new List<ITemplate>();
+            var candidates = new List<ParametrisedTemplate>();
             
             foreach (var template in templates)
             {
-                var arguments = (int) template.GetMethod("GetAmountOfArguments")?.Invoke(null, null)!;
+                var arguments = (int) template.Template.GetMethod("GetAmountOfArguments")?.Invoke(null, null)!;
 
-                Generatrion(template, candidates, combinations[arguments], longestCase, arguments);
+                InnerCandidateGeneration(template, candidates, combinations[arguments], longestCase, arguments);
             }
             return candidates;
         }
 
-        private List<ITemplate> GenerateCandidateConstraints(Type template,
+        private List<ParametrisedTemplate> GenerateCandidateConstraints(ParametrisedTemplate template,
             List<List<string>> combinations, int longestCase, int arguments)
         {
-            var candidates = new List<ITemplate>();
+            var candidates = new List<ParametrisedTemplate>();
 
-            Generatrion(template, candidates, combinations, longestCase, arguments);
+            InnerCandidateGeneration(template, candidates, combinations, longestCase, arguments);
 
             return candidates;
         }
 
-        private void Generatrion(Type template, List<ITemplate> candidates, List<List<string>> combinations, 
+        private void InnerCandidateGeneration(ParametrisedTemplate template, List<ParametrisedTemplate> candidates, List<List<string>> combinations, 
             int longestCase, int arguments)
         {
-            var constructor = GetTemplateConstructor(template, out bool noInt);
+            var constructor = GetTemplateConstructor(template.Template, out bool noInt);
                 
             if (constructor is null || arguments < 0)
             {
@@ -165,17 +167,19 @@ namespace DeclarativePM.Lib.Discovery
             {
                 if (noInt)
                 {
-                    var candidate = (ITemplate) constructor.Invoke(combination.ToArray());
+                    var candidate = new ParametrisedTemplate(template.Template, 
+                        (ITemplate) constructor.Invoke(combination.ToArray()), template.Poe, template.Poi);
                     candidates.Add(candidate);
                     continue;
                 }
 
-                for (int i = 1; i < longestCase; i++)
+                for (var i = 1; i < longestCase; i++)
                 {
                     var par = new List<object>() {i};
                     par.AddRange(combination);
                     var input = par.ToArray();
-                    var candidate = (ITemplate) constructor.Invoke(input);
+                    var candidate = new ParametrisedTemplate(template.Template, 
+                        (ITemplate) constructor.Invoke(input), template.Poe, template.Poi);
                     candidates.Add(candidate);
                 }
             }
@@ -187,23 +191,27 @@ namespace DeclarativePM.Lib.Discovery
         /// </summary>
         /// <param name="instances">Grouping of events under different cases on which the check is performed.</param>
         /// <param name="candidates">Candidate templates which are to be checked and reduced.</param>
-        /// <param name="pol">Percentage of instances at which candidate needs to be held in order not to be reduced.
+        /// <param name="poi">Percentage of instances at which candidate needs to be held in order not to be reduced.
         /// 100 in order for candidate to hold in every case, 50 in order to hold in at least 50% of cases.</param>
         /// <returns>List of reduced templates which hold in an event log.</returns>
         private List<ITemplate> GetMatchingConstraints(IEnumerable<IGrouping<string, ImportedEventLog>> instances,
-            List<ITemplate> candidates, decimal pol)
+            List<ParametrisedTemplate> candidates, decimal poi)
         {
             var result = new List<ITemplate>();
-            UtilMethods.CutIntoRange(ref pol, 1, 100);
-            var treshold = (int)decimal.Round(candidates.Count() * (100 - pol) / 100);
+            UtilMethods.CutIntoRange(ref poi, 1);
+            var treshold = (int)decimal.Round(candidates.Count() * (100 - poi) / 100);
+            var enumerable = instances as IGrouping<string, ImportedEventLog>[] ?? instances.ToArray();
             foreach (var candidate in candidates)
             {
                 bool cont = false;
                 int notHolds = 0;
-                var expr = candidate.GetExpression();
-                foreach (var instance in instances)
+                var expr = candidate.TemplateInstance?.GetExpression();
+                if (expr is null)
+                    continue;
+                treshold = poi == -1 ? (int)decimal.Round(candidates.Count() * (100 - candidate.Poi) / 100) : treshold;
+                foreach (var instance in enumerable)
                 {
-                    if (EvaluateExpression(instance.ToList(), expr, 0)) continue;
+                    if (EvaluateExpression(instance.ToList(), expr)) continue;
                     notHolds++;
                     if (notHolds < treshold) continue;
                     cont = true;
@@ -211,7 +219,7 @@ namespace DeclarativePM.Lib.Discovery
                 }
                 if (cont)
                     continue;
-                result.Add(candidate);
+                result.Add(candidate.TemplateInstance);
             }
 
             return result;
