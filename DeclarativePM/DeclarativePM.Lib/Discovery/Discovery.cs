@@ -24,8 +24,41 @@ namespace DeclarativePM.Lib.Discovery
         /// <returns>DECLARE model representing an event log.</returns>
         public List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log, decimal poe = 100, decimal poi = 100)
         {
-            var templates = GetTemplates();
-            return DiscoverModel(log, templates, poe, poi);
+            return DiscoverModel(log, GetTemplates(), poe, poi);
+        }
+        
+        /// <summary>
+        /// Method discovers DECLARE model on top of an event log.
+        /// </summary>
+        /// <param name="log">Event log.</param>
+        /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
+        /// <param name="poe">Percentage of events. 100 for discovery on every event in an event log.
+        /// For n where 0 < =n < 100, =n% of most frequent events in the log.</param>
+        /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
+        /// template has to hold to be considered in the resulting DECLARE model.</param>
+        /// <returns>DECLARE model representing an event log.</returns>
+        public List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log, List<Type> templates, decimal poe = 100, decimal poi = 100)
+        {
+            var temp = templates
+                .Where(t => t.IsValueType && t.IsAssignableTo(typeof(ITemplate)))
+                .Select(t => new ParametrisedTemplate(t, 100, 100))
+                .ToList();
+            return DiscoverModel(log, temp, true, poe, poi);
+        }
+
+        //TODO templates
+        /// <summary>
+        /// Method discovers DECLARE model on top of an event log.
+        /// </summary>
+        /// <param name="log">Event log.</param>
+        /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
+        /// <returns>DECLARE model representing an event log.</returns>
+        public List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log, List<ParametrisedTemplate> templates)
+        {
+            var temp = templates
+                .Where(t => t.Template.IsValueType && t.Template.IsAssignableTo(typeof(ITemplate)))
+                .ToList();
+            return DiscoverModel(log, temp, false);
         }
 
         /// <summary>
@@ -38,28 +71,50 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        public List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log, List<Type> templates, decimal poe = 100, decimal poi = 100)
+        private List<ITemplate> DiscoverModel(IEnumerable<ImportedEventLog> log, List<ParametrisedTemplate> templates, 
+            bool isGeneralPoX, decimal poe = 100, decimal poi = 100)
         {
-            //check if wrong input wasn't sent
-            templates = templates.Where(t => t.IsValueType && t.IsAssignableTo(typeof(ITemplate))).ToList();
-
             var longestCase = log.GroupBy(e => e.CaseId, e => e.CaseId,
                 (k, v) => v.Count()).Max();
             
-            var neededCombinations = templates
-                .Select(t => t.GetMethod("GetAmountOfArguments")?.Invoke(null, null) ?? -1)
-                .Cast<int>()
-                .Where(a => a >= 0)
-                .Distinct();
+            var argOnTemplates = templates
+                .Select(t => new {arguments = t.Template.GetMethod("GetAmountOfArguments")?
+                    .Invoke(null, null) ?? -1, poe = t.Poe, template = t.Template})
+                .ToList();
+                
             
             var instances = log.GroupBy(e => e.CaseId).ToList();
 
-            var bagOfActivities = ReduceEvents(instances, poe).ToArray();
+            var ordering = OrderedEvents(instances);
 
-            var combinations = neededCombinations.ToDictionary(c => c,
-                c => UtilMethods.Combinations(c, bagOfActivities, false));
-
-            var candidates = GenerateCandidateConstraints(templates, combinations, longestCase);
+            Dictionary<int, List<List<string>>> combinations;
+            List<ITemplate> candidates;
+            
+            if (isGeneralPoX)
+            {
+                var neededCombinations = argOnTemplates
+                    .Select(v => v.arguments)
+                    .Cast<int>()
+                    .Where(a => a >= 0)
+                    .Distinct();
+                var bagOfEvents = ReduceEvents(ordering, poe).ToArray();
+                combinations = neededCombinations.ToDictionary(c => c,
+                    c => UtilMethods.Combinations(c, bagOfEvents, false));
+                candidates = GenerateCandidateConstraints(templates.Select(t => t.Template).ToList(), combinations, longestCase);
+            }
+            else
+            {
+                candidates = new List<ITemplate>();
+                var neededCombinations = argOnTemplates
+                    .Select(v => new {args = (int) v.arguments, v.poe, v.template})
+                    .Where(a => a.args >= 0) //in case, shouldn't happen
+                    .ToList();
+                foreach (var combination in neededCombinations)
+                {
+                    var bagOfEvents = ReduceEvents(ordering, combination.poe).ToArray();
+                    candidates.AddRange(GenerateCandidateConstraints(combination.template, UtilMethods.Combinations(combination.args, bagOfEvents,false ), longestCase, combination.args));
+                }
+            }
             
             return GetMatchingConstraints(instances, candidates, poi);
         }
@@ -81,36 +136,50 @@ namespace DeclarativePM.Lib.Discovery
             {
                 var arguments = (int) template.GetMethod("GetAmountOfArguments")?.Invoke(null, null)!;
 
-                var constructor = GetTemplateConstructor(template, out bool noInt);
+                Generatrion(template, candidates, combinations[arguments], longestCase, arguments);
+            }
+            return candidates;
+        }
+
+        private List<ITemplate> GenerateCandidateConstraints(Type template,
+            List<List<string>> combinations, int longestCase, int arguments)
+        {
+            var candidates = new List<ITemplate>();
+
+            Generatrion(template, candidates, combinations, longestCase, arguments);
+
+            return candidates;
+        }
+
+        private void Generatrion(Type template, List<ITemplate> candidates, List<List<string>> combinations, 
+            int longestCase, int arguments)
+        {
+            var constructor = GetTemplateConstructor(template, out bool noInt);
                 
-                if (constructor is null || arguments < 0)
+            if (constructor is null || arguments < 0)
+            {
+                return;
+            }
+
+            foreach (var combination in combinations)
+            {
+                if (noInt)
                 {
+                    var candidate = (ITemplate) constructor.Invoke(combination.ToArray());
+                    candidates.Add(candidate);
                     continue;
                 }
 
-                foreach (var combination in combinations[arguments])
+                for (int i = 1; i < longestCase; i++)
                 {
-                    if (noInt)
-                    {
-                        var candidate = (ITemplate) constructor.Invoke(combination.ToArray());
-                        candidates.Add(candidate);
-                        continue;
-                    }
-
-                    for (int i = 1; i < longestCase; i++)
-                    {
-                        var par = new List<object>() {i};
-                        par.AddRange(combination);
-                        var input = par.ToArray();
-                        var candidate = (ITemplate) constructor.Invoke(input);
-                        candidates.Add(candidate);
-                    }
-                    
+                    var par = new List<object>() {i};
+                    par.AddRange(combination);
+                    var input = par.ToArray();
+                    var candidate = (ITemplate) constructor.Invoke(input);
+                    candidates.Add(candidate);
                 }
-                
             }
 
-            return candidates;
         }
 
         /// <summary>
@@ -184,20 +253,25 @@ namespace DeclarativePM.Lib.Discovery
         /// Reduces amount of events based on given percentage. For 100 amount of events stays unchanged.
         /// For 50, 50% of least frequent events are thrown away.
         /// </summary>
-        /// <param name="instances">Cases from which we want to reduce.</param>
+        /// <param name="ordering">Ordered cases from which we want to reduce, tuple as distinct events
+        /// and their counts.</param>
         /// <param name="poe">Percentage of events.</param>
         /// <returns>List of reduced events, resp. their names.</returns>
-        private List<string> ReduceEvents(IEnumerable<IGrouping<string, ImportedEventLog>> instances, decimal poe)
+        private List<string> ReduceEvents(List<(string, int)> ordering, decimal poe)
         {
-            UtilMethods.CutIntoRange(ref poe, 1, 100);
-            var ordering = instances.SelectMany(g => g.Select(v => v.Activity))
-                .GroupBy(v => v, v => v, (s, enumerable) => new {s, count = enumerable.Count()})
-                .OrderBy(v => v.count)
-                .ToList();
             var count = ordering.Count();
             var endingElements = (int)decimal.Round((count * poe) / 100);
-            return ordering.Take(endingElements).Select(v => v.s).ToList();
+            return ordering.Take(endingElements).Select(v => v.Item1).ToList();
         }
+
+        private List<(string, int)> OrderedEvents(IEnumerable<IGrouping<string, ImportedEventLog>> instances)
+        {
+            return instances.SelectMany(g => g.Select(v => v.Activity))
+                .GroupBy(v => v, v => v, (s, enumerable) => (s, enumerable.Count()))
+                .OrderByDescending(v => v.Item2)
+                .ToList();
+        }
+
 
 
         /// <summary>
