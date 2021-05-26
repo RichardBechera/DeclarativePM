@@ -4,7 +4,7 @@ using DeclarativePM.Lib.Utils;
 
 namespace DeclarativePM.Lib.Models
 {
-    public struct ParametrisedTemplate
+    public readonly struct ParametrisedTemplate
     {
         public Type Template { get; }
         public ITemplate TemplateInstance { get; }
