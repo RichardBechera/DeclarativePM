@@ -34,5 +34,14 @@ namespace DeclarativePM.Lib.Models
             UtilMethods.CutIntoRange(ref poi, 1, 100);
             Poi = poi;
         }
+        
+        
+        public ParametrisedTemplate(ParametrisedTemplate template, ITemplate templateInstance)
+        {
+            Template = template.Template;
+            TemplateInstance = templateInstance;
+            Poe = template.Poe;
+            Poi = template.Poi;
+        }
     }
 }
