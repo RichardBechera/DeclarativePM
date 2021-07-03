@@ -4,7 +4,7 @@ using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
-    public class NotSuccession: ITemplate
+    public struct NotSuccession: IBiTemplate
     {
         public string LogEventA;
         public string LogEventB;

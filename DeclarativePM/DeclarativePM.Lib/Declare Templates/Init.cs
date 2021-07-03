@@ -3,7 +3,7 @@ using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
-    public struct Init: ITemplate
+    public struct Init: IUniTemplate
     {
         public string LogEvent;
         

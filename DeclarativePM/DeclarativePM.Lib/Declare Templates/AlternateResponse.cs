@@ -4,7 +4,7 @@ using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
-    public struct AlternateResponse: ITemplate
+    public struct AlternateResponse: IBiTemplate
     {
         public string LogEventA;
         public string LogEventB;

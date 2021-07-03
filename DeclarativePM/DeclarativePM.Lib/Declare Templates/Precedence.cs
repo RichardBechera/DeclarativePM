@@ -4,7 +4,7 @@ using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
-    public struct Precedence: ITemplate
+    public struct Precedence: IBiTemplate
     {
         public string LogEventA;
         public string LogEventB;

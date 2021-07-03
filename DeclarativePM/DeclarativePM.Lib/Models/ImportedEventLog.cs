@@ -7,99 +7,92 @@ namespace DeclarativePM.Lib.Models
 {
     public class ImportedEventLog
     {
-        private string _activity;
-        public string Activity
+        
+        private int _activity = 0;
+        public string Activity()
         {
-            get
-            {
-                if (_activity is null)
-                    throw new LogValueNotSetException(
-                        "Activity property is not defined. You can define it by calling ChooseTokens method.");
-                return Data[_activity];
-            }
-            private set
-            {
-                if (value is not null && _activity != value)
-                {
-                    _activity = value;
-                }
-            }
+            return Headers[_activity];
         }
 
-        private string _caseId;
-        public string CaseId
+        private int _caseId = 1;
+        public string CaseId()
         {
-            get
-            {
-                if (_caseId is null)
-                    throw new LogValueNotSetException(
-                        "CaseId property is not defined. You can define it by calling ChooseTokens method.");
-                return Data[_caseId];
-            }
-            private set
-            {
-                if (value is not null && _caseId != value)
-                {
-                    _caseId = value;
-                }
-            }
+            return Headers[_caseId];
         }
-
-        private string _timeStampName;
-        private DateTime? _timeStamp;
-        public DateTime? TimeStamp
+        
+        private int _timeStamp = -1;
+        public string TimeStamp()
         {
-            get
-            {
-                if (_timeStamp is null)
-                    throw new LogValueNotSetException(
+            if (_timeStamp == -1)
+                throw new LogValueNotSetException(
                         "TimeStamp property is not defined. You can define it by calling ChooseTokens method.");
-                return _timeStamp;
-            }
-            private set
-            {
-                if (value is not null && _timeStamp != value)
-                {
-                    _timeStamp = value;
-                }
-            }
+            return Headers[_timeStamp];
         }
         
-        public Dictionary<string, string> Resources
-        {
-            get
-            {
-                var except = new[] {_activity, _caseId, _timeStampName};
-                return Data.Where(d => !except.Contains(d.Key))
-                    .ToDictionary(k => k.Key, v => v.Value);
-            }
-        }
-        
-        private Dictionary<string, string> Data { get; set; }
+        private List<int> _resources;
+        public List<string> Resources()
+            => _resources.Select(r => Headers[r]).ToList();
 
-        public ImportedEventLog(Dictionary<string, string> data)
-        {
-            Data = data;
-        }
-
-        public IEnumerable<string> GetHeaders()
-            => Data.Keys;
         
 
-        public void ChooseTokens(string activity, string caseId, string timeStamp = null)
+        private List<string[]> rows;
+        public string[] Headers { get; }
+
+        public ImportedEventLog(List<string[]> rows, string[] headers)
         {
-            if (Data.ContainsKey(activity))
-                Activity = activity;
+            if (headers.Length < 2)
+                throw new Exception("Not enough columns");
+            Headers = headers;
+            if (rows.Any(r => r.Length != headers.Length))
+                throw new Exception("Some rows were of different length then others.");
+            this.rows = rows;
+            _resources = Enumerable.Range(2, headers.Length - 2).ToList();
+        }
+        
+        //TODO Add() and AddRange()
+        
+
+        public void ChooseTokens(string activity, string caseId, string timeStamp = null, params string[] resources)
+        {
+            if ((timeStamp is not null && !Headers.Contains(timeStamp)) ||
+                !Headers.Contains(activity) || !Headers.Contains(caseId) ||
+                resources.Any(v => !Headers.Contains(v)))
+            //TODO better exception
+                throw new Exception("One of the values in headers does not exist.");
+
+            _activity = Array.IndexOf(Headers, activity);
+            _caseId = Array.IndexOf(Headers, caseId);
             
-            if (Data.ContainsKey(caseId))
-                CaseId = caseId;
-            
-            if (timeStamp is null || !Data.ContainsKey(timeStamp)) return;
-            if (DateTime.TryParse(Data[timeStamp], out var time))
+            if (timeStamp is null) return;
+            _timeStamp = Array.IndexOf(Headers, timeStamp);
+
+            _resources = resources.Select(r => Array.IndexOf(Headers, r)).ToList();
+            /*if (DateTime.TryParse(Data[timeStamp], out var time))
             {
                 TimeStamp = time;
                 _timeStampName = timeStamp;
-            }
+            }*/
+            //TODO RESET
+
+        }
+
+        public EventLog buildEventLog()
+        {
+            List<Event> events = new List<Event>(rows.Capacity);
+            Func<string[], DateTime> converter = (row) => DateTime.TryParse(row[_timeStamp], out var time) 
+                ? time : DateTime.MinValue;
+            events.AddRange(rows
+                .Select(row =>
+                {
+                    var e =  new Event(
+                        row[_activity],
+                        row[_caseId],
+                        _resources.Select(r => row[r]).ToArray());
+                    if (_timeStamp > 0)
+                        e.TimeStamp = converter(row);
+                    return e;
+                }));
+            return new (events, Headers.ToList());
         }
     }
 }
