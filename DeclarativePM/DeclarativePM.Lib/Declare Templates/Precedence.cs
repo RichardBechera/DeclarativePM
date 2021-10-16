@@ -29,6 +29,9 @@ namespace DeclarativePM.Lib.Declare_Templates
                     new LtlExpression(Operators.Not, new LtlExpression(LogEventB))));
         }
         
+        public bool IsActivation(Event e)
+            => e.Activity.Equals(LogEventB);
+        
         public override string ToString() 
             => $"Precedence(\"{LogEventA}\", \"{LogEventB}\")";
     }

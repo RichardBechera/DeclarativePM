@@ -153,10 +153,8 @@ namespace DeclarativePM.Lib.Discovery
                         template.TemplateInstances.Add(BiTemplateFactory.GetInstance(template.Template, combination[0], combination[1]));
                         break;
                     case TemplateTypes.Existence:
-                    {
                         for (var i = 1; i < longestCase; i++)
                             template.TemplateInstances.Add(ExistenceFactory.GetInstance(template.Template, i, combination[0]));
-                    }
                         break;
                     default:
                         return;
@@ -208,7 +206,6 @@ namespace DeclarativePM.Lib.Discovery
         private bool CheckConstraint(ITemplate candidate, int treshold, List<List< 
             Event>> instances)
         {
-            bool cont = false;
             int notHolds = 0;
             var expr = candidate.GetExpression();
             if (expr is null)
@@ -216,14 +213,13 @@ namespace DeclarativePM.Lib.Discovery
             
             foreach (var instance in instances)
             {
-                if (EvaluateExpression(instance, expr)) continue;
+                if (MainMethods.EvaluateExpression(instance, expr)) continue;
                 notHolds++;
                 if (notHolds < treshold) continue;
-                cont = true;
-                break;
+                return false;
             }
 
-            return !cont;
+            return true;
         }
 
         /// <summary>
@@ -266,88 +262,6 @@ namespace DeclarativePM.Lib.Discovery
                 .GroupBy(v => v, v => v, (s, enumerable) => (s, enumerable.Count()))
                 .OrderByDescending(v => v.Item2)
                 .ToList();
-        }
-
-
-
-        /// <summary>
-        /// Evaluates whether expression holds for the case.
-        /// </summary>
-        /// <param name="events">Sorted list of event in a case.</param>
-        /// <param name="expression">Expression to be evaluated.</param>
-        /// <param name="position">Starting position from which we start the evaluation.</param>
-        /// <returns>Bool whether expression holds.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Expression contains undefined operator.</exception>
-        bool EvaluateExpression(List<Event> events, LtlExpression expression, int position = 0)
-        {
-            if (position >= events.Count)
-                return false;
-            
-            switch (expression.Operator)
-            {
-                case Operators.None:
-                    return events[position].Activity == expression.Atom;
-                    
-                case Operators.Not:
-                    return !EvaluateExpression(events, expression.InnerLeft, position);
-                    
-                case Operators.Next:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerLeft, position + 1);
-                    }
-
-                    return false;
-                    
-                case Operators.Subsequent:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerLeft, position) &&
-                               EvaluateExpression(events, expression, position + 1);
-                    }
-
-                    return EvaluateExpression(events, expression.InnerLeft, position);
-                
-                case Operators.Eventual:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerLeft, position) ||
-                               EvaluateExpression(events, expression, position + 1);
-                    }
-
-                    return EvaluateExpression(events, expression.InnerLeft, position);
-                    
-                case Operators.And:
-                    return EvaluateExpression(events, expression.InnerLeft, position) &&
-                           EvaluateExpression(events, expression.InnerRight, position);
-                    
-                case Operators.Or:
-                    return EvaluateExpression(events, expression.InnerLeft, position) ||
-                           EvaluateExpression(events, expression.InnerRight, position);
-                    
-                case Operators.Imply:
-                    return !EvaluateExpression(events, expression.InnerLeft, position) ||
-                           EvaluateExpression(events, expression.InnerRight, position);
-                    
-                case Operators.Equivalence:
-                    bool A = EvaluateExpression(events, expression.InnerLeft, position);
-                    bool B = EvaluateExpression(events, expression.InnerRight, position);
-                    return (A && B) || (!A && !B);
-                
-                case Operators.Least:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerRight, position) ||
-                               (EvaluateExpression(events, expression.InnerLeft, position) &&
-                                EvaluateExpression(events, expression, position + 1));
-                    }
-
-                    return EvaluateExpression(events, expression.InnerLeft, position) ||
-                           EvaluateExpression(events, expression.InnerRight, position);
-                
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        } 
     }
 }

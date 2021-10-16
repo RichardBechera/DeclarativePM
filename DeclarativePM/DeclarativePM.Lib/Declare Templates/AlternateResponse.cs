@@ -28,7 +28,10 @@ namespace DeclarativePM.Lib.Declare_Templates
                             new LtlExpression(LogEventA)),
                         new LtlExpression(LogEventB)))));
         }
-        
+
+        public bool IsActivation(Event e)
+            => e.Activity.Equals(LogEventA);
+
         public override string ToString() 
             => $"AlternateResponse(\"{LogEventA}\", \"{LogEventB}\")";
     }

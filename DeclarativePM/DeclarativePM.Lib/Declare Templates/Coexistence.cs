@@ -27,6 +27,9 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB)));
         }
         
+        public bool IsActivation(Event e)
+            => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
+        
         public override string ToString() 
             => $"Coexistence(\"{LogEventA}\", \"{LogEventB}\")";
     }

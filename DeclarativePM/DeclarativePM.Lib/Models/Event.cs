@@ -7,6 +7,8 @@ namespace DeclarativePM.Lib.Models
     public record Event
     {
         public string Activity { get; set; }
+
+        public int ActivityInTraceId { get; set; } = 0;
         public string CaseId { get; set; }
         public DateTime? TimeStamp { get; set; }
         public List<string> Resources { get; set; }
@@ -35,5 +37,7 @@ namespace DeclarativePM.Lib.Models
             CaseId = caseId;
             Resources = res.ToList();
         }
+        
+        
     }
 }

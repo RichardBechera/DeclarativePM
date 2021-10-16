@@ -26,6 +26,9 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new Precedence(LogEventA, LogEventB).GetExpression());
         }
         
+        public bool IsActivation(Event e)
+            => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
+        
         public override string ToString() 
             => $"Succession(\"{LogEventA}\", \"{LogEventB}\")";
     }

@@ -27,6 +27,9 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(Operators.Next, new LtlExpression(LogEventB))));
         }
         
+        public bool IsActivation(Event e)
+            => e.Activity.Equals(LogEventA);
+        
         public override string ToString() 
             => $"ChainResponse(\"{LogEventA}\", \"{LogEventB}\")";
     }

@@ -31,6 +31,9 @@ namespace DeclarativePM.Lib.Declare_Templates
                             new LtlExpression(LogEventB)))));
         }
         
+        public bool IsActivation(Event e)
+            => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
+        
         public override string ToString() 
             => $"NotChainSuccession(\"{LogEventA}\", \"{LogEventB}\")";
     }
