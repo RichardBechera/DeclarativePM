@@ -1,16 +1,19 @@
 using System.Collections.Generic;
+using DeclarativePM.Lib.Declare_Templates;
 
 namespace DeclarativePM.Lib.Models
 {
     public class ActivationBinaryTree
     {
-        public ActivationNode Root;
-        public List<ActivationNode> Leafs;
+        public ActivationNode Root { get; set; }
+        public List<ActivationNode> Leafs { get; }
+        public IBiTemplate Constraint { get; }
 
-        public ActivationBinaryTree()
+        public ActivationBinaryTree(IBiTemplate constraint)
         {
             Root = new();
             Leafs = new() {Root};
+            Constraint = constraint;
         }
 
         public void AddNodeLeft(ActivationNode current, ActivationNode node)

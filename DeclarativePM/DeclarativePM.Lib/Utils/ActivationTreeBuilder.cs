@@ -9,7 +9,7 @@ namespace DeclarativePM.Lib.Utils
     {
         public static ActivationBinaryTree BuildTree(List<Event> trace, IBiTemplate constraint)
         {
-            ActivationBinaryTree tree = new();
+            ActivationBinaryTree tree = new(constraint);
             int id = 1;
             foreach (var e in trace)
             {
@@ -82,6 +82,8 @@ namespace DeclarativePM.Lib.Utils
                     counter = fifo.Count;
                 }
             }
+            if (longest is not null && !result.Contains(longest))
+                result.Add(longest);
 
             return result;
         }
@@ -99,7 +101,8 @@ namespace DeclarativePM.Lib.Utils
             
             while (a.Count > 0 && b.Count > 0)
             {
-                if (a.Peek().Activity.Equals(b.Peek().Activity))
+                if (a.Peek().Activity.Equals(b.Peek().Activity) &&
+                    a.Peek().ActivityInTraceId == b.Peek().ActivityInTraceId)
                 {
                     a.Pop();
                     b.Pop();

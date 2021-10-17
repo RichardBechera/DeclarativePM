@@ -88,33 +88,41 @@ namespace DeclarativePM.Lib.Utils
             }
         }
 
-        public static List<Event> GetFulfillment(List<ActivationNode> nodes)
+        public static List<Event> GetFulfillment(ActivationBinaryTree tree)
         {
-            return nodes
+            return tree.Leafs
                 .Where(x => x.MaxFulfilling)
                 .Select(x => x.Subtrace)
                 .Aggregate((x, y) => x
                     .Intersect(y, new EventEqualityComparer())
                     .ToList())
+                .Where(x => tree.Constraint.IsActivation(x))
                 .ToList();
         }
 
-        public static List<Event> GetViolation(List<ActivationNode> nodes)
+        public static List<Event> GetViolation(ActivationBinaryTree tree)
         {
-            var all = nodes
+            var all = tree.Leafs
                 .Where(x => x.MaxFulfilling)
                 .SelectMany(x => x.Subtrace);
-            return nodes.SelectMany(x => x.Subtrace).Except(all).ToList();
-        }
-
-        public static List<Event> GetConflict(List<ActivationNode> nodes)
-        {
-            return nodes
-                .Where(x => x.MaxFulfilling)
+            return tree.Leafs
                 .SelectMany(x => x.Subtrace)
-                .Except(GetViolation(nodes))
-                .Except(GetFulfillment(nodes))
+                .Except(all)
+                .Where(x => tree.Constraint.IsActivation(x))
                 .ToList();
         }
+
+        public static List<Event> GetConflict(ActivationBinaryTree tree)
+        {
+            return tree.Leafs
+                .Where(x => x.MaxFulfilling)
+                .SelectMany(x => x.Subtrace)
+                .Except(GetViolation(tree))
+                .Except(GetFulfillment(tree))
+                .Where(x => tree.Constraint.IsActivation(x))
+                .ToList();
+        }
+        
+        
     }
 }
