@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativePM.Lib", "Declar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRunning", "TestRunning\TestRunning.csproj", "{C0F1C8B8-73AE-4C3D-AC72-3E986D349BB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativePM.UI", "DeclarativePM.UI\DeclarativePM.UI.csproj", "{558E274C-888D-4D78-A3D4-E5718219C6D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{C0F1C8B8-73AE-4C3D-AC72-3E986D349BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0F1C8B8-73AE-4C3D-AC72-3E986D349BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0F1C8B8-73AE-4C3D-AC72-3E986D349BB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{558E274C-888D-4D78-A3D4-E5718219C6D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{558E274C-888D-4D78-A3D4-E5718219C6D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{558E274C-888D-4D78-A3D4-E5718219C6D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{558E274C-888D-4D78-A3D4-E5718219C6D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
