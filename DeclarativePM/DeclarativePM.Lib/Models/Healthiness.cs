@@ -27,6 +27,21 @@ namespace DeclarativePM.Lib.Models
             ViolationRation = (double)violations / (double)na;
             ConflictRation = (double)conflicts / (double)na;
         }
+        
+        public Healthiness(ActivationBinaryTree tree, int violations, int fulfillments, int conflicts)
+        {
+            int na = violations + fulfillments + conflicts;
+            int n = tree.Leafs
+                .SelectMany(x => x.Subtrace)
+                .Distinct(new EventEqualityComparer())
+                .Count();
+            
+
+            ActivationSparsity = 1 - na / n;
+            FulfillmentRation = (double)fulfillments / (double)na;
+            ViolationRation = (double)violations / (double)na;
+            ConflictRation = (double)conflicts / (double)na;
+        }
 
         public override string ToString()
         {
