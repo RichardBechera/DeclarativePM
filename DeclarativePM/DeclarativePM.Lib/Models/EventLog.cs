@@ -32,10 +32,8 @@ namespace DeclarativePM.Lib.Models
             Name = name ?? GetDefaultName();
         }
 
-        private List<string> cases;
-
         public List<string> Cases()
-            => cases ?? Logs.Select(e => e.CaseId).Distinct().ToList();
+            => Logs.Select(e => e.CaseId).Distinct().ToList();
 
         public List<Event> SpecificCase(string @case)
             => Logs.Where(e => e.CaseId.Equals(@case)).ToList();
