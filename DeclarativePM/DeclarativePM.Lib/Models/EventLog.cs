@@ -16,20 +16,20 @@ namespace DeclarativePM.Lib.Models
             if (!logs.Any())
             {
                 Headers = new();
-                this.Logs = new();
+                Logs = new();
                 return;
             }
 
             Headers = Enumerable.Range(0, logs.FirstOrDefault().Count()).Select(i => i.ToString()).ToList();
-            this.Logs = logs;
+            Logs = logs;
             Name = name ?? GetDefaultName();
         }
 
         public EventLog(List<Event> logs, List<string> headers, string name = null)
         {
-            this.Logs = logs;
-            this.Headers = headers;
-            this.Name = name ?? GetDefaultName();
+            Logs = logs;
+            Headers = headers;
+            Name = name ?? GetDefaultName();
         }
 
         private List<string> cases;
@@ -41,13 +41,8 @@ namespace DeclarativePM.Lib.Models
             => Logs.Where(e => e.CaseId.Equals(@case)).ToList();
 
         private string GetDefaultName()
-        {
-            /*if (Headers.Any())
-                return Headers.First() + "DEFAULT LOG NAME";
-            if (Logs.Any())
-                return Logs.First().Activity + "DEFAULT LOG NAME";*/
-            return "DEFAULT LOG NAME";
-        }
+            => "DEFAULT LOG NAME";
+        
 
     }
 }

@@ -76,7 +76,7 @@ namespace DeclarativePM.Lib.Models
 
         }
 
-        public EventLog buildEventLog()
+        public EventLog buildEventLog(string name = null)
         {
             List<Event> events = new List<Event>(rows.Capacity);
             Func<string[], DateTime> converter = (row) => DateTime.TryParse(row[_timeStamp], out var time) 
@@ -92,7 +92,7 @@ namespace DeclarativePM.Lib.Models
                         e.TimeStamp = converter(row);
                     return e;
                 }));
-            return new (events, Headers.ToList());
+            return new (events, Headers.ToList(), name);
         }
     }
 }
