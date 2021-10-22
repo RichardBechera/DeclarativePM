@@ -20,6 +20,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore "DeclarativePM/DeclarativePM.UI/DeclarativePM.UI.csproj"
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore "DeclarativePM/DeclarativePM.UI/DeclarativePM.UI.csproj"
     - name: Test
       run: dotnet test --no-build --verbosity normal
