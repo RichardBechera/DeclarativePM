@@ -6,17 +6,14 @@ using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Import
 {
-    public class ImportCsvLogs
+    public static class ImportCsvLogs
     {
-        public ImportedEventLog LoadCsv(string path, bool hasHeaders = true, string[] missing = null, char separator = ',')
+        public static ImportedEventLog LoadCsv(Stream stream, bool hasHeaders = true, string[] missing = null, char separator = ',')
         {
-            if (!File.Exists(path))
-                return null;
-
             var logs = new List<string[]>();
             string[] headers = null;
             missing ??= new[] {"none", "null", "nan", "na", "-"};
-            using var csv = new StreamReader(File.OpenRead(path));
+            using var csv = new StreamReader(stream);
             
             while (!csv.EndOfStream)
             {
@@ -36,8 +33,21 @@ namespace DeclarativePM.Lib.Import
                 if (values.Length == headers.Length)
                     logs.Add(values);
             }
-
+            
             return new ImportedEventLog(logs, headers);
+        }
+
+        public static ImportedEventLog LoadCsv(string path, bool hasHeaders = true, string[] missing = null,
+            char separator = ',')
+        {
+            if (!File.Exists(path))
+                return null;
+
+            var stream = File.OpenRead(path);
+
+            var result = LoadCsv(stream, hasHeaders, missing, separator);
+            stream.Dispose();
+            return result;
         }
     }
 }

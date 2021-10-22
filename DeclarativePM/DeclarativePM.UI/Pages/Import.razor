@@ -1,0 +1,194 @@
+@page "/Import"
+@using System.IO
+@using System.Text
+@using DeclarativePM.Lib.Import
+@using DeclarativePM.UI.Enums
+@implements IDisposable
+
+@inject IMatDialogService MatDialogService
+
+<h3>Import</h3>
+
+<MatFileUpload OnChange="@UploadLog" AllowMultiple="false" Label="Drop files here or Browse"></MatFileUpload>
+
+@if (uploadMode)
+{
+    <span style="white-space: pre-line">
+        Filename: @file.Name
+        Size: @file.Size.ToString()
+        @content
+    </span>
+
+    @foreach (var head in headersDict)
+    {
+        var key = head.Key;
+        <MatSelectItem value="@headersDict[key]" Items="@value2Items" ValueChanged="@((HeaderType ht) => EnumChanged(ht, key))" HelperText="@key"
+                       HelperTextPersistent="true"></MatSelectItem>
+    }
+
+    if (show)
+    {
+        foreach (var head in headersDict)
+        {
+            <p>@head.Key + @head.Value</p>
+        }
+    }
+
+    <MatButton OnClick="ImportLog">Import</MatButton>
+    <MatButton OnClick="ChooseTokens">Choose Tokens</MatButton>
+}
+
+<MatAccordion>
+    @foreach (var log in eventLogs)
+    {
+        <MatExpansionPanel ExpandedChanged="_ => Selection(log)">
+            <MatExpansionPanelSummary>
+                <MatExpansionPanelHeader>
+                    @log.Name
+                </MatExpansionPanelHeader>
+            </MatExpansionPanelSummary>
+            <MatExpansionPanelDetails>
+                <ul>
+                    @foreach (var head in log.Headers)
+                    {
+                        <li>@head</li>
+                    }
+                </ul>
+            </MatExpansionPanelDetails>
+        </MatExpansionPanel>
+    }
+</MatAccordion>
+
+@if (selectedLog is not null)
+   {
+       @selectedLog.Name
+       <br/>
+       @foreach(var header in selectedLog.Headers)
+       {
+           @header
+           <br/>
+       }
+   }
+   else
+   {
+       <p>Nothing selected</p>
+   }
+
+
+@code {
+    
+    List<EventLog> eventLogs;
+    EventLog selectedLog;
+    private MemoryStream _stream;
+    string content;
+    ImportedEventLog _imported;
+    IMatFileUploadEntry file;
+    bool uploadMode = false;
+    bool show;
+
+    Dictionary<string, HeaderType> headersDict;
+    HeaderType[] value2Items = Enum.GetValues(typeof(HeaderType)).Cast<HeaderType>().ToArray();
+    
+
+    protected override void OnInitialized()
+    {
+        eventLogs = new();
+        selectedLog = eventLogs.FirstOrDefault();
+    }
+
+    public async Task UploadLog(IMatFileUploadEntry[] files)
+    {
+        file = files.FirstOrDefault();
+        if (file is null)
+            return;
+        if (file.Type != "text/csv")
+            return; //??
+        try
+        {
+            _stream = new MemoryStream();
+            
+            await file.WriteToStreamAsync(_stream);
+            _stream.Seek(0, SeekOrigin.Begin);
+            GetUploadContent();
+            _stream.Seek(0, SeekOrigin.Begin);
+            _imported = ImportCsvLogs.LoadCsv(_stream);
+            headersDict = _imported.Headers.ToDictionary(x => x, HeaderTypeSet);
+            
+            uploadMode = true;
+        }
+        catch
+        {
+            Console.WriteLine("Something went wrong");
+            throw;
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void ImportLog()
+    {
+        eventLogs.Add(_imported.buildEventLog());
+        _stream.Dispose();
+        file = null;
+        content = null;
+        _imported = null;
+        uploadMode = false;
+    }
+
+    private HeaderType HeaderTypeSet(string head)
+    {
+        if (_imported.Activity().Equals(head))
+            return HeaderType.Activity;
+        if (_imported.CaseId().Equals(head))
+            return HeaderType.Case;
+        return HeaderType.Resource;
+    }
+
+    public void GetUploadContent(int lines = 11)
+    {
+        var reader = new StreamReader(_stream);
+        StringBuilder builder = new();
+        while (!reader.EndOfStream && lines != 0)
+        {
+            var line = reader.ReadLine();
+            builder.AppendLine(line);
+            lines--;
+        }
+        content = builder.ToString();
+    }
+
+    public async Task Selection(EventLog log)
+    {
+        selectedLog = log;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void EnumChanged(HeaderType o, string key)
+    {
+        headersDict[key] = o;
+    }
+
+    public async Task ChooseTokens()
+    {
+        var act = headersDict.Where(x => x.Value == HeaderType.Activity);
+        var caseId = headersDict.Where(x => x.Value == HeaderType.Case);
+        if (!act.Any() || !caseId.Any())
+        {
+            await MatDialogService.AlertAsync("You need at least 1 activity and 1 case!");
+            return;
+        }
+        
+        var timetmpList = headersDict.Where(x => x.Value == HeaderType.Timestamp).Select(x => x.Key).ToList();
+        var time = timetmpList.Any() ? timetmpList[0] : null;
+        var resources = headersDict.Where(x => x.Value == HeaderType.Resource).Select(x => x.Key).ToArray();
+        _imported.ChooseTokens(act.FirstOrDefault().Key, caseId.FirstOrDefault().Key, time, resources);
+    }
+
+    public void Dispose()
+    {
+        _stream?.Dispose();
+    }
+
+}

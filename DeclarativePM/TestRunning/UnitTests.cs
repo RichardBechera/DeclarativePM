@@ -12,16 +12,15 @@ namespace TestRunning
 {
     public class UnitTests
     {
-        private ImportCsvLogs _importer = new();
         private Discovery _disco = new();
         
         [Fact]
         public void Test1()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample1.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = ImportCsvLogs.LoadCsv(path4);
             var log2 = third.buildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.logs, 
+            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new Response("C", "S"));
             
             var ful = MainMethods.GetFulfillment(tree);
@@ -38,9 +37,9 @@ namespace TestRunning
         public void Test2()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample2.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = ImportCsvLogs.LoadCsv(path4);
             var log2 = third.buildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.logs, 
+            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new AlternateResponse("H", "M"));
             
             var ful = MainMethods.GetFulfillment(tree);
@@ -58,9 +57,9 @@ namespace TestRunning
         public void Test3()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = ImportCsvLogs.LoadCsv(path4);
             var log2 = third.buildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.logs, 
+            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
             
             var ful = MainMethods.GetFulfillment(tree);
@@ -79,9 +78,9 @@ namespace TestRunning
         public void Test4()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = ImportCsvLogs.LoadCsv(path4);
             var log2 = third.buildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.logs, 
+            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
             var result = MainMethods.LocalLikelyhood(tree);
@@ -95,9 +94,9 @@ namespace TestRunning
         {
             Assert.True(false);
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = ImportCsvLogs.LoadCsv(path4);
             var log2 = third.buildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.logs, 
+            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
             List<ParametrisedTemplate> templates = new List<ParametrisedTemplate>()

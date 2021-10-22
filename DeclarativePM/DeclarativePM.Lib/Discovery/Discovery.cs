@@ -74,10 +74,10 @@ namespace DeclarativePM.Lib.Discovery
             bool isGeneralPoX, decimal poe = 100, decimal poi = 100)
         {
             //var importedEventLogs = log as ImportedEventLog[] ?? log.ToArray();
-            var longestCase = log.logs.GroupBy(e => e.CaseId, e => e.CaseId,
+            var longestCase = log.Logs.GroupBy(e => e.CaseId, e => e.CaseId,
                 (_, v) => v.Count()).Max();
 
-            var instances = log.logs.GroupBy(e => e.CaseId).ToList();
+            var instances = log.Logs.GroupBy(e => e.CaseId).ToList();
 
             var ordering = OrderedEvents(instances);
             
