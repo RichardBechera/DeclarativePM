@@ -14,7 +14,6 @@ namespace DeclarativePM.UI.Pages
 {
     public partial class Import : ComponentBase
     {
-        List<EventLog> eventLogs;
         EventLog selectedLog;
         private MemoryStream _stream;
         string content;
@@ -29,8 +28,7 @@ namespace DeclarativePM.UI.Pages
 
         protected override void OnInitialized()
         {
-            eventLogs = new();
-            selectedLog = eventLogs.FirstOrDefault();
+            selectedLog = StateContainer.EventLogs.FirstOrDefault();
         }
 
         public async Task UploadLog(IMatFileUploadEntry[] files)
@@ -66,7 +64,7 @@ namespace DeclarativePM.UI.Pages
 
         private void ImportLog()
         {
-            eventLogs.Add(_imported.buildEventLog(LogName));
+            StateContainer.EventLogs.Add(_imported.buildEventLog(LogName));
             _stream.Dispose();
             file = null;
             content = null;

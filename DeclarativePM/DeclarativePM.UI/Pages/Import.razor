@@ -1,8 +1,10 @@
 @page "/Import"
 @using DeclarativePM.UI.Enums
+@using DeclarativePM.UI.Data
 @implements IDisposable
 
 @inject IMatDialogService MatDialogService
+@inject StateContainer StateContainer
 
 <h3>Import</h3>
 
@@ -29,7 +31,7 @@
 }
 
 <MatAccordion>
-    @foreach (var log in eventLogs)
+    @foreach (var log in StateContainer.EventLogs)
     {
         <MatExpansionPanel ExpandedChanged="_ => Selection(log)">
             <MatExpansionPanelSummary>
