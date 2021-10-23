@@ -10,8 +10,8 @@ namespace DeclarativePM.Lib.Models
     {
         public TemplateInstanceType Template { get; }
         public List<ITemplate> TemplateInstances { get; set; }
-        public decimal Poe { get; }
-        public decimal Poi { get; }
+        public decimal Poe { get; set; }
+        public decimal Poi { get; set; }
 
         public TemplateTypes TemplateType { get; }
 

@@ -1,14 +1,81 @@
 @page "/Discover"
 @using DeclarativePM.UI.Data
+@using DeclarativePM.Lib.Enums
 @implements IDisposable
 @inject StateContainer StateContainer
 
 <h3>Discover</h3>
 
-@code {
+@if (selectLog)
+{
+    <MatAccordion>
+        @foreach (var log in StateContainer.EventLogs)
+        {
+            <MatExpansionPanel ExpandedChanged="_ => Selection(log)" Style="@GetExpansionBackground(log)">
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        @log.Name
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <ul>
+                        @foreach (var head in log.Headers)
+                        {
+                            <li>@head</li>
+                        }
+                    </ul>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>
+        }
+    </MatAccordion>
+    
+    <MatButton OnClick="ContinueSelection" Disabled="@(SelectedLog is null)">Continue</MatButton>
+}
+else if (selectParameters)
+{
+    <MatChipSet Filter="true" @bind-SelectedChips="@selectedTemplates">
+        @foreach (var tit in value2Items)
+        {
+            //TODO own onCLick instead filter to keep state
+            <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit"></MatChip>
+        }
+    </MatChipSet>
 
-    public void Dispose()
-    {
-    }
+    //TODO description of templates
 
+    <MatButton OnClick="BackSelectionT">Back</MatButton>
+    <MatButton OnClick="ContinueSelectionT">Continue</MatButton>
+}
+else if (configureTemplates)
+{
+    <MatAccordion>
+        @foreach (var tit in templates)
+        {
+            <MatExpansionPanel>
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        @tit.Template.ToString()
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <MatNumericUpDownField Label="Percentage of Instances"
+                                           @bind-Value=@tit.Poi
+                                           DecimalPlaces=0
+                                           Minimum=0 Maximum=100>
+                    </MatNumericUpDownField>
+                    <MatNumericUpDownField Label="Percentage of Events"
+                                                       @bind-Value=@tit.Poe
+                                                       DecimalPlaces=0
+                                                       Minimum=0 Maximum=100>
+                                </MatNumericUpDownField>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>
+        }
+    </MatAccordion>
+    <MatButton OnClick="BackConfigure">Back</MatButton>
+    <MatButton OnClick="ContinueConfigure">Continue</MatButton>
+}
+else if (showDiscovered)
+{
+    <MatButton OnClick="BackDiscover">Back</MatButton>
 }
