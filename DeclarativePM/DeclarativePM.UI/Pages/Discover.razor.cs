@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Utils;
+using DeclarativePM.UI.Data;
 using MatBlazor;
 using Microsoft.AspNetCore.Components;
 
@@ -22,6 +25,7 @@ namespace DeclarativePM.UI.Pages
             
             MatChip[] selectedTemplates;
             private List<ParametrisedTemplate> templates;
+            public TreeNodeModel treeTemplates;
 
             public void Selection(EventLog log)
             {
@@ -62,6 +66,8 @@ namespace DeclarativePM.UI.Pages
             {
                 configureTemplates = false;
                 showDiscovered = true;
+                ModelDiscovery();
+                CreateTreeNode();
                 await InvokeAsync(StateHasChanged);
             }
             
@@ -95,6 +101,48 @@ namespace DeclarativePM.UI.Pages
                         continue;
                     templates.Add(new(tit));
                 }
+            }
+
+            public void CreateTreeNode()
+            {
+                treeTemplates = new()
+                {
+                    Name = "Discovered Constraints",
+                    Nodes = new []
+                    {
+                        GenerateInnerNodes(TemplateBookType.Existential, "Existential"),
+                        GenerateInnerNodes(TemplateBookType.Relational, "Relational"),
+                        GenerateInnerNodes(TemplateBookType.NotRelational, "Not Relational")
+                        
+                    }
+                };
+            }
+
+            private TreeNodeModel GenerateInnerNodes(TemplateBookType tbt, string name)
+            {
+                return new()
+                {
+                    Name = name,
+                    Nodes = templates.Where(x => x.Template.GetTemplateBookType() == tbt)
+                        .Select(template =>
+                        {
+                            return new TreeNodeModel()
+                            {
+                                Name = template.Template.ToString(),
+                                Nodes = template.TemplateInstances.Select(instance => new TreeNodeModel()
+                                {
+                                    Name = instance.ToString()
+                                }).ToArray()
+                            };
+                        }).ToArray()
+
+                };
+            }
+
+            public void ModelDiscovery()
+            {
+                var disco = new Discovery();
+                disco.DiscoverModel(SelectedLog, templates);
             }
 
             public bool IsSelectedTit(TemplateInstanceType tit)

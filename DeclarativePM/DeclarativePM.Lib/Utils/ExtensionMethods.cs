@@ -78,6 +78,36 @@ namespace DeclarativePM.Lib.Utils
             }
         }
         
+        public static TemplateBookType GetTemplateBookType(this TemplateInstanceType template)
+        {
+            switch (template)
+            {
+                case TemplateInstanceType.Init:
+                case TemplateInstanceType.Exactly:
+                case TemplateInstanceType.Existence:
+                case TemplateInstanceType.Absence:
+                    return TemplateBookType.Existential;
+                case TemplateInstanceType.AlternatePrecedence:
+                case TemplateInstanceType.AlternateResponse:
+                case TemplateInstanceType.AlternateSuccession:
+                case TemplateInstanceType.ChainPrecedence:
+                case TemplateInstanceType.ChainResponse:
+                case TemplateInstanceType.ChainSuccession:
+                case TemplateInstanceType.Coexistence:
+                case TemplateInstanceType.Precedence:
+                case TemplateInstanceType.RespondedExistence:
+                case TemplateInstanceType.Response:
+                case TemplateInstanceType.Succession:
+                    return TemplateBookType.Relational;
+                case TemplateInstanceType.NotChainSuccession:
+                case TemplateInstanceType.NotCoexistence:
+                case TemplateInstanceType.NotSuccession:
+                    return TemplateBookType.NotRelational;
+                default:
+                    throw new Exception("Wrong enum type");
+            }
+        }
+        
         public static int GetTemplateEventArgs(this TemplateTypes type)
         {
             switch (type)
