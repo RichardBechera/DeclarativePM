@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.Factories;
 using DeclarativePM.Lib.Enums;
@@ -21,7 +23,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        public List<ParametrisedTemplate> DiscoverModel(EventLog log, decimal poe = 100, decimal poi = 100)
+        public DeclareModel DiscoverModel(EventLog log, decimal poe = 100, decimal poi = 100)
         {
             return DiscoverModel(log, GetTemplates(), poe, poi);
         }
@@ -36,14 +38,14 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        public List<ParametrisedTemplate> DiscoverModel(EventLog log, List<Type> templates, decimal poe = 100, decimal poi = 100)
+        public DeclareModel DiscoverModel(EventLog log, List<Type> templates, decimal poe = 100, decimal poi = 100)
         {
             var temp = templates
                 .Where(t => t.IsValueType && t.IsAssignableTo(typeof(ITemplate)))
                 .Select(t => new ParametrisedTemplate(t))
                 .ToList();
             DiscoverModel(log, temp, true, poe, poi);
-            return temp;
+            return new DeclareModel("Declare model", temp, log);
         }
 
         //TODO templates
@@ -53,9 +55,22 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        public void DiscoverModel(EventLog log, List<ParametrisedTemplate> templates)
+        public DeclareModel DiscoverModel(EventLog log, List<ParametrisedTemplate> templates)
         {
             DiscoverModel(log, templates, false);
+            return new DeclareModel("Declare model", templates, log);
+        }
+        
+        /// <summary>
+        /// Method discovers DECLARE model on top of an event log.
+        /// </summary>
+        /// <param name="log">Event log.</param>
+        /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
+        /// <returns>DECLARE model representing an event log.</returns>
+        public async Task<DeclareModel> DiscoverModelAsync(EventLog log, List<ParametrisedTemplate> templates, CancellationToken ctk)
+        {
+            await Task.Run(() => DiscoverModel(log, templates, false), ctk);
+            return new DeclareModel("Declare model", templates, log);
         }
 
         /// <summary>
@@ -70,7 +85,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        private void DiscoverModel(EventLog log, List<ParametrisedTemplate> templates, 
+        private DeclareModel DiscoverModel(EventLog log, List<ParametrisedTemplate> templates, 
             bool isGeneralPoX, decimal poe = 100, decimal poi = 100)
         {
             //var importedEventLogs = log as ImportedEventLog[] ?? log.ToArray();
@@ -86,6 +101,8 @@ namespace DeclarativePM.Lib.Discovery
             var instancesAsLists = instances.Select(x => x.ToList());
             
             GetMatchingConstraints(instancesAsLists, templates, poi, isGeneralPoX);
+            
+            return new DeclareModel("Declare model", templates, log);
         }
 
         /// <summary>

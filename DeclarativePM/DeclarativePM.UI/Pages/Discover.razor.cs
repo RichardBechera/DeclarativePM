@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
@@ -19,6 +20,8 @@ namespace DeclarativePM.UI.Pages
             bool selectParameters = false;
             bool configureTemplates = false;
             bool showDiscovered = false;
+            bool wait = false;
+            bool abort = false;
         
             TemplateInstanceType[] value2Items = Enum.GetValues(typeof(TemplateInstanceType))
                 .Cast<TemplateInstanceType>().Where(x => x != TemplateInstanceType.None).ToArray();
@@ -26,6 +29,8 @@ namespace DeclarativePM.UI.Pages
             MatChip[] selectedTemplates;
             private List<ParametrisedTemplate> templates;
             public TreeNodeModel treeTemplates;
+            private DeclareModel _declareModel;
+            CancellationTokenSource tokenSource = new();
 
             public void Selection(EventLog log)
             {
@@ -64,10 +69,14 @@ namespace DeclarativePM.UI.Pages
             
             public async Task ContinueConfigure()
             {
+                wait = true;
+                await InvokeAsync(StateHasChanged);
+                await ModelDiscoveryAsync();
+                wait = false;
+                CreateTreeNode();
+                
                 configureTemplates = false;
                 showDiscovered = true;
-                ModelDiscovery();
-                CreateTreeNode();
                 await InvokeAsync(StateHasChanged);
             }
             
@@ -139,10 +148,23 @@ namespace DeclarativePM.UI.Pages
                 };
             }
 
-            public void ModelDiscovery()
+            public async Task ModelDiscoveryAsync()
             {
+                ManualResetEventSlim mrs = new ManualResetEventSlim(false);
+                CancellationToken ctk = tokenSource.Token;
                 var disco = new Discovery();
-                disco.DiscoverModel(SelectedLog, templates);
+                _declareModel = await disco.DiscoverModelAsync(SelectedLog, templates, ctk);
+            }
+
+            public void AbortDiscovery()
+            {
+                tokenSource.Cancel();
+            }
+
+            public void SaveModel()
+            {
+                if (_declareModel is not null && !StateContainer.DeclareModels.Contains(_declareModel))
+                    StateContainer.DeclareModels.Add(_declareModel);
             }
 
             public bool IsSelectedTit(TemplateInstanceType tit)

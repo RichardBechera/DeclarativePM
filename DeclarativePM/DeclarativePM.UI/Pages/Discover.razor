@@ -1,8 +1,8 @@
 @page "/Discover"
 @using DeclarativePM.UI.Data
-@using DeclarativePM.Lib.Enums
 @implements IDisposable
 @inject StateContainer StateContainer
+@inject IMatDialogService MatDialogService
 
 <h3>Discover</h3>
 
@@ -64,18 +64,23 @@ else if (configureTemplates)
                                            Minimum=0 Maximum=100>
                     </MatNumericUpDownField>
                     <MatNumericUpDownField Label="Percentage of Events"
-                                                       @bind-Value=@tit.Poe
-                                                       DecimalPlaces=0
-                                                       Minimum=0 Maximum=100>
-                                </MatNumericUpDownField>
+                                           @bind-Value=@tit.Poe
+                                           DecimalPlaces=0
+                                           Minimum=0 Maximum=100>
+                    </MatNumericUpDownField>
                 </MatExpansionPanelDetails>
             </MatExpansionPanel>
         }
     </MatAccordion>
+    @if (wait)
+    {
+        <MatProgressCircle Indeterminate="true" Size="MatProgressCircleSize.Large" />
+        //<MatButton OnClick="AbortDiscovery">Abort</MatButton>
+    }
     <MatButton OnClick="BackConfigure">Back</MatButton>
     <MatButton OnClick="ContinueConfigure">Continue</MatButton>
 }
-else if (showDiscovered)
+else if (showDiscovered && treeTemplates is not null && _declareModel is not null)
 {
     <MatTreeView TNode="TreeNodeModel"
                  RootNode="@treeTemplates"
@@ -84,5 +89,7 @@ else if (showDiscovered)
             @context.Name
         </NodeTemplate>
     </MatTreeView>
+    <MatTextField @bind-Value="@_declareModel.Name" Label="Model name" ></MatTextField><br/>
+    <MatButton OnClick="SaveModel">Save</MatButton>
     <MatButton OnClick="BackDiscover">Back</MatButton>
 }
