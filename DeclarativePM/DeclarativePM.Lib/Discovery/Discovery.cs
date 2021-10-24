@@ -132,6 +132,7 @@ namespace DeclarativePM.Lib.Discovery
                     var combo = UtilMethods.Combinations(args, bagOfEvents, false);
                     InnerCandidateGeneration(template, combo, longestCase);
                 }
+                return;
             }
             
             var neededCombinations = templates

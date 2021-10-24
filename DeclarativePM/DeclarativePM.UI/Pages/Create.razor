@@ -1,0 +1,63 @@
+@page "/Create"
+@using DeclarativePM.UI.Data
+@using DeclarativePM.UI.Enums
+@inject StateContainer StateContainer
+@inject IMatDialogService MatDialogService
+
+<h3>Create</h3>
+
+<style>
+.parent {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-rows: repeat(5, 1fr);
+grid-column-gap: 0px;
+grid-row-gap: 0px;
+}
+
+.div1 { grid-area: 1 / 1 / 6 / 2; }
+.div2 { grid-area: 1 / 2 / 2 / 6; }
+.div3 { grid-area: 2 / 2 / 6 / 4; }
+.div4 { grid-area: 2 / 4 / 6 / 6; }
+</style>
+
+@if (chooseMethod)
+{
+    <MatButton OnClick="() => ChooseMethod(CreateMethod.Create)">Create DECLARE model</MatButton>
+    <MatButton OnClick="() => ChooseMethod(CreateMethod.CreateWithLog)">Create DECLARE model from log</MatButton>
+    <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>
+}
+else if (method == CreateMethod.CreateWithLog && chooseLog)
+{
+    <MatAccordion>
+        @foreach (var log in StateContainer.EventLogs)
+        {
+            <MatExpansionPanel ExpandedChanged="_ => Selection(log)" Style="@GetExpansionBackground(log)">
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        @log.Name
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <ul>
+                        @foreach (var head in log.Headers)
+                        {
+                            <li>@head</li>
+                        }
+                    </ul>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>
+        }
+    </MatAccordion>
+    //TODO dialog continue without log ?
+    <MatButton OnClick="ContinueCreate" Disabled="@(SelectedLog is null)">Continue</MatButton>
+}
+else
+{
+    <div class="parent">
+    <div class="div1" Style="background: blue"> <p>blue</p></div>
+    <div class="div2" Style="background: red"><p>red</p> </div>
+    <div class="div3" Style="background: yellow"> <p>yellow</p></div>
+    <div class="div4" Style="background: green"> <p>green</p></div>
+    </div> 
+}
