@@ -30,6 +30,12 @@ namespace DeclarativePM.Lib.Declare_Templates
         public bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
         
+        public string GetEventA()
+            => LogEventA;
+
+        public string GetEventB()
+            => LogEventB;
+        
         public override string ToString() 
             => $"NotCoexistence(\"{LogEventA}\", \"{LogEventB}\")";
     }

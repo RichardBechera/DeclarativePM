@@ -26,6 +26,11 @@ namespace DeclarativePM.Lib.Declare_Templates
 
         public override string ToString() 
             => $"Absence({Occurances}, \"{LogEvent}\")";
-        
+
+        public string GetEvent()
+            => LogEvent;
+
+        public int GetCount()
+            => Occurances;
     }
 }

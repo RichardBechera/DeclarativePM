@@ -8,6 +8,7 @@ using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;
+using DeclarativePM.UI.Utils;
 using MatBlazor;
 using Microsoft.AspNetCore.Components;
 
@@ -73,7 +74,7 @@ namespace DeclarativePM.UI.Pages
                 await InvokeAsync(StateHasChanged);
                 await ModelDiscoveryAsync();
                 wait = false;
-                CreateTreeNode();
+                Utilities.CreateTreeNode(out treeTemplates, templates);
                 
                 configureTemplates = false;
                 showDiscovered = true;
@@ -112,41 +113,7 @@ namespace DeclarativePM.UI.Pages
                 }
             }
 
-            public void CreateTreeNode()
-            {
-                treeTemplates = new()
-                {
-                    Name = "Discovered Constraints",
-                    Nodes = new []
-                    {
-                        GenerateInnerNodes(TemplateBookType.Existential, "Existential"),
-                        GenerateInnerNodes(TemplateBookType.Relational, "Relational"),
-                        GenerateInnerNodes(TemplateBookType.NotRelational, "Not Relational")
-                        
-                    }
-                };
-            }
-
-            private TreeNodeModel GenerateInnerNodes(TemplateBookType tbt, string name)
-            {
-                return new()
-                {
-                    Name = name,
-                    Nodes = templates.Where(x => x.Template.GetTemplateBookType() == tbt)
-                        .Select(template =>
-                        {
-                            return new TreeNodeModel()
-                            {
-                                Name = template.Template.ToString(),
-                                Nodes = template.TemplateInstances.Select(instance => new TreeNodeModel()
-                                {
-                                    Name = instance.ToString()
-                                }).ToArray()
-                            };
-                        }).ToArray()
-
-                };
-            }
+            
 
             public async Task ModelDiscoveryAsync()
             {

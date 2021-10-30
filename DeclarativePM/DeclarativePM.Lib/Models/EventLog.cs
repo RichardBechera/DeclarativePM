@@ -40,7 +40,10 @@ namespace DeclarativePM.Lib.Models
 
         private string GetDefaultName()
             => "DEFAULT LOG NAME";
-        
+
+        public List<string> GetAllActivities()
+            => Logs.Select(x => x.Activity).Distinct().ToList();
+
 
     }
 }

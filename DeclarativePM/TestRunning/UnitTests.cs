@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
@@ -119,6 +120,28 @@ namespace TestRunning
             
             var gl2 = MainMethods.GlobalLikelyhood(tree, templates, cr.Last());
             //Assert.Equal(1/(double)6, gl2);
+        }
+        
+        [Fact]
+        public void Test6()
+        {
+            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
+            var third = ImportCsvLogs.LoadCsv(path4);
+            var log = third.buildEventLog();
+            var model = _disco.DiscoverModel(log, new List<ParametrisedTemplate>()
+            {
+                new ParametrisedTemplate(TemplateInstanceType.Coexistence),
+                new ParametrisedTemplate(TemplateInstanceType.ChainPrecedence),
+                new ParametrisedTemplate(TemplateInstanceType.NotCoexistence),
+                new ParametrisedTemplate(TemplateInstanceType.Precedence),
+                new ParametrisedTemplate(TemplateInstanceType.AlternatePrecedence),
+                new ParametrisedTemplate(TemplateInstanceType.ChainSuccession),
+                new ParametrisedTemplate(TemplateInstanceType.ChainResponse),
+                new ParametrisedTemplate(TemplateInstanceType.AlternateSuccession),
+            });
+            Assert.Equal(6, model.Constraints[0].TemplateInstances.Count);
+            Assert.Equal(6, model.Constraints[0].TemplateInstances.Count);
+
         }
         
         

@@ -1,38 +1,24 @@
 @page "/Create"
+@using DeclarativePM.Lib.Utils
 @using DeclarativePM.UI.Data
 @using DeclarativePM.UI.Enums
+@using DeclarativePM.Lib.Enums
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
 
 <h3>Create</h3>
 
-<style>
-.parent {
-display: grid;
-grid-template-columns: repeat(5, 1fr);
-grid-template-rows: repeat(5, 1fr);
-grid-column-gap: 0px;
-grid-row-gap: 0px;
-}
-
-.div1 { grid-area: 1 / 1 / 6 / 2; }
-.div2 { grid-area: 1 / 2 / 2 / 6; }
-.div3 { grid-area: 2 / 2 / 6 / 4; }
-.div4 { grid-area: 2 / 4 / 6 / 6; }
-</style>
-
 @if (chooseMethod)
 {
     <MatButton OnClick="() => ChooseMethod(CreateMethod.Create)">Create DECLARE model</MatButton>
     <MatButton OnClick="() => ChooseMethod(CreateMethod.CreateWithLog)">Create DECLARE model from log</MatButton>
-    <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>
-}
+    <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>}
 else if (method == CreateMethod.CreateWithLog && chooseLog)
 {
     <MatAccordion>
         @foreach (var log in StateContainer.EventLogs)
         {
-            <MatExpansionPanel ExpandedChanged="_ => Selection(log)" Style="@GetExpansionBackground(log)">
+            <MatExpansionPanel ExpandedChanged="_ => SelectionLog(log)" Style="@GetExpansionBackground(log)">
                 <MatExpansionPanelSummary>
                     <MatExpansionPanelHeader>
                         @log.Name
@@ -46,18 +32,165 @@ else if (method == CreateMethod.CreateWithLog && chooseLog)
                         }
                     </ul>
                 </MatExpansionPanelDetails>
-            </MatExpansionPanel>
-        }
+            </MatExpansionPanel>        }
     </MatAccordion>
     //TODO dialog continue without log ?
-    <MatButton OnClick="ContinueCreate" Disabled="@(SelectedLog is null)">Continue</MatButton>
-}
+    <MatButton OnClick="LogContinueCreate" Disabled="@(SelectedLog is null)">Continue</MatButton>}
+else if (method == CreateMethod.Edit && chooseModel)
+{
+    <MatAccordion>
+        @foreach (var md in StateContainer.DeclareModels)
+        {
+            <MatExpansionPanel ExpandedChanged="_ => SelectionModel(md)" Style="@GetExpansionBackground(md)">
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        <span><b>Model name: </b>
+                        @md.Name
+                        <b> Event log: </b>
+                        @if (md.Log is null)
+                        {
+                            <p>Model without eventlog</p>
+                        }
+                        else
+                        {
+                            @md.Log?.Name 
+                        }</span>
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <ul>
+                        @foreach (var constraint in md.Constraints)
+                        {
+                            <li>@constraint.Template.ToString() @constraint.TemplateInstances.Count</li>
+                        }
+                    </ul>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>        }
+    </MatAccordion>
+    //TODO dialog continue without log ?
+    <MatButton OnClick="ModelContinueCreate" Disabled="@(_declareModel is null)">Continue</MatButton>}
 else
 {
-    <div class="parent">
-    <div class="div1" Style="background: blue"> <p>blue</p></div>
-    <div class="div2" Style="background: red"><p>red</p> </div>
-    <div class="div3" Style="background: yellow"> <p>yellow</p></div>
-    <div class="div4" Style="background: green"> <p>green</p></div>
-    </div> 
+    <MatChipSet Choice="true" SelectedChipChanged="SelectedPTemplateChanged">
+        <div class="ChipContainer">
+            <!-- CHIPS -->
+
+            <div class="Existential">
+                <div class="Text">Existential:</div>
+                <div class="Chip">
+                    @foreach (var tit in value2Items
+                        .Where(x => x.GetTemplateBookType() == TemplateBookType.Existential))
+                    {
+                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>                        
+                    }
+                </div>
+
+            </div>
+            <div class="Relational">
+                <div class="Text">Relational:</div>
+                <div class="Chip">
+                    @foreach (var tit in value2Items
+                        .Where(x => x.GetTemplateBookType() == TemplateBookType.Relational))
+                    {
+                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>                        
+                    }
+                </div>
+
+            </div>
+            <div class="NotRelational">
+                <div class="Text">Not Relational:</div>
+                <div class="Chip">
+
+                    @foreach (var tit in value2Items
+                        .Where(x => x.GetTemplateBookType() == TemplateBookType.NotRelational))
+                    {
+                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>                        
+                    }
+                </div>
+            </div>
+
+        </div>
+    </MatChipSet>
+    <div class="MainContainer">
+        <div class="Activities">
+            <!-- ACTIVITIES -->
+            <MatIconButton OnClick="AddActivity" Icon="add"/>
+            <MatVirtualScroll style="height: auto" ItemType="string" Items="@activities" ItemHeight="50" Disabled="true">
+                <ItemTemplate>
+                    <div>
+                        @context
+                        <MatIconButton Icon="remove" OnClick="@(() => RemoveActivity(context))"></MatIconButton>
+                    </div>
+                </ItemTemplate>
+            </MatVirtualScroll>
+        </div>
+        <div class="Editor">
+            <!-- EDITOR -->
+            @if (current is null)
+            {
+                <h5>Please select a template to edit</h5>
+            }
+            else
+            {
+                <span>
+                    <MatNumericUpDownField Label="Percentage of Instances"
+                                           @bind-Value=@current.Poi
+                                           DecimalPlaces=0
+                                           Minimum=0 Maximum=100>
+                    </MatNumericUpDownField>
+                    <MatNumericUpDownField Label="Percentage of Events"
+                                           @bind-Value=@current.Poe
+                                           DecimalPlaces=0
+                                           Minimum=0 Maximum=100>
+                    </MatNumericUpDownField>
+                    @if (CurrentlyEditedTemplate.TemplateTypes == TemplateTypes.Existence)
+                    {
+                        <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event A"></MatSelectItem>
+                        <MatNumericUpDownField Label="Occurances"
+                                                                   @bind-Value=@CurrentlyEditedTemplate.Occurances
+                                                                   DecimalPlaces=0
+                                                                   Minimum=1>
+                                            </MatNumericUpDownField>
+                    }
+                    else if (CurrentlyEditedTemplate.TemplateTypes == TemplateTypes.BiTemplate)
+                    {
+                        <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event A"></MatSelectItem>
+                        <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventB" Items="@activities" Label="Event B"></MatSelectItem>
+                    }
+                    else if (CurrentlyEditedTemplate.TemplateTypes == TemplateTypes.UniTemplate)
+                    {
+                        <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event"></MatSelectItem>
+                    }
+                    
+                    <MatButton OnClick="SaveTemplate" Disabled="@DisableSave()">Save template</MatButton>
+                    
+                </span>
+            }
+            <MatButton OnClick="SaveModel">Save DECLARE MODEL</MatButton>
+            <MatTable Items="currentTemplates" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
+                <MatTableHeader>
+                    <th>Name</th>
+                    <th>@GetHeader(true)</th>
+                    <th>@GetHeader(false)</th>
+                    <th>Remove</th>
+                </MatTableHeader>
+                <MatTableRow>
+                    <td>@current.Template.ToString()</td>
+                    <td>@GetValue1(context)</td>
+                    <td>@GetValue2(context)</td>
+                    <td><MatIconButton Icon="remove" OnClick="@(() => RemoveTemplate(context))"></MatIconButton></td>
+                </MatTableRow>
+            </MatTable>
+            </div>
+        <div class="Tree">
+            <!-- TREE -->
+            <MatTreeView TNode="TreeNodeModel"
+                         RootNode="@treeTemplates"
+                         GetChildNodesCallback="@(n => n.Nodes)">
+                <NodeTemplate>
+                    @context.Name
+                </NodeTemplate>
+            </MatTreeView>
+        </div>
+    </div>
 }

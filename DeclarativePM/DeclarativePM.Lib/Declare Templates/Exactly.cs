@@ -28,5 +28,11 @@ namespace DeclarativePM.Lib.Declare_Templates
         
         public override string ToString() 
             => $"Exactly({Occurances}, \"{LogEvent}\")";
+        
+        public string GetEvent()
+            => LogEvent;
+
+        public int GetCount()
+            => Occurances;
     }
 }
