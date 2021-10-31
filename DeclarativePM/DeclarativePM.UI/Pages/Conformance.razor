@@ -1,0 +1,75 @@
+@page "/Conformance"
+
+@using DeclarativePM.UI.Data
+@using DeclarativePM.UI.Enums
+@inject StateContainer StateContainer
+@inject IMatDialogService MatDialogService
+
+<h3>Conformance</h3>
+
+<div class="mat-layout-grid">
+    <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+            <MatIconButton OnClick="AddCases" Icon="add"/>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5">
+            <MatIconButton OnClick="ShowCase" Icon="remove_red_eye"/>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
+            <MatIconButton OnClick="ChangeModel" Icon="import_export"/>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+            <!-- ====CASES=== -->
+            <MatVirtualScroll style="height: auto" ItemType="TraceDTO" Items="@Traces" ItemHeight="50" Disabled="true">
+                <ItemTemplate>
+                    <MatButton OnClick="@(() => ChooseTrace(context))" Style="@GetExpansionBackground(context)">
+                        @context.Case
+                    </MatButton>
+                </ItemTemplate>
+            </MatVirtualScroll>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5">
+            <!-- ====VIEW=== -->
+            @if (View == ConformancePageView.Conformance)
+            {
+            }
+            else if (View == ConformancePageView.CreateTrace)
+            {
+                <h5>Create Trace</h5>
+            }
+            else if (View == ConformancePageView.SelectedTrace)
+            {
+                <h5>Trace</h5>
+            }
+            else if (View == ConformancePageView.SelectLog)
+            {
+                <h5>Select Eventlog</h5>
+            }
+            else if (View == ConformancePageView.SelectModel)
+            {
+                <h5>Select model</h5>
+            }
+            else if (View == ConformancePageView.SelectTraces)
+            {
+                <h5>Select traces</h5>
+            }
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
+            <!-- ====TREE=== -->
+            @if (_declareModel is null)
+            {
+                <h4>Select a model</h4>
+            }
+            else
+            {
+                <MatTreeView TNode="TreeNodeModel"
+                             RootNode="@TreeNodeModel"
+                             GetChildNodesCallback="@(n => n.Nodes)">
+                    <NodeTemplate>
+                        @context.Name
+                    </NodeTemplate>
+                </MatTreeView>
+            }
+        </div>
+    </div>
+</div>
