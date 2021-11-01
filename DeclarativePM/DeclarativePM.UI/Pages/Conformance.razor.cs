@@ -89,5 +89,12 @@ namespace DeclarativePM.UI.Pages
         {
             return _selectedLog?.GetAllTraces().Select(x => new TraceDTO(x)).ToList();
         }
+
+        public async Task RemoveTrace(TraceDTO trace)
+        {
+            if (Traces.Contains(trace))
+                Traces.Remove(trace);
+            await InvokeAsync(StateHasChanged);
+        }
     }
 }

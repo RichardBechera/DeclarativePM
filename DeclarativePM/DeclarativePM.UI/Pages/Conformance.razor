@@ -25,6 +25,7 @@
                     <MatButton OnClick="@(() => ChooseTrace(context))" Style="@GetExpansionBackground(context)">
                         @context.Case
                     </MatButton>
+                    <MatIconButton OnClick="@(() => RemoveTrace(context))" Icon="remove"/>
                 </ItemTemplate>
             </MatVirtualScroll>
         </div>
