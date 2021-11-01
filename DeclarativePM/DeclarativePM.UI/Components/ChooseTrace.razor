@@ -1,0 +1,63 @@
+@using DeclarativePM.UI.Utils
+@using DeclarativePM.UI.Data
+<MatAccordion>
+        @foreach (var trace in Traces)
+        {
+            <MatExpansionPanel Style="@Utilities.GetExpansionBackground(trace, SelectedTraces)">
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        <span>
+                            @if (!SelectedTraces.Contains(trace))
+                            {
+                                <MatIconButton OnClick="@(() => AddTrace(trace))" Icon="add"/>
+                            }
+                            else
+                            {
+                                <MatIconButton OnClick="@(() => RemoveTrace(trace))" Icon="remove"/>
+                            }
+                            <b>Trace case: </b> @trace.Case <b>Events in trace: </b> @trace.Events.Count
+                        </span>
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <ul>
+                        @foreach (var evnt in trace.Events.Take(10))
+                        {
+                            <li>Activity: @evnt.Activity @(evnt.TimeStamp is not null ? $"Timestamp: {evnt.TimeStamp.Value}" : "")</li>
+                        }
+                        @if (trace.Events.Count > 10)
+                        {
+                            <li>...</li>
+                        }
+                    </ul>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>            
+        }
+    </MatAccordion>
+
+@code {
+    //maybe table?
+
+    [Parameter]
+    public List<TraceDTO> Traces { get; set; }
+
+    [Parameter]
+    public List<TraceDTO> SelectedTraces { get; set; }
+
+    public void AddTrace(TraceDTO trace)
+    {
+        if(SelectedTraces.Contains(trace))
+            return;
+        SelectedTraces.Add(trace);
+        StateHasChanged();
+    }
+
+    public void RemoveTrace(TraceDTO trace)
+    {
+        if(!SelectedTraces.Contains(trace))
+            return;
+        SelectedTraces.Remove(trace);
+        StateHasChanged();
+    }
+
+}

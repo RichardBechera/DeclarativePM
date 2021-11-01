@@ -50,5 +50,11 @@ namespace DeclarativePM.UI.Utils
             //TODO colours into constants ?
             return current.Equals(selected) ? "background: #ffd5ff" : "background: #f3f3f3";
         }
+        
+        public static string GetExpansionBackground<T>(T current, List<T> from)
+        {
+            //TODO colours into constants ?
+            return from.Contains(current) ? "background: #ffd5ff" : "background: #f3f3f3";
+        }
     }
 }

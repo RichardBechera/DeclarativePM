@@ -56,6 +56,8 @@
             else if (View == ConformancePageView.SelectTraces)
             {
                 <h5>Select traces</h5>
+                <ChooseTrace Traces="@GetLogTraceDtos()" SelectedTraces="@_selectedTraces"></ChooseTrace>
+                <MatButton OnClick="OnTracesSelected">OK</MatButton>
             }
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
