@@ -8,28 +8,8 @@
 
 @if (selectLog)
 {
-    <MatAccordion>
-        @foreach (var log in StateContainer.EventLogs)
-        {
-            <MatExpansionPanel ExpandedChanged="_ => Selection(log)" Style="@GetExpansionBackground(log)">
-                <MatExpansionPanelSummary>
-                    <MatExpansionPanelHeader>
-                        @log.Name
-                    </MatExpansionPanelHeader>
-                </MatExpansionPanelSummary>
-                <MatExpansionPanelDetails>
-                    <ul>
-                        @foreach (var head in log.Headers)
-                        {
-                            <li>@head</li>
-                        }
-                    </ul>
-                </MatExpansionPanelDetails>
-            </MatExpansionPanel>
-        }
-    </MatAccordion>
-    
-    <MatButton OnClick="ContinueSelection" Disabled="@(SelectedLog is null)">Continue</MatButton>
+    <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
+    <MatButton OnClick="ContinueSelection" Disabled="@(_selectedLog is null)">Continue</MatButton>
 }
 else if (selectParameters)
 {

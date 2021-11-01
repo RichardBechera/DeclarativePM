@@ -15,58 +15,12 @@
     <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>}
 else if (method == CreateMethod.CreateWithLog && chooseLog)
 {
-    <MatAccordion>
-        @foreach (var log in StateContainer.EventLogs)
-        {
-            <MatExpansionPanel ExpandedChanged="_ => SelectionLog(log)" Style="@GetExpansionBackground(log)">
-                <MatExpansionPanelSummary>
-                    <MatExpansionPanelHeader>
-                        @log.Name
-                    </MatExpansionPanelHeader>
-                </MatExpansionPanelSummary>
-                <MatExpansionPanelDetails>
-                    <ul>
-                        @foreach (var head in log.Headers)
-                        {
-                            <li>@head</li>
-                        }
-                    </ul>
-                </MatExpansionPanelDetails>
-            </MatExpansionPanel>        }
-    </MatAccordion>
+    <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
     //TODO dialog continue without log ?
-    <MatButton OnClick="LogContinueCreate" Disabled="@(SelectedLog is null)">Continue</MatButton>}
+    <MatButton OnClick="LogContinueCreate" Disabled="@(_selectedLog is null)">Continue</MatButton>}
 else if (method == CreateMethod.Edit && chooseModel)
 {
-    <MatAccordion>
-        @foreach (var md in StateContainer.DeclareModels)
-        {
-            <MatExpansionPanel ExpandedChanged="_ => SelectionModel(md)" Style="@GetExpansionBackground(md)">
-                <MatExpansionPanelSummary>
-                    <MatExpansionPanelHeader>
-                        <span><b>Model name: </b>
-                        @md.Name
-                        <b> Event log: </b>
-                        @if (md.Log is null)
-                        {
-                            <p>Model without eventlog</p>
-                        }
-                        else
-                        {
-                            @md.Log?.Name 
-                        }</span>
-                    </MatExpansionPanelHeader>
-                </MatExpansionPanelSummary>
-                <MatExpansionPanelDetails>
-                    <ul>
-                        @foreach (var constraint in md.Constraints)
-                        {
-                            <li>@constraint.Template.ToString() @constraint.TemplateInstances.Count</li>
-                        }
-                    </ul>
-                </MatExpansionPanelDetails>
-            </MatExpansionPanel>        }
-    </MatAccordion>
+    <ChooseModel DeclareModels="@StateContainer.DeclareModels" @bind-SelectedModel="_declareModel"></ChooseModel>
     //TODO dialog continue without log ?
     <MatButton OnClick="ModelContinueCreate" Disabled="@(_declareModel is null)">Continue</MatButton>}
 else

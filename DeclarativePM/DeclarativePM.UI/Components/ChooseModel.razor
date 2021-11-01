@@ -1,0 +1,61 @@
+@using DeclarativePM.UI.Utils
+<MatAccordion>
+        @foreach (var md in DeclareModels)
+        {
+            <MatExpansionPanel ExpandedChanged="_ => SelectionModel(md)" Style="@Utilities.GetExpansionBackground(md, SelectedModel)">
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        <span><b>Model name: </b>
+                        @md.Name
+                        <b> Event log: </b>
+                        @if (md.Log is null)
+                        {
+                            <p>Model without eventlog</p>
+                        }
+                        else
+                        {
+                            @md.Log?.Name 
+                        }</span>
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <ul>
+                        @foreach (var constraint in md.Constraints)
+                        {
+                            <li>@constraint.Template.ToString() @constraint.TemplateInstances.Count</li>
+                        }
+                    </ul>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>        }
+    </MatAccordion>
+
+@code {
+
+    [Parameter]
+    public List<DeclareModel> DeclareModels { get; set; }
+    
+
+    private DeclareModel _selectedModel;
+
+    [Parameter]
+    public DeclareModel SelectedModel
+    {
+        get => _selectedModel;
+        set
+        {
+            if (value == _selectedModel)
+                return;
+            _selectedModel = value;
+            SelectedModelChanged.InvokeAsync(value);
+        }
+    }
+    
+    [Parameter]
+    public EventCallback<DeclareModel> SelectedModelChanged { get; set; } 
+    
+    public void SelectionModel(DeclareModel md)
+    {
+        SelectedModel = md;
+        StateHasChanged();
+    }
+}

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace DeclarativePM.UI.Pages
         private bool chooseMethod = true;
         private bool chooseLog = false;
         private bool chooseModel = false;
-        private EventLog SelectedLog;
+        private EventLog _selectedLog;
 
         public ITemplate SelectedTemplateInstance;
         public CreateTemplateWrap CurrentlyEditedTemplate;
@@ -55,41 +54,32 @@ namespace DeclarativePM.UI.Pages
                 chooseModel = true;
             await InvokeAsync(StateHasChanged);
         }
-
-        public void SelectionLog(EventLog log)
-        {
-            SelectedLog = log;
-            StateHasChanged();
-        }
-        
-        public void SelectionModel(DeclareModel md)
-        {
-            _declareModel = md;
-            StateHasChanged();
-        }
         
         public async Task LogContinueCreate()
         {
-            
-            if (!StateContainer.DeclareModels.Any(x => x.Log.Equals(SelectedLog)))
+
+            if (StateContainer.DeclareModels.Any(x => x.Log.Equals(_selectedLog)))
             {
-                chooseLog = false;
-                await InvokeAsync(StateHasChanged);
-                return;
+                var result = await MatDialogService.AskAsync($"For {_selectedLog.Name} already existing" +
+                                                             $" DECLARE model was found, would you like to import it?", new[] {"YES", "NO", "CANCEL"});
+                if (result == "CANCEL")
+                    return;
+                
+                if (result == "YES")
+                {
+                    chooseLog = false;
+                    _declareModel = StateContainer.DeclareModels.Find(x => x.Log.Equals(_selectedLog));
+                    await ModelContinueCreate();
+                    await InvokeAsync(StateHasChanged);
+                    return;
+                }
             }
 
-            var result = await MatDialogService.AskAsync($"For {SelectedLog.Name} already existing" +
-                                                         $" DECLARE model was found, would you like to import it?", new[] {"YES", "NO", "CANCEL"});
-            if (result == "CANCEL")
-                return;
             chooseLog = false;
-            if (result == "YES")
-            {
-                _declareModel = StateContainer.DeclareModels.Find(x => x.Log.Equals(SelectedLog));
-                await ModelContinueCreate();
-                return;
-            }
             activities = new();
+            templates = new();
+            Utilities.CreateTreeNode(out treeTemplates, templates);
+            currentTemplates = new();
             
             await InvokeAsync(StateHasChanged);
         }
@@ -129,17 +119,6 @@ namespace DeclarativePM.UI.Pages
                 return "background: #b6b6b6";
             return templates.Any(x => x.Template == tit && x.TemplateInstances.Count > 0)
                 ? "background: #ffd5ff" : "background: #f3f3f3";
-        }
-        
-        public string GetExpansionBackground(EventLog el)
-        {
-            //TODO colours into constants ?
-            return el.Equals(SelectedLog) ? "background: #ffd5ff" : "background: #f3f3f3";
-        }
-        
-        public string GetExpansionBackground(DeclareModel md)
-        {
-            return md.Equals(_declareModel) ? "background: #ffd5ff" : "background: #f3f3f3";
         }
 
         public void SelectionChangedEvent(object row)

@@ -1,0 +1,51 @@
+@using DeclarativePM.UI.Utils
+<MatAccordion>
+        @foreach (var log in EventLogs)
+        {
+            <MatExpansionPanel ExpandedChanged="_ => SelectionLog(log)" Style="@Utilities.GetExpansionBackground(log, _selectedLog)">
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        @log.Name
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <ul>
+                        @foreach (var head in log.Headers)
+                        {
+                            <li>@head</li>
+                        }
+                    </ul>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>            
+        }
+    </MatAccordion>
+
+@code {
+        
+    [Parameter]
+    public List<EventLog> EventLogs { get; set; }
+
+    private EventLog _selectedLog;
+
+    [Parameter]
+    public EventLog SelectedLog
+    {
+        get => _selectedLog;
+        set
+        {
+            if (value == _selectedLog)
+                return;
+            _selectedLog = value;
+            SelectedLogChanged.InvokeAsync(value);
+        }
+    }
+    
+    [Parameter]
+    public EventCallback<EventLog> SelectedLogChanged { get; set; } 
+    
+    public void SelectionLog(EventLog log)
+    {
+        SelectedLog = log;
+        StateHasChanged();
+    }
+}

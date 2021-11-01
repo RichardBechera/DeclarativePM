@@ -44,10 +44,14 @@
             else if (View == ConformancePageView.SelectLog)
             {
                 <h5>Select Eventlog</h5>
+                <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
+                <MatButton OnClick="OnLogSelected">Continue</MatButton>
             }
             else if (View == ConformancePageView.SelectModel)
             {
                 <h5>Select model</h5>
+                <ChooseModel DeclareModels="@StateContainer.DeclareModels" @bind-SelectedModel="_declareModel"></ChooseModel>
+                <MatButton OnClick="OnModelSelected">OK</MatButton>
             }
             else if (View == ConformancePageView.SelectTraces)
             {

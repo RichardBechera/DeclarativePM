@@ -44,5 +44,11 @@ namespace DeclarativePM.UI.Utils
 
             };
         }
+        
+        public static string GetExpansionBackground<T>(T current, T selected)
+        {
+            //TODO colours into constants ?
+            return current.Equals(selected) ? "background: #ffd5ff" : "background: #f3f3f3";
+        }
     }
 }

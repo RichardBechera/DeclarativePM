@@ -13,6 +13,7 @@ namespace DeclarativePM.UI.Pages
         public List<TraceDTO> Traces = new();
         public TraceDTO SelectedTrace;
         private DeclareModel _declareModel;
+        private EventLog _selectedLog;
         public TreeNodeModel TreeNodeModel;
         public ConformancePageView View = ConformancePageView.CreateTrace;
         public async Task AddCases()
@@ -41,9 +42,7 @@ namespace DeclarativePM.UI.Pages
         
         public async Task ChangeModel()
         {
-            //View = ConformancePageView.SelectModel;
-            _declareModel = StateContainer.DeclareModels.First();
-            Utils.Utilities.CreateTreeNode(out TreeNodeModel, _declareModel.Constraints);
+            View = ConformancePageView.SelectModel;
             await InvokeAsync(StateHasChanged);
         }
         
@@ -56,6 +55,19 @@ namespace DeclarativePM.UI.Pages
         public string GetExpansionBackground(TraceDTO trace)
         {
             return trace is null || !trace.Equals(SelectedTrace) ? "background: #f3f3f3" : "background: #ffd5ff";
+        }
+
+        public async Task OnModelSelected()
+        {
+            View = ConformancePageView.Conformance;
+            Utils.Utilities.CreateTreeNode(out TreeNodeModel, _declareModel.Constraints);
+            await InvokeAsync(StateHasChanged);
+        }
+        
+        public async Task OnLogSelected()
+        {
+            View = ConformancePageView.SelectTraces;
+            await InvokeAsync(StateHasChanged);
         }
     }
 }
