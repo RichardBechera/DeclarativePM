@@ -15,9 +15,12 @@
                             {
                                 <MatIconButton OnClick="@(() => RemoveTrace(trace))" Icon="remove"/>
                             }
-                            <b>Trace case: </b> @trace.Case <b>Events in trace: </b> @trace.Events.Count
+                            @trace.Case
                         </span>
                     </MatExpansionPanelHeader>
+                    <MatExpansionPanelSubHeader>
+                        Count: @trace.Events.Count
+                    </MatExpansionPanelSubHeader>
                 </MatExpansionPanelSummary>
                 <MatExpansionPanelDetails>
                     <ul>

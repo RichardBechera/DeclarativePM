@@ -56,5 +56,16 @@ namespace DeclarativePM.UI.Utils
             //TODO colours into constants ?
             return from.Contains(current) ? "background: #ffd5ff" : "background: #f3f3f3";
         }
+
+        public static string GetTreeBackground(string current, List<SimpleTemplateEvaluation> evaluations)
+        {
+            if (evaluations is null)
+                return "background: #ffffff";
+            if (evaluations.Any(x => x.constraints.Any(y => y.ToString().Equals(current))))
+            {
+                return "background: #ffd5ff";
+            }
+            return "background: #ffffff";
+        }
     }
 }

@@ -5,20 +5,19 @@
             <MatExpansionPanel ExpandedChanged="_ => SelectionModel(md)" Style="@Utilities.GetExpansionBackground(md, SelectedModel)">
                 <MatExpansionPanelSummary>
                     <MatExpansionPanelHeader>
-                        <span><b>Model name: </b>
-                        @md.Name
-                        <b> Event log: </b>
-                        @if (md.Log is null)
-                        {
-                            <p>Model without eventlog</p>
-                        }
-                        else
-                        {
-                            @md.Log?.Name 
-                        }</span>
+                       @md.Name
                     </MatExpansionPanelHeader>
                 </MatExpansionPanelSummary>
                 <MatExpansionPanelDetails>
+                    <b>Event log:</b> 
+                    @if (md.Log is null)
+                    {
+                        <p>Model without eventlog</p>
+                    }
+                    else
+                    {
+                        @md.Log?.Name 
+                    }
                     <ul>
                         @foreach (var constraint in md.Constraints)
                         {

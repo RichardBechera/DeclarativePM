@@ -113,13 +113,16 @@ namespace DeclarativePM.Lib.Utils
                 .ToList();
         }
 
-        public static List<Event> GetConflict(ActivationBinaryTree tree)
+        public static List<Event> GetConflict(ActivationBinaryTree tree, List<Event> violations = null, List<Event> fulfilments = null)
+
         {
+            violations ??= GetViolation(tree);
+            fulfilments ??= GetFulfillment(tree);
             return tree.Leafs
                 .Where(x => x.MaxFulfilling)
                 .SelectMany(x => x.Subtrace)
-                .Except(GetViolation(tree))
-                .Except(GetFulfillment(tree))
+                .Except(violations)
+                .Except(fulfilments)
                 .Where(x => tree.Constraint.IsActivation(x))
                 .ToList();
         }
@@ -186,7 +189,54 @@ namespace DeclarativePM.Lib.Utils
             return result / kOfConflictActivations.Count;
         }
 
+        public static List<SimpleTemplateEvaluation> EvaluateTrace(DeclareModel model, List<Event> trace)
+        {
+            List<SimpleTemplateEvaluation> evaluations = new();
+            foreach (var template in model.Constraints)
+            {
+                SimpleTemplateEvaluation temp = new(template);
+                foreach (var constraint in template.TemplateInstances)
+                {
+                    if (!EvaluateExpression(trace, constraint.GetExpression()))
+                    {
+                        temp.constraints.Add(constraint);
+                        if (template.TemplateType == TemplateTypes.BiTemplate)
+                        {
+                            ActivationBinaryTree tree = ActivationTreeBuilder.BuildTree(trace, (IBiTemplate)constraint);
+                            temp.evals.Add(constraint, GetEventActivationTypes(tree, trace));
+                        }
+                    }
+                }
+                evaluations.Add(temp);
+            }
 
+            return evaluations;
+        }
+
+        private static Dictionary<Event, EventActivationType> GetEventActivationTypes(ActivationBinaryTree tree, List<Event> events)
+        {
+            List<Event> f = GetFulfillment(tree);
+            List<Event> v = GetViolation(tree);
+            List<Event> c = GetConflict(tree, v, f);
+            
+
+            Dictionary<Event, EventActivationType> dic = new();
+            foreach (var e in events)
+            {
+                if (f.Contains(e, new EventEqualityComparer()))
+                    dic.Add(e, EventActivationType.Fulfilment);
+                else if (c.Contains(e, new EventEqualityComparer()))
+                    dic.Add(e, EventActivationType.Conflict);
+                else if (v.Contains(e, new EventEqualityComparer()))
+                    dic.Add(e, EventActivationType.Violation);
+                else
+                    dic.Add(e, EventActivationType.None);
+            }
+
+            return dic;
+        }
+        
+        
 
 
     }
