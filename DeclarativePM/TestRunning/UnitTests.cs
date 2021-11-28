@@ -6,6 +6,7 @@ using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Import;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Utils;
 using Xunit;
 
@@ -37,6 +38,7 @@ namespace TestRunning
         [Fact]
         public void Test2()
         {
+            //TODO relative path
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample2.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
             var log2 = third.buildEventLog();
@@ -84,7 +86,7 @@ namespace TestRunning
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
-            var result = MainMethods.LocalLikelyhood(tree);
+            var result = MainMethods.LocalLikelihood(tree);
             Assert.Equal(2, result.Count);
             Assert.Equal(result.First().Value, 2/(double)3);
             Assert.Equal(result.Last().Value, 1/(double)3);
@@ -100,7 +102,7 @@ namespace TestRunning
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
-            List<ParametrisedTemplate> templates = new List<ParametrisedTemplate>()
+            List<ParametrizedTemplate> templates = new List<ParametrizedTemplate>()
             {
                 new(TemplateInstanceType.NotCoexistence, new List<ITemplate>()
                 {
@@ -115,10 +117,10 @@ namespace TestRunning
 
             Assert.Equal(2, cr.Count);
             
-            var gl1 = MainMethods.GlobalLikelyhood(tree, templates, cr.First());
+            var gl1 = MainMethods.GlobalLikelihood(tree, templates, cr.First());
             //Assert.Equal(0, gl1);
             
-            var gl2 = MainMethods.GlobalLikelyhood(tree, templates, cr.Last());
+            var gl2 = MainMethods.GlobalLikelihood(tree, templates, cr.Last());
             //Assert.Equal(1/(double)6, gl2);
         }
         
@@ -128,22 +130,152 @@ namespace TestRunning
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
             var log = third.buildEventLog();
-            var model = _disco.DiscoverModel(log, new List<ParametrisedTemplate>()
+            var model = _disco.DiscoverModel(log, new List<ParametrizedTemplate>()
             {
-                new ParametrisedTemplate(TemplateInstanceType.Coexistence),
-                new ParametrisedTemplate(TemplateInstanceType.ChainPrecedence),
-                new ParametrisedTemplate(TemplateInstanceType.NotCoexistence),
-                new ParametrisedTemplate(TemplateInstanceType.Precedence),
-                new ParametrisedTemplate(TemplateInstanceType.AlternatePrecedence),
-                new ParametrisedTemplate(TemplateInstanceType.ChainSuccession),
-                new ParametrisedTemplate(TemplateInstanceType.ChainResponse),
-                new ParametrisedTemplate(TemplateInstanceType.AlternateSuccession),
+                new ParametrizedTemplate(TemplateInstanceType.Coexistence),
+                new ParametrizedTemplate(TemplateInstanceType.ChainPrecedence),
+                new ParametrizedTemplate(TemplateInstanceType.NotCoexistence),
+                new ParametrizedTemplate(TemplateInstanceType.Precedence),
+                new ParametrizedTemplate(TemplateInstanceType.AlternatePrecedence),
+                new ParametrizedTemplate(TemplateInstanceType.ChainSuccession),
+                new ParametrizedTemplate(TemplateInstanceType.ChainResponse),
+                new ParametrizedTemplate(TemplateInstanceType.AlternateSuccession),
             });
             Assert.Equal(6, model.Constraints[0].TemplateInstances.Count);
             Assert.Equal(6, model.Constraints[0].TemplateInstances.Count);
 
         }
         
+        [Fact]
+        public void TestLeastEvaluation()
+        {
+            List<Event> eventsAHolds = new List<Event>()
+            {
+                new("a", "1"),
+                new("a", "1"),
+                new("a", "1"),
+                new("a", "1"),
+                new("b", "1"),
+            };
+            
+            List<Event> eventsANotHolds = new List<Event>()
+            {
+                new("a", "1"),
+                new("a", "1"),
+                new("c", "1"),
+                new("a", "1"),
+                new("b", "1"),
+            };
+
+            //a U b
+            LtlExpression expr = new LtlExpression(Operators.Least,
+                new LtlExpression("a"),
+                new LtlExpression("b"));
+            
+            //!c U b
+            LtlExpression exprNotC = new LtlExpression(Operators.Least,
+                new LtlExpression(Operators.Not, 
+                    new LtlExpression("c")),
+                new LtlExpression("b"));
+
+            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, expr));
+            Assert.False(MainMethods.EvaluateExpression(eventsANotHolds, expr));
+            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, exprNotC));
+            Assert.False(MainMethods.EvaluateExpression(eventsANotHolds, exprNotC));
+        }
         
+        
+        [Fact]
+        public void TestNextEvaluation()
+        {
+            List<Event> eventsNextB = new List<Event>()
+            {
+                new("a", "1"),
+                new("b", "1")
+            };
+
+            //next(a)
+            LtlExpression exprA = new LtlExpression(Operators.Next,
+                new LtlExpression("a"));
+            
+            //next(!a)
+            LtlExpression exprNotA = new LtlExpression(Operators.Next,
+                new LtlExpression(Operators.Not, new LtlExpression("a")));
+            
+            //next(b)
+            LtlExpression exprB = new LtlExpression(Operators.Next,
+                new LtlExpression("b"));
+
+            Assert.True(MainMethods.EvaluateExpression(eventsNextB, exprB));
+            Assert.True(MainMethods.EvaluateExpression(eventsNextB, exprNotA));
+            Assert.False(MainMethods.EvaluateExpression(eventsNextB, exprA));
+        }
+        
+        [Fact]
+        public void TestSubsequentEvaluation()
+        {
+            List<Event> eventsAHolds = new List<Event>()
+            {
+                new("a", "1"),
+                new("a", "1"),
+                new("a", "1"),
+            };
+            
+            List<Event> eventsANotHolds = new List<Event>()
+            {
+                new("a", "1"),
+                new("a", "1"),
+                new("c", "1")
+            };
+
+            //subsequent(a)
+            LtlExpression exprA = new LtlExpression(Operators.Subsequent,
+                new LtlExpression("a"));
+            
+            //subsequent(!c)
+            LtlExpression exprNotC = new LtlExpression(Operators.Next,
+                new LtlExpression(Operators.Not, new LtlExpression("c")));
+
+            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, exprA));
+            Assert.False(MainMethods.EvaluateExpression(eventsANotHolds, exprA));
+            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, exprNotC));
+        }
+        
+        [Fact]
+        public void TestAlternateResponseEvaluate()
+        {
+            List<Event> eventsHolds = new List<Event>()
+            {
+                new("a", "1"),
+                new("b", "1"),
+                new("b", "1"),
+                new("c", "1"),
+            };
+            
+            List<Event> eventsNotHolds = new List<Event>()
+            {
+                new("a", "1"),
+                new("b", "1"),
+                new("a", "1"),
+                new("c", "1"),
+            };
+            
+            List<Event> eventsNotFinish = new List<Event>()
+            {
+                new("a", "1"),
+                new("b", "1"),
+                new("b", "1"),
+            };
+
+            AlternateResponse template = new AlternateResponse("a", "c");
+
+            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            //This is true as there really was no other "a" until "c".
+            Assert.True(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
+        }
+        
+        
+
     }
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Import
 {

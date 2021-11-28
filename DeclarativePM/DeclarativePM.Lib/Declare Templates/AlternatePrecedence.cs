@@ -1,9 +1,15 @@
 using System;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
+    /// <summary>
+    /// LTL Alternate Precedence template
+    /// Each time B occurs, it is preceded by A and no other B can recur in between
+    /// precedence(A, B) && subsequent(B => next(precedence(A, B)))
+    /// </summary>
     public struct AlternatePrecedence: IBiTemplate
     {
         public string LogEventA;
@@ -14,10 +20,6 @@ namespace DeclarativePM.Lib.Declare_Templates
             LogEventA = logEventA;
             LogEventB = logEventB;
         }
-
-        public static int GetAmountOfArguments() => 2;
-
-        public static Type[] GetConstructorOptions() => new[] {typeof(string), typeof(string)};
         
         public LtlExpression GetExpression()
         {

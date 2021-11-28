@@ -1,9 +1,16 @@
 using System;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
+    /// <summary>
+    /// LTL Existence template
+    /// A occurs at least n times 
+    /// Eventual(A && Next(Existence(n-1, A)))
+    /// Eventual(A)
+    /// </summary>
     public struct Existence: IExistenceTemplate
     {
         public int Occurances;
@@ -15,10 +22,6 @@ namespace DeclarativePM.Lib.Declare_Templates
             Occurances = occurances;
             LogEvent = logEvent;
         }
-        
-        public static int GetAmountOfArguments() => 1;
-
-        public static Type[] GetConstructorOptions() => new[] {typeof(int), typeof(string)};
 
         public LtlExpression GetExpression()
         {

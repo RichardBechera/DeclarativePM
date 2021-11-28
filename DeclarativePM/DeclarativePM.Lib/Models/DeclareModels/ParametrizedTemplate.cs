@@ -4,9 +4,9 @@ using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Utils;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.DeclareModels
 {
-    public class ParametrisedTemplate
+    public class ParametrizedTemplate
     {
         public TemplateInstanceType Template { get; }
         public List<ITemplate> TemplateInstances { get; set; }
@@ -15,11 +15,11 @@ namespace DeclarativePM.Lib.Models
 
         public TemplateTypes TemplateType { get; }
 
-        public ParametrisedTemplate(Type template, decimal poe = 100, decimal poi = 100) : this(template, new(), poe, poi)
+        public ParametrizedTemplate(Type template, decimal poe = 100, decimal poi = 100) : this(template, new(), poe, poi)
         {
         }
         
-        public ParametrisedTemplate(Type template, List<ITemplate> templateInstances, decimal poe = 100, decimal poi = 100)
+        public ParametrizedTemplate(Type template, List<ITemplate> templateInstances, decimal poe = 100, decimal poi = 100)
         {
             if (!(template.IsValueType && template.IsAssignableTo(typeof(ITemplate))))
                 throw new ArgumentException("Type has to be ValueType implementing ITemplate interface");
@@ -32,13 +32,13 @@ namespace DeclarativePM.Lib.Models
             TemplateType = Template.GetTemplateType();
         }
 
-        public ParametrisedTemplate(TemplateInstanceType template, decimal poe = 100, decimal poi = 100) : this(
+        public ParametrizedTemplate(TemplateInstanceType template, decimal poe = 100, decimal poi = 100) : this(
             template, new(), poe, poi)
         {
         }
 
 
-        public ParametrisedTemplate(TemplateInstanceType template, List<ITemplate> templateInstances, decimal poe = 100, decimal poi = 100)
+        public ParametrizedTemplate(TemplateInstanceType template, List<ITemplate> templateInstances, decimal poe = 100, decimal poi = 100)
         {
             Template = template;
             TemplateInstances = templateInstances;
@@ -49,7 +49,7 @@ namespace DeclarativePM.Lib.Models
             TemplateType = Template.GetTemplateType();
         }
 
-        public ParametrisedTemplate(ParametrisedTemplate template, List<ITemplate> templateInstances)
+        public ParametrizedTemplate(ParametrizedTemplate template, List<ITemplate> templateInstances)
         {
             Template = template.Template;
             TemplateInstances = templateInstances;

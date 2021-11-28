@@ -1,7 +1,8 @@
 using System.Linq;
+using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.ConformanceModels
 {
     public struct Healthiness
     {

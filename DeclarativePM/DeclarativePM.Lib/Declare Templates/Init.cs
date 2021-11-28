@@ -1,8 +1,14 @@
 using System;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
+    /// <summary>
+    /// LTL Init template
+    /// A is the first to occur
+    /// A
+    /// </summary>
     public struct Init: IUniTemplate
     {
         public string LogEvent;
@@ -11,10 +17,6 @@ namespace DeclarativePM.Lib.Declare_Templates
         {
             LogEvent = logEvent;
         }
-        
-        public static int GetAmountOfArguments() => 1;
-
-        public static Type[] GetConstructorOptions() => new[] {typeof(string)};
 
         public LtlExpression GetExpression()
         {

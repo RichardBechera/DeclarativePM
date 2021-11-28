@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;
 
@@ -9,7 +10,7 @@ namespace DeclarativePM.UI.Utils
 {
     public static class Utilities
     {
-        public static void CreateTreeNode(out TreeNodeModel treeTemplates, List<ParametrisedTemplate> templates)
+        public static void CreateTreeNode(out TreeNodeModel treeTemplates, List<ParametrizedTemplate> templates)
         {
             treeTemplates = new()
             {
@@ -24,7 +25,7 @@ namespace DeclarativePM.UI.Utils
             };
         }
 
-        private static TreeNodeModel GenerateInnerNodes(TemplateBookType tbt, string name, List<ParametrisedTemplate> templates)
+        private static TreeNodeModel GenerateInnerNodes(TemplateBookType tbt, string name, List<ParametrizedTemplate> templates)
         {
             return new()
             {

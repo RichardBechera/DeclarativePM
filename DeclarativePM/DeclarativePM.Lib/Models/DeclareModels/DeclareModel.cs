@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Enums;
+using DeclarativePM.Lib.Models.LogModels;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.DeclareModels
 {
     public class DeclareModel
     {
         public string Name { get; set; }
-        public List<ParametrisedTemplate> Constraints { get; set; }
+        public List<ParametrizedTemplate> Constraints { get; set; }
         public EventLog Log { get; set; }
 
-        public DeclareModel(string name, List<ParametrisedTemplate> constraints, EventLog log)
+        public DeclareModel(string name, List<ParametrizedTemplate> constraints, EventLog log)
         {
             Name = name;
             Constraints = constraints;
             Log = log;
         }
         
-        public DeclareModel(string name, List<ParametrisedTemplate> constraints)
+        public DeclareModel(string name, List<ParametrizedTemplate> constraints)
         {
             Name = name;
             Constraints = constraints;

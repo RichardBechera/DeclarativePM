@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {

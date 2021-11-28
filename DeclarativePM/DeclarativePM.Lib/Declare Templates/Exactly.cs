@@ -1,9 +1,15 @@
 using System;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
+    /// <summary>
+    /// LTL Exactly template
+    /// A occurs exactly n times
+    /// existence(n, A) && absence(n + 1, A)
+    /// </summary>
     public struct Exactly: IExistenceTemplate
     {
         public int Occurances;
@@ -14,10 +20,6 @@ namespace DeclarativePM.Lib.Declare_Templates
             Occurances = occurances;
             LogEvent = logEvent;
         }
-        
-        public static int GetAmountOfArguments() => 1;
-
-        public static Type[] GetConstructorOptions() => new[] {typeof(int), typeof(string)};
 
         public LtlExpression GetExpression()
         {

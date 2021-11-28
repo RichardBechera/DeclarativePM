@@ -4,6 +4,9 @@ using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.ConformanceModels;
+using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Utils
 {
@@ -150,7 +153,7 @@ namespace DeclarativePM.Lib.Utils
                                         && node.MaxFulfilling
                                         && node.Subtrace.Intersect(intr).Any());
 
-        public static Dictionary<ActivationNode, double> LocalLikelyhood(ActivationBinaryTree tree,
+        public static Dictionary<ActivationNode, double> LocalLikelihood(ActivationBinaryTree tree,
             List<ActivationNode> conflictResolution = null)
         {
             List<Event> conflicts = GetConflict(tree);
@@ -160,15 +163,15 @@ namespace DeclarativePM.Lib.Utils
                 .Aggregate(0, (num, c) => num + c.Subtrace
                     .Count(tree.Constraint.IsActivation));
             return conflictResolution
-                .ToDictionary(x => x, y => LocalLikelyhoodNode(y, na, tree.Constraint));
+                .ToDictionary(x => x, y => LocalLikelihoodNode(y, na, tree.Constraint));
         }
 
-        private static double LocalLikelyhoodNode(ActivationNode node, int na, IBiTemplate constraint)
+        private static double LocalLikelihoodNode(ActivationNode node, int na, IBiTemplate constraint)
             => node.Subtrace.Count(constraint.IsActivation) / (double)na;
 
         //TODO
-        public static double GlobalLikelyhood(ActivationBinaryTree tree,
-            List<ParametrisedTemplate> model, ActivationNode conflictResolution)
+        public static double GlobalLikelihood(ActivationBinaryTree tree,
+            List<ParametrizedTemplate> model, ActivationNode conflictResolution)
         {
             double result = 0;
             List<Event> kOfConflictActivations = GetConflict(tree);

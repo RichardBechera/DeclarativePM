@@ -1,9 +1,15 @@
 using System;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
+    /// <summary>
+    /// LTL Alternate Response template
+    /// Each time A occurs, then B occurs afterwards, before A recurs
+    /// subsequent(A => next(!A U B))
+    /// </summary>
     public struct AlternateResponse: IBiTemplate
     {
         public string LogEventA;
@@ -14,10 +20,6 @@ namespace DeclarativePM.Lib.Declare_Templates
             LogEventA = logEventA;
             LogEventB = logEventB;
         }
-        
-        public static int GetAmountOfArguments() => 2;
-
-        public static Type[] GetConstructorOptions() => new[] {typeof(string), typeof(string)};
 
         public LtlExpression GetExpression()
         {

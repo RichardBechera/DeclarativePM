@@ -8,6 +8,8 @@ using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.Factories;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
 
 namespace DeclarativePM.Lib.Discovery
@@ -42,7 +44,7 @@ namespace DeclarativePM.Lib.Discovery
         {
             var temp = templates
                 .Where(t => t.IsValueType && t.IsAssignableTo(typeof(ITemplate)))
-                .Select(t => new ParametrisedTemplate(t))
+                .Select(t => new ParametrizedTemplate(t))
                 .ToList();
             DiscoverModel(log, temp, true, poe, poi);
             return new DeclareModel("Declare model", temp, log);
@@ -55,7 +57,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        public DeclareModel DiscoverModel(EventLog log, List<ParametrisedTemplate> templates)
+        public DeclareModel DiscoverModel(EventLog log, List<ParametrizedTemplate> templates)
         {
             DiscoverModel(log, templates, false);
             return new DeclareModel("Declare model", templates, log);
@@ -67,7 +69,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        public async Task<DeclareModel> DiscoverModelAsync(EventLog log, List<ParametrisedTemplate> templates, CancellationToken ctk)
+        public async Task<DeclareModel> DiscoverModelAsync(EventLog log, List<ParametrizedTemplate> templates, CancellationToken ctk)
         {
             await Task.Run(() => DiscoverModel(log, templates, false), ctk);
             return new DeclareModel("Declare model", templates, log);
@@ -85,7 +87,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        private DeclareModel DiscoverModel(EventLog log, List<ParametrisedTemplate> templates, 
+        private DeclareModel DiscoverModel(EventLog log, List<ParametrizedTemplate> templates, 
             bool isGeneralPoX, decimal poe = 100, decimal poi = 100)
         {
             //var importedEventLogs = log as ImportedEventLog[] ?? log.ToArray();
@@ -108,8 +110,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <summary>
         /// Generates all the candidates for resulting DECLARE model.
         /// </summary>
-        /// <param name="argOnTemplates">Tuples where first argument is amount of arguments template constructor takes
-        /// and second one is corresponding parametrised template.</param>
+        /// <param name="templates"></param>
         /// <param name="ordering">List of unique ordered Event Activities from the most frequent
         /// to the least frequent and their frequencies.</param>
         /// <param name="longestCase">Longest case in an Event log.</param>
@@ -117,7 +118,7 @@ namespace DeclarativePM.Lib.Discovery
         /// POE corresponding to the given template.</param>
         /// <param name="poe">Percentage of most frequent events we consider.</param>
         /// <returns>List of all candidates for DECLARE model.</returns>
-        private void GenerateCandidates(List<ParametrisedTemplate> templates,
+        private void GenerateCandidates(List<ParametrizedTemplate> templates,
             List<(string, int)> ordering, int longestCase, bool isGeneralPoX, decimal poe = 100)
         {
             string[] bagOfEvents;
@@ -152,12 +153,10 @@ namespace DeclarativePM.Lib.Discovery
         /// Generates all the candidates for resulting DECLARE model.
         /// </summary>
         /// <param name="template">Template for which we are generating all possible candidates.</param>
-        /// <param name="candidates"> List of candidates which to fill with generated candidates.</param>
         /// <param name="combinations">All possible combinations of event of length of amount of arguments
         /// which template takes in constructor.</param>
         /// <param name="longestCase">Longest case in an Event log.</param>
-        /// <param name="arguments">Amount of arguments template constructor takes.</param>
-        private void InnerCandidateGeneration(ParametrisedTemplate template, List<List<string>> combinations, 
+        private void InnerCandidateGeneration(ParametrizedTemplate template, List<List<string>> combinations, 
             int longestCase)
         {
             foreach (var combination in combinations)
@@ -190,7 +189,7 @@ namespace DeclarativePM.Lib.Discovery
         /// 100 in order for candidate to hold in every case, 50 in order to hold in at least 50% of cases.</param>
         /// <returns>List of reduced templates which hold in an event log.</returns>
         private void GetMatchingConstraints(IEnumerable<List<Event>> instances,
-            List<ParametrisedTemplate> candidates, decimal poi, bool usePoi = true)
+            List<ParametrizedTemplate> candidates, decimal poi, bool usePoi = true)
         {
             UtilMethods.CutIntoRange(ref poi, 1);
             int treshold = (int)decimal.Round(candidates.Count() * (100 - poi) / 100);
@@ -204,7 +203,7 @@ namespace DeclarativePM.Lib.Discovery
             });
         }
 
-        private void CheckTemplate(ParametrisedTemplate candidate, int treshold, List<List<
+        private void CheckTemplate(ParametrizedTemplate candidate, int treshold, List<List<
             Event>> instances, int allCount, bool usePoi)
         {
             treshold = !usePoi ? (int)decimal.Round(allCount * (100 - candidate.Poi) / 100) : treshold;

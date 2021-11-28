@@ -1,9 +1,15 @@
 using System;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
+    /// <summary>
+    /// LTL Absence template
+    /// A occurs at most n - 1 times
+    /// !existence(n, a)
+    /// </summary>
     public struct Absence : IExistenceTemplate
     {
         public int Occurances;
@@ -15,12 +21,9 @@ namespace DeclarativePM.Lib.Declare_Templates
             Occurances = occurances;
         }
 
-        public static int GetAmountOfArguments() => 1;
-
-        public static Type[] GetConstructorOptions() => new[] {typeof(int), typeof(string)};
-
         public LtlExpression GetExpression()
         {
+            //!existence(n, a)
             return new LtlExpression(Operators.Not, new Existence(Occurances, LogEvent).GetExpression());
         }
 

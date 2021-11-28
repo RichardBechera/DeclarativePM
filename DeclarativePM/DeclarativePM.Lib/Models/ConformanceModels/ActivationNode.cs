@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.ConformanceModels
 {
     public class ActivationNode
     {

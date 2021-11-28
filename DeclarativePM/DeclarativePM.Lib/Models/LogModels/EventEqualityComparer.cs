@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.LogModels
 {
     public class EventEqualityComparer : IEqualityComparer<Event>
     {

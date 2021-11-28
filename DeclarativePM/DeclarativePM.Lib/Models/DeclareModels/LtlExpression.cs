@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using DeclarativePM.Lib.Enums;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.DeclareModels
 {
     public class LtlExpression
     {

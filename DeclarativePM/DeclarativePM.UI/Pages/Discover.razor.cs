@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.UI.Data;
 using DeclarativePM.UI.Utils;
 using MatBlazor;
@@ -27,7 +29,7 @@ namespace DeclarativePM.UI.Pages
             .Cast<TemplateInstanceType>().Where(x => x != TemplateInstanceType.None).ToArray();
 
         MatChip[] selectedTemplates;
-        private List<ParametrisedTemplate> templates;
+        private List<ParametrizedTemplate> templates;
         public TreeNodeModel treeTemplates;
         private DeclareModel _declareModel;
         CancellationTokenSource tokenSource = new();
@@ -95,7 +97,7 @@ namespace DeclarativePM.UI.Pages
         private void CreateTemplates()
         {
             bool isNew = templates is null;
-            templates ??= new List<ParametrisedTemplate>();
+            templates ??= new List<ParametrizedTemplate>();
             if (!isNew)
             {
                 templates = templates

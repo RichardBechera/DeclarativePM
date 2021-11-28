@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;
 using DeclarativePM.UI.Enums;

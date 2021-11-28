@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DeclarativePM.Lib.Import;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.UI.Enums;
 using MatBlazor;
 using Microsoft.AspNetCore.Components;

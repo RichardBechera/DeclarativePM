@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using DeclarativePM.Lib.Declare_Templates;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.ConformanceModels
 {
     public class ActivationBinaryTree
     {

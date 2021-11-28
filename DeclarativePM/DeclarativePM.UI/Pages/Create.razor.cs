@@ -6,6 +6,8 @@ using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.Factories;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.UI.Data;
 using DeclarativePM.UI.Enums;
 using DeclarativePM.UI.Utils;
@@ -26,9 +28,9 @@ namespace DeclarativePM.UI.Pages
         public ITemplate SelectedTemplateInstance;
         public CreateTemplateWrap CurrentlyEditedTemplate;
 
-        private List<ParametrisedTemplate> templates;
+        private List<ParametrizedTemplate> templates;
         private List<ITemplate> currentTemplates = new();
-        private ParametrisedTemplate current;
+        private ParametrizedTemplate current;
         public List<string> activities;
         public TreeNodeModel treeTemplates;
         private DeclareModel _declareModel;
@@ -157,7 +159,7 @@ namespace DeclarativePM.UI.Pages
         public async Task SelectedPTemplateChanged(MatChip selectedTemplate)
         {
             current = templates.Find(x => x.Template == (TemplateInstanceType)selectedTemplate.Value);
-            current ??= new ParametrisedTemplate((TemplateInstanceType) selectedTemplate.Value);
+            current ??= new ParametrizedTemplate((TemplateInstanceType) selectedTemplate.Value);
             currentTemplates = current.TemplateInstances;
             CurrentlyEditedTemplate = new(current.Template, current.TemplateType);
             await InvokeAsync(StateHasChanged);

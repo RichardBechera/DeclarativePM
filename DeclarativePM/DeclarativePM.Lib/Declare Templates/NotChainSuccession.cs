@@ -1,9 +1,15 @@
 using System;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
 {
+    /// <summary>
+    /// LTL Not Chain Succession template
+    /// A and B occur if and only if the latter does not immediately follow the former 
+    /// subsequent(A => next(!B))
+    /// </summary>
     public struct NotChainSuccession: IBiTemplate
     {
         public string LogEventA;
@@ -14,11 +20,6 @@ namespace DeclarativePM.Lib.Declare_Templates
             LogEventA = logEventA;
             LogEventB = logEventB;
         }
-        
-        public static int GetAmountOfArguments() => 2;
-
-        public static Type[] GetConstructorOptions() => new[] {typeof(string), typeof(string)};
-        
 
         public LtlExpression GetExpression()
         {
