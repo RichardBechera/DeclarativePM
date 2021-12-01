@@ -202,7 +202,7 @@ namespace DeclarativePM.UI.Pages
                 return "";
             return current.TemplateType switch
             {
-                TemplateTypes.Existence => first ? "Event" : "Occurances",
+                TemplateTypes.Existence => first ? "Event" : "Occurrences",
                 TemplateTypes.BiTemplate => first ? "Event-A" : "Event-B",
                 TemplateTypes.UniTemplate => first ? "Event" : "",
                 _ => throw new ArgumentOutOfRangeException()

@@ -224,13 +224,10 @@ namespace DeclarativePM.Lib.Discovery
             Event>> instances)
         {
             int notHolds = 0;
-            var expr = candidate.GetExpression();
-            if (expr is null)
-                return false;
             
             foreach (var instance in instances)
             {
-                if (MainMethods.EvaluateExpression(instance, expr)) continue;
+                if (MainMethods.EvaluateTemplate(instance, candidate)) continue;
                 notHolds++;
                 if (notHolds < treshold) continue;
                 return false;

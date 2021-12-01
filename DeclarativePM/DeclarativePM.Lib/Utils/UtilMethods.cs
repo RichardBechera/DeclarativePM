@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using DeclarativePM.Lib.Declare_Templates;
+using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Utils
 {
@@ -46,5 +48,38 @@ namespace DeclarativePM.Lib.Utils
             p = p > max ? max : p;
             p = p < min ? min : p;
         }
+        
+        public static List<Event> PreprocessTraceForEvaluation(ITemplate template, List<Event> events)
+        {
+            Event addition;
+            var front = false;
+            switch (template)
+            {
+                case AlternatePrecedence ap:
+                    addition = new(ap.LogEventA + ap.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    break;
+                case AlternateSuccession asu:
+                    addition = new(asu.LogEventA + asu.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    break;
+                case ChainPrecedence cp:
+                    addition = new(cp.LogEventA + cp.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    front = true;
+                    break;
+                case ChainSuccession cs:
+                    addition = new(cs.LogEventA + cs.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    front = true;
+                    break;
+                default:
+                    return events;
+            }
+            
+            List<Event> extended = events.ToList();
+            if (front)
+                extended.Insert(0, addition);
+            else
+                extended.Add(addition);
+            
+            return extended;
+        }   
     }
 }

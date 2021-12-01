@@ -1,6 +1,5 @@
 using System;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
@@ -12,28 +11,30 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// </summary>
     public struct Absence : IExistenceTemplate
     {
-        public int Occurances;
+        public int Occurrences;
         public string LogEvent;
         
-        public Absence(int occurances, string logEvent)
+        public Absence(int occurrences, string logEvent)
         {
+            if (occurrences < 1)
+                throw new ArgumentException("Absence template parameter occurrences has to be higher or equal 1");
             LogEvent = logEvent;
-            Occurances = occurances;
+            Occurrences = occurrences;
         }
 
         public LtlExpression GetExpression()
         {
             //!existence(n, a)
-            return new LtlExpression(Operators.Not, new Existence(Occurances, LogEvent).GetExpression());
+            return new LtlExpression(Operators.Not, new Existence(Occurrences, LogEvent).GetExpression());
         }
 
         public override string ToString() 
-            => $"Absence({Occurances}, \"{LogEvent}\")";
+            => $"Absence({Occurrences}, \"{LogEvent}\")";
 
         public string GetEvent()
             => LogEvent;
 
         public int GetCount()
-            => Occurances;
+            => Occurrences;
     }
 }

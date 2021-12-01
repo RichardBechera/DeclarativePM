@@ -25,6 +25,15 @@ namespace DeclarativePM.Lib.Declare_Templates
 
         public LtlExpression GetExpression()
         {
+            if (Occurances == 0)
+            {
+                //tautology a || !a
+                return new LtlExpression(Operators.Or, 
+                    new LtlExpression(LogEvent), 
+                    new LtlExpression(Operators.Not, 
+                        new LtlExpression(LogEvent)));
+            }
+
             if (Occurances == 1)
             {
                 return new LtlExpression(Operators.Eventual, new LtlExpression(LogEvent));

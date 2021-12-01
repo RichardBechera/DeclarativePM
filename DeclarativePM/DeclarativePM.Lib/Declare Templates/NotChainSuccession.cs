@@ -27,7 +27,7 @@ namespace DeclarativePM.Lib.Declare_Templates
             return new LtlExpression(Operators.Subsequent, 
                 new LtlExpression(Operators.Imply,
                     new LtlExpression(LogEventA), 
-                    new LtlExpression(Operators.Eventual, 
+                    new LtlExpression(Operators.Next, 
                         new LtlExpression(Operators.Not,
                             new LtlExpression(LogEventB)))));
         }

@@ -92,6 +92,16 @@ namespace DeclarativePM.Lib.Utils
             }
         }
 
+        public static bool EvaluateTemplate(List<Event> events, ITemplate template, bool preprocessing = true)
+        {
+            var expr = template.GetExpression();
+            if (expr is null)
+                return false;
+            if(preprocessing)
+                events = UtilMethods.PreprocessTraceForEvaluation(template, events);
+            return EvaluateExpression(events, expr);
+        }
+
         public static List<Event> GetFulfillment(ActivationBinaryTree tree)
         {
             return tree.Leafs

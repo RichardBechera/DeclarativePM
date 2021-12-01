@@ -99,7 +99,7 @@ else
                     @if (CurrentlyEditedTemplate.TemplateTypes == TemplateTypes.Existence)
                     {
                         <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event A"></MatSelectItem>
-                        <MatNumericUpDownField Label="Occurances"
+                        <MatNumericUpDownField Label="Occurrences"
                                                                    @bind-Value=@CurrentlyEditedTemplate.Occurances
                                                                    DecimalPlaces=0
                                                                    Minimum=1>
