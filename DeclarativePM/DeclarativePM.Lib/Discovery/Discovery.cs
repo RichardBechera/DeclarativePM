@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.Factories;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
@@ -159,6 +160,8 @@ namespace DeclarativePM.Lib.Discovery
         private void InnerCandidateGeneration(ParametrizedTemplate template, List<List<string>> combinations, 
             int longestCase)
         {
+            if (!template.OrderMatters())
+                combinations = UtilMethods.RemoveReversedDuplicates(combinations);
             foreach (var combination in combinations)
             {
                 switch (template.TemplateType)

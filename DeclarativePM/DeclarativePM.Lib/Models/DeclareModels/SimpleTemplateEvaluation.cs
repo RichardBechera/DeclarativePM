@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DeclarativePM.Lib.Declare_Templates;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 
 namespace DeclarativePM.Lib.Models.DeclareModels

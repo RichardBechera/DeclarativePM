@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models;
 
 namespace DeclarativePM.Lib.Utils
@@ -80,6 +82,31 @@ namespace DeclarativePM.Lib.Utils
                 extended.Add(addition);
             
             return extended;
-        }   
+        }
+
+        public static List<List<string>> RemoveReversedDuplicates(List<List<string>> combos)
+        {
+            if (combos.Any(x => x.Count != 2))
+                throw new Exception("All sub lists have to have same length.");
+            var ordered = combos
+                .Select(lst => lst
+                    .OrderBy(s => s).ToList())
+                .OrderBy(lst => lst[0])
+                .ThenBy(lst => lst[1])
+                .ToList();
+
+            List<List<string>> result = new();
+            for (int i = 0; i < ordered.Count; i += 2)
+            {
+                result.Add(ordered[i]);
+                if (ordered[i][0] == ordered[i + 1][0] || ordered[i][1] == ordered[i + 1][1]) continue;
+                ordered[i + 1].Reverse();
+                result.Add(ordered[i + 1]);
+            }
+            if (ordered.Count % 2 == 1)
+                result.Add(ordered.Last());
+
+            return result;
+        }
     }
 }
