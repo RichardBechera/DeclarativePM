@@ -6,7 +6,7 @@ namespace DeclarativePM.UI.Data
     {
         public string EventA { get; set; } = "";
         public string EventB { get; set; } = "";
-        public int Occurances { get; set; } = 0;
+        public int Occurrences { get; set; } = 1;
         public TemplateInstanceType TemplateInstanceType { get; set; }
         public TemplateTypes TemplateTypes { get; set; }
 
@@ -16,10 +16,10 @@ namespace DeclarativePM.UI.Data
             TemplateTypes = templateTypes;
         }
 
-        public CreateTemplateWrap(string eventA, int occurances, TemplateInstanceType templateInstanceType, TemplateTypes templateTypes)
+        public CreateTemplateWrap(string eventA, int occurrences, TemplateInstanceType templateInstanceType, TemplateTypes templateTypes)
         {
             EventA = eventA;
-            Occurances = occurances;
+            Occurrences = occurrences;
             TemplateInstanceType = templateInstanceType;
             TemplateTypes = templateTypes;
         }

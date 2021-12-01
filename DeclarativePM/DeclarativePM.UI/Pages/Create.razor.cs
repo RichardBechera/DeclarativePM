@@ -103,7 +103,7 @@ namespace DeclarativePM.UI.Pages
                 await MatDialogService.AlertAsync("Activity is already in the list");
                 return;
             }
-            activities.Add(result);
+            activities.Add(result.Trim());
             await InvokeAsync(StateHasChanged);
         }
 
@@ -228,15 +228,22 @@ namespace DeclarativePM.UI.Pages
             {
                 TemplateTypes.UniTemplate 
                     => UniTemplateFactory.GetInstance(CurrentlyEditedTemplate.TemplateInstanceType,
-                        CurrentlyEditedTemplate.EventA),
+                        CurrentlyEditedTemplate.EventA.Trim()),
                 TemplateTypes.BiTemplate
                     => BiTemplateFactory.GetInstance(CurrentlyEditedTemplate.TemplateInstanceType,
-                        CurrentlyEditedTemplate.EventA, CurrentlyEditedTemplate.EventB),
+                        CurrentlyEditedTemplate.EventA.Trim(), CurrentlyEditedTemplate.EventB.Trim()),
                 TemplateTypes.Existence
                     => ExistenceFactory.GetInstance(CurrentlyEditedTemplate.TemplateInstanceType,
-                        CurrentlyEditedTemplate.Occurances, CurrentlyEditedTemplate.EventA),
+                        CurrentlyEditedTemplate.Occurrences, CurrentlyEditedTemplate.EventA),
                 _ => throw new ArgumentOutOfRangeException()
             };
+            
+            if (current.TemplateInstances.Exists(t => t.GetExpression().ToString() == template.GetExpression().ToString()))
+            {
+                await MatDialogService.AlertAsync("This template already exists in the list");
+                return;
+            }
+
             current.TemplateInstances.Add(template);
             if(!templates.Contains(current))
                 templates.Add(current);
@@ -261,7 +268,7 @@ namespace DeclarativePM.UI.Pages
             var result = await MatDialogService.PromptAsync("Name of the DECLARE model", _declareModel?.Name ?? "DEFAULT MODEL NAME");
             if (_declareModel is null)
             {
-                DeclareModel md = new DeclareModel(result, templates);
+                DeclareModel md = new DeclareModel(result.Trim(), templates);
                 _declareModel = md;
                 StateContainer.DeclareModels.Add(md);
             }
