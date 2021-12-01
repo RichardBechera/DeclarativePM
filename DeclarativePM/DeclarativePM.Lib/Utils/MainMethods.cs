@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
@@ -73,9 +72,9 @@ namespace DeclarativePM.Lib.Utils
                            EvaluateExpression(events, expression.InnerRight, position);
                     
                 case Operators.Equivalence:
-                    bool A = EvaluateExpression(events, expression.InnerLeft, position);
-                    bool B = EvaluateExpression(events, expression.InnerRight, position);
-                    return (A && B) || (!A && !B);
+                    bool a = EvaluateExpression(events, expression.InnerLeft, position);
+                    bool b = EvaluateExpression(events, expression.InnerRight, position);
+                    return (a && b) || (!a && !b);
                 
                 case Operators.Least:
                     if (position >= 0 && position < (events.Count - 1))
@@ -105,7 +104,7 @@ namespace DeclarativePM.Lib.Utils
 
         public static List<Event> GetFulfillment(ActivationBinaryTree tree)
         {
-            return tree.Leafs
+            return tree.Leaves
                 .Where(x => x.MaxFulfilling)
                 .Select(x => x.Subtrace)
                 .Aggregate((x, y) => x
@@ -117,10 +116,10 @@ namespace DeclarativePM.Lib.Utils
 
         public static List<Event> GetViolation(ActivationBinaryTree tree)
         {
-            var all = tree.Leafs
+            var all = tree.Leaves
                 .Where(x => x.MaxFulfilling)
                 .SelectMany(x => x.Subtrace);
-            return tree.Leafs
+            return tree.Leaves
                 .SelectMany(x => x.Subtrace)
                 .Except(all)
                 .Where(x => tree.Constraint.IsActivation(x))
@@ -132,7 +131,7 @@ namespace DeclarativePM.Lib.Utils
         {
             violations ??= GetViolation(tree);
             fulfilments ??= GetFulfillment(tree);
-            return tree.Leafs
+            return tree.Leaves
                 .Where(x => x.MaxFulfilling)
                 .SelectMany(x => x.Subtrace)
                 .Except(violations)
@@ -160,7 +159,7 @@ namespace DeclarativePM.Lib.Utils
         }
 
         private static IEnumerable<ActivationNode> GetNodesWith(ActivationBinaryTree tree, List<Event> intr)
-            => tree.Leafs.Where(node => !node.IsDead
+            => tree.Leaves.Where(node => !node.IsDead
                                         && node.MaxFulfilling
                                         && node.Subtrace.Intersect(intr).Any());
 

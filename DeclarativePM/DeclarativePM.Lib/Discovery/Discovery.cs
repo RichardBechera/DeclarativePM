@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.Factories;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
@@ -22,7 +21,7 @@ namespace DeclarativePM.Lib.Discovery
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="poe">Percentage of events. 100 for discovery on every event in an event log.
-        /// For n where 0 < =n < 100, =n% of most frequent events in the log.</param>
+        /// For n where 0 <= n < 100, = n% of most frequent events in the log.</param>
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
@@ -51,7 +50,6 @@ namespace DeclarativePM.Lib.Discovery
             return new DeclareModel("Declare model", temp, log);
         }
 
-        //TODO templates
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
         /// </summary>
@@ -63,12 +61,13 @@ namespace DeclarativePM.Lib.Discovery
             DiscoverModel(log, templates, false);
             return new DeclareModel("Declare model", templates, log);
         }
-        
+
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
+        /// <param name="ctk"></param>
         /// <returns>DECLARE model representing an event log.</returns>
         public async Task<DeclareModel> DiscoverModelAsync(EventLog log, List<ParametrizedTemplate> templates, CancellationToken ctk)
         {
@@ -126,7 +125,6 @@ namespace DeclarativePM.Lib.Discovery
             
             if (!isGeneralPoX)
             {
-                //TODO performance tweaks: where poe and args same => cash combinations
                 foreach (var template in templates)
                 {
                     bagOfEvents = ReduceEvents(ordering, template.Poe).ToArray();
@@ -190,6 +188,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="candidates">Candidate templates which are to be checked and reduced.</param>
         /// <param name="poi">Percentage of instances at which candidate needs to be held in order not to be reduced.
         /// 100 in order for candidate to hold in every case, 50 in order to hold in at least 50% of cases.</param>
+        /// <param name="usePoi">Whether we want to use poi or the one from templates</param>
         /// <returns>List of reduced templates which hold in an event log.</returns>
         private void GetMatchingConstraints(IEnumerable<List<Event>> instances,
             List<ParametrizedTemplate> candidates, decimal poi, bool usePoi = true)
@@ -220,8 +219,6 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="candidate">DECLARE constraint.</param>
         /// <param name="treshold">Amount of instances on which checking can fail.</param>
         /// <param name="instances">Instances from event log, each represents a unique case.</param>
-        /// <param name="allCount">Amount of all instances in an Event Log.</param>
-        /// <param name="usePoi">Whether to compute new treshold according to poi of templates.</param>
         /// <returns>True if constraint hold, false else.</returns>
         private bool CheckConstraint(ITemplate candidate, int treshold, List<List< 
             Event>> instances)

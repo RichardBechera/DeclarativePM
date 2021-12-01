@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DeclarativePM.Lib.Declare_Templates;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.LogModels;
 
@@ -10,8 +10,8 @@ namespace DeclarativePM.Lib.Models.DeclareModels
     public class DeclareModel
     {
         public string Name { get; set; }
-        public List<ParametrizedTemplate> Constraints { get; set; }
-        public EventLog Log { get; set; }
+        public List<ParametrizedTemplate> Constraints { get; }
+        public EventLog Log { get; }
 
         public DeclareModel(string name, List<ParametrizedTemplate> constraints, EventLog log)
         {
@@ -52,7 +52,7 @@ namespace DeclarativePM.Lib.Models.DeclareModels
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
-                    };
+                    }
                 }
             }
             return activities.ToList();

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;

@@ -16,7 +16,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="bag">All the possible elements.</param>
         /// <param name="repeat">Whether generate combinations with repeat or not.</param>
         /// <typeparam name="T">Type of element for which we generate combinations.</typeparam>
-        /// <returns>List containing all the combinations of elements of type T stored as List<T>.</returns>
+        /// <returns>List containing all the combinations of elements of type T stored in List.</returns>
         public static List<List<T>> Combinations<T>(int rest, T[] bag, bool repeat)
         {
             var res = new List<List<T>>();

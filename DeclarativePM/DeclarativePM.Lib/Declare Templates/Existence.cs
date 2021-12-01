@@ -1,6 +1,5 @@
-using System;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
@@ -13,19 +12,19 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// </summary>
     public struct Existence: IExistenceTemplate
     {
-        public int Occurances;
-        public string LogEvent;
+        public readonly int Occurrences;
+        public readonly string LogEvent;
         
-        public Existence(int occurances, string logEvent)
+        public Existence(int occurrences, string logEvent)
         {
             //what if 0 passed?
-            Occurances = occurances;
+            Occurrences = occurrences;
             LogEvent = logEvent;
         }
 
         public LtlExpression GetExpression()
         {
-            if (Occurances == 0)
+            if (Occurrences == 0)
             {
                 //tautology a || !a
                 return new LtlExpression(Operators.Or, 
@@ -34,7 +33,7 @@ namespace DeclarativePM.Lib.Declare_Templates
                         new LtlExpression(LogEvent)));
             }
 
-            if (Occurances == 1)
+            if (Occurrences == 1)
             {
                 return new LtlExpression(Operators.Eventual, new LtlExpression(LogEvent));
             }
@@ -43,16 +42,16 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(Operators.And, 
                     new LtlExpression(LogEvent),
                     new LtlExpression(Operators.Next, 
-                        new Existence(Occurances - 1, LogEvent).GetExpression())));
+                        new Existence(Occurrences - 1, LogEvent).GetExpression())));
         }
         
         public override string ToString() 
-            => $"Existence({Occurances}, \"{LogEvent}\")";
+            => $"Existence({Occurrences}, \"{LogEvent}\")";
         
         public string GetEvent()
             => LogEvent;
 
         public int GetCount()
-            => Occurances;
+            => Occurrences;
     }
 }

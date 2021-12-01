@@ -1,38 +1,38 @@
 using System.Collections.Generic;
-using DeclarativePM.Lib.Declare_Templates;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 
 namespace DeclarativePM.Lib.Models.ConformanceModels
 {
     public class ActivationBinaryTree
     {
         public ActivationNode Root { get; set; }
-        public List<ActivationNode> Leafs { get; }
+        public List<ActivationNode> Leaves { get; }
         public IBiTemplate Constraint { get; }
 
         public ActivationBinaryTree(IBiTemplate constraint)
         {
             Root = new();
-            Leafs = new() {Root};
+            Leaves = new() {Root};
             Constraint = constraint;
         }
 
         public void AddNodeLeft(ActivationNode current, ActivationNode node)
         {
             current.Left = node;
-            UpdateLeafsList(current, node);
+            UpdateLeavesList(current, node);
         }
         
         public void AddNodeRight(ActivationNode current, ActivationNode node)
         {
             current.Right = node;
-            UpdateLeafsList(current, node);
+            UpdateLeavesList(current, node);
         }
 
-        private void UpdateLeafsList(ActivationNode current, ActivationNode node)
+        private void UpdateLeavesList(ActivationNode current, ActivationNode node)
         {
-            if (!Leafs.Contains(node))
-                Leafs.Add(node);
-            Leafs.Remove(current);
+            if (!Leaves.Contains(node))
+                Leaves.Add(node);
+            Leaves.Remove(current);
         }
     }
 }

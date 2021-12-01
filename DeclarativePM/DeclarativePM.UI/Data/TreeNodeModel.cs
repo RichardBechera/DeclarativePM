@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace DeclarativePM.UI.Data
 {
     public class TreeNodeModel

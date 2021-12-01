@@ -1,4 +1,4 @@
-using System;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
@@ -12,8 +12,8 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// </summary>
     public struct NotChainSuccession: IBiTemplate
     {
-        public string LogEventA;
-        public string LogEventB;
+        public readonly string LogEventA;
+        public readonly string LogEventB;
         
         public NotChainSuccession(string logEventA, string logEventB)
         {

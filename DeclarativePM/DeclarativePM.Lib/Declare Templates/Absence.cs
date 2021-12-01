@@ -1,4 +1,5 @@
 using System;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.DeclareModels;
 
@@ -11,8 +12,8 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// </summary>
     public struct Absence : IExistenceTemplate
     {
-        public int Occurrences;
-        public string LogEvent;
+        public readonly int Occurrences;
+        public readonly string LogEvent;
         
         public Absence(int occurrences, string logEvent)
         {

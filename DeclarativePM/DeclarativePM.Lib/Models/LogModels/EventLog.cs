@@ -44,7 +44,7 @@ namespace DeclarativePM.Lib.Models.LogModels
             => Logs.Select(x => x.Activity).Distinct().ToList();
 
         public List<List<Event>> GetAllTraces()
-            => Logs.GroupBy(x => x.CaseId, x => x, (c, events) => events.ToList()).ToList();
+            => Logs.GroupBy(x => x.CaseId, x => x, (_, events) => events.ToList()).ToList();
 
 
     }

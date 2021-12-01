@@ -1,5 +1,4 @@
-using System;
-using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
@@ -11,7 +10,7 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// </summary>
     public struct Init: IUniTemplate
     {
-        public string LogEvent;
+        public readonly string LogEvent;
         
         public Init(string logEvent)
         {

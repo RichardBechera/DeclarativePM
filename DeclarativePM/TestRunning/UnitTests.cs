@@ -22,7 +22,7 @@ namespace TestRunning
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample1.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
-            var log2 = third.buildEventLog();
+            var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new Response("C", "S"));
             
@@ -42,7 +42,7 @@ namespace TestRunning
             //TODO relative path
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample2.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
-            var log2 = third.buildEventLog();
+            var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new AlternateResponse("H", "M"));
             
@@ -62,7 +62,7 @@ namespace TestRunning
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
-            var log2 = third.buildEventLog();
+            var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
             
@@ -83,7 +83,7 @@ namespace TestRunning
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
-            var log2 = third.buildEventLog();
+            var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
@@ -99,7 +99,7 @@ namespace TestRunning
             Assert.True(false);
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
-            var log2 = third.buildEventLog();
+            var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
@@ -130,7 +130,7 @@ namespace TestRunning
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             var third = ImportCsvLogs.LoadCsv(path4);
-            var log = third.buildEventLog();
+            var log = third.BuildEventLog();
             var model = _disco.DiscoverModel(log, new List<ParametrizedTemplate>()
             {
                 new ParametrizedTemplate(TemplateInstanceType.Coexistence),

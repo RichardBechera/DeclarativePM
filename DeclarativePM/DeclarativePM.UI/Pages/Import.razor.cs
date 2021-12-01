@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DeclarativePM.Lib.Import;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.UI.Enums;
 using MatBlazor;
@@ -65,7 +64,7 @@ namespace DeclarativePM.UI.Pages
 
         private void ImportLog()
         {
-            StateContainer.EventLogs.Add(_imported.buildEventLog(LogName));
+            StateContainer.EventLogs.Add(_imported.BuildEventLog(LogName));
             _stream.Dispose();
             file = null;
             content = null;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using DeclarativePM.Lib.Declare_Templates;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.ConformanceModels;
 
@@ -16,7 +16,7 @@ namespace DeclarativePM.Lib.Utils
             {
                 e.ActivityInTraceId = id;
                 id++;
-                foreach (var leaf in tree.Leafs.ToList())
+                foreach (var leaf in tree.Leaves.ToList())
                 {
                     if (leaf.IsDead)
                         continue;
@@ -39,12 +39,12 @@ namespace DeclarativePM.Lib.Utils
                 }
             }
             
-            AssignLeafsStatus(tree.Leafs, constraint);
+            AssignLeavesStatus(tree.Leaves, constraint);
 
             return tree;
         }
 
-        private static void AssignLeafsStatus(List<ActivationNode> nodes, IBiTemplate constraint)
+        private static void AssignLeavesStatus(List<ActivationNode> nodes, IBiTemplate constraint)
         {
             foreach (var leaf in nodes)
             {

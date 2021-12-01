@@ -9,7 +9,7 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
         public bool IsLeaf => Left is null && Right is null;
         public bool IsDead;
         public bool MaxFulfilling;
-        public List<Event> Subtrace;
+        public readonly List<Event> Subtrace;
 
         public ActivationNode(List<Event> subtrace)
         {

@@ -76,7 +76,7 @@ namespace DeclarativePM.Lib.Models.LogModels
 
         }
 
-        public EventLog buildEventLog(string name = null)
+        public EventLog BuildEventLog(string name = null)
         {
             List<Event> events = new List<Event>(rows.Capacity);
             Func<string[], DateTime> converter = (row) => DateTime.TryParse(row[_timeStamp], out var time) 

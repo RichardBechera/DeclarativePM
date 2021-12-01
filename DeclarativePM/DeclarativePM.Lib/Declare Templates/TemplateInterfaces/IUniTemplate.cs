@@ -1,6 +1,4 @@
-using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
-
-namespace DeclarativePM.Lib.Declare_Templates
+namespace DeclarativePM.Lib.Declare_Templates.TemplateInterfaces
 {
     public interface IUniTemplate : ITemplate
     {

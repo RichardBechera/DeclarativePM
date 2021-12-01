@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
 

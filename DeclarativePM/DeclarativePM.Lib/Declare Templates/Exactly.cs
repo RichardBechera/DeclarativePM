@@ -1,6 +1,5 @@
-using System;
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates
@@ -12,29 +11,29 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// </summary>
     public struct Exactly: IExistenceTemplate
     {
-        public int Occurances;
-        public string LogEvent;
+        public readonly int Occurrences;
+        public readonly string LogEvent;
         
-        public Exactly(int occurances, string logEvent)
+        public Exactly(int occurrences, string logEvent)
         {
-            Occurances = occurances;
+            Occurrences = occurrences;
             LogEvent = logEvent;
         }
 
         public LtlExpression GetExpression()
         {
             //existence(n, A) && absence(n + 1, A)
-            return new LtlExpression(Operators.And, new Existence(Occurances, LogEvent).GetExpression(),
-                new Absence(Occurances + 1, LogEvent).GetExpression());
+            return new LtlExpression(Operators.And, new Existence(Occurrences, LogEvent).GetExpression(),
+                new Absence(Occurrences + 1, LogEvent).GetExpression());
         }
         
         public override string ToString() 
-            => $"Exactly({Occurances}, \"{LogEvent}\")";
+            => $"Exactly({Occurrences}, \"{LogEvent}\")";
         
         public string GetEvent()
             => LogEvent;
 
         public int GetCount()
-            => Occurances;
+            => Occurrences;
     }
 }
