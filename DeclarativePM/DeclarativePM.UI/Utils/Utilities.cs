@@ -29,12 +29,12 @@ namespace DeclarativePM.UI.Utils
             return new()
             {
                 Name = name,
-                Nodes = templates.Where(x => x.Template.GetTemplateBookType() == tbt)
+                Nodes = templates.Where(x => x.TemplateDescription.TemplateType.GetTemplateBookType() == tbt)
                     .Select(template =>
                     {
                         return new TreeNodeModel()
                         {
-                            Name = template.Template.ToString(),
+                            Name = template.TemplateDescription.TemplateType.ToString(),
                             Nodes = template.TemplateInstances.Select(instance => new TreeNodeModel()
                             {
                                 Name = instance.ToString()

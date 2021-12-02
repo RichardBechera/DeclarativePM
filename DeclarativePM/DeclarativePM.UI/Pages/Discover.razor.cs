@@ -7,6 +7,7 @@ using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
+using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;
 using DeclarativePM.UI.Utils;
 using MatBlazor;
@@ -27,11 +28,19 @@ namespace DeclarativePM.UI.Pages
         TemplateInstanceType[] value2Items = Enum.GetValues(typeof(TemplateInstanceType))
             .Cast<TemplateInstanceType>().Where(x => x != TemplateInstanceType.None).ToArray();
 
+        private List<TemplateDescription> _templateDescriptions;
+
         MatChip[] selectedTemplates;
         private List<ParametrizedTemplate> templates;
         public TreeNodeModel treeTemplates;
         private DeclareModel _declareModel;
         CancellationTokenSource tokenSource = new();
+
+        protected override void OnInitialized()
+        {
+            _templateDescriptions = value2Items.Select(e => e.GetTemplateDescription()).ToList();
+            base.OnInitialized();
+        }
 
         public void Selection(EventLog log)
         {
@@ -101,13 +110,13 @@ namespace DeclarativePM.UI.Pages
             {
                 templates = templates
                     .Where(x => selectedTemplates
-                        .Any(y => x.Template == (TemplateInstanceType) y.Value))
+                        .Any(y => x.TemplateDescription.TemplateType == (TemplateInstanceType) y.Value))
                     .ToList();
             }
 
             foreach (var tit in selectedTemplates.Select(x => x.Value).Cast<TemplateInstanceType>())
             {
-                if (!isNew && templates.Any(x => x.Template == tit))
+                if (!isNew && templates.Any(x => x.TemplateDescription.TemplateType == tit))
                     continue;
                 templates.Add(new(tit));
             }
@@ -151,8 +160,6 @@ namespace DeclarativePM.UI.Pages
                 default:
                     return false;
             }
-
-            ;
         }
 
 

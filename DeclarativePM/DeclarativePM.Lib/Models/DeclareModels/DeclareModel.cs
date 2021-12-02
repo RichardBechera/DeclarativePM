@@ -35,7 +35,7 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             {
                 foreach (var instance in template.TemplateInstances)
                 {
-                    switch(template.TemplateType)
+                    switch(template.TemplateDescription.TemplateParametersType)
                     {
                         case TemplateTypes.Existence:
                             IExistenceTemplate temp1 = (IExistenceTemplate) instance;

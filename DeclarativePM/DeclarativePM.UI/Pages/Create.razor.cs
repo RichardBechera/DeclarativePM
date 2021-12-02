@@ -116,9 +116,9 @@ namespace DeclarativePM.UI.Pages
         
         public string GetChipBackground(TemplateInstanceType tit)
         {
-            if (current is not null && current.Template == tit)
+            if (current is not null && current.TemplateDescription.TemplateType == tit)
                 return "background: #b6b6b6";
-            return templates.Any(x => x.Template == tit && x.TemplateInstances.Count > 0)
+            return templates.Any(x => x.TemplateDescription.TemplateType == tit && x.TemplateInstances.Count > 0)
                 ? "background: #ffd5ff" : "background: #f3f3f3";
         }
 
@@ -127,7 +127,7 @@ namespace DeclarativePM.UI.Pages
             if (row is null)
             {
                 SelectedTemplateInstance = null;
-                CurrentlyEditedTemplate = new(current.Template, current.TemplateType);
+                CurrentlyEditedTemplate = new(current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
             }
             else
             {
@@ -139,17 +139,20 @@ namespace DeclarativePM.UI.Pages
 
         public CreateTemplateWrap WrapSelection()
         {
-            switch(current.TemplateType)
+            switch(current.TemplateDescription.TemplateParametersType)
             {
                 case TemplateTypes.Existence:
                     IExistenceTemplate temp1 = (IExistenceTemplate) SelectedTemplateInstance;
-                    return new(temp1.GetEvent(), temp1.GetCount(), current.Template, current.TemplateType);
+                    return new(temp1.GetEvent(), temp1.GetCount(), 
+                        current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
                 case TemplateTypes.BiTemplate:
                     IBiTemplate temp2 = (IBiTemplate) SelectedTemplateInstance;
-                    return new(temp2.GetEventA(), temp2.GetEventB(), current.Template, current.TemplateType);
+                    return new(temp2.GetEventA(), temp2.GetEventB(),
+                        current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
                 case TemplateTypes.UniTemplate:
                     IUniTemplate temp3 = (IUniTemplate) SelectedTemplateInstance;
-                    return new(temp3.GetEventA(), current.Template, current.TemplateType);
+                    return new(temp3.GetEventA(), current.TemplateDescription.TemplateType,
+                        current.TemplateDescription.TemplateParametersType);
                 default:
                     throw new ArgumentOutOfRangeException();
             };
@@ -157,10 +160,10 @@ namespace DeclarativePM.UI.Pages
 
         public async Task SelectedPTemplateChanged(MatChip selectedTemplate)
         {
-            current = templates.Find(x => x.Template == (TemplateInstanceType)selectedTemplate.Value);
+            current = templates.Find(x => x.TemplateDescription.TemplateType == (TemplateInstanceType)selectedTemplate.Value);
             current ??= new ParametrizedTemplate((TemplateInstanceType) selectedTemplate.Value);
             currentTemplates = current.TemplateInstances;
-            CurrentlyEditedTemplate = new(current.Template, current.TemplateType);
+            CurrentlyEditedTemplate = new(current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
             await InvokeAsync(StateHasChanged);
         }
 
@@ -168,7 +171,7 @@ namespace DeclarativePM.UI.Pages
         {
             if (current is null)
                 return "";
-            return current.TemplateType switch
+            return current.TemplateDescription.TemplateParametersType switch
             {
                 TemplateTypes.Existence =>
                     ((IExistenceTemplate) template).GetEvent(),
@@ -184,7 +187,7 @@ namespace DeclarativePM.UI.Pages
         {
             if (current is null)
                 return "";
-            return current.TemplateType switch
+            return current.TemplateDescription.TemplateParametersType switch
             {
                 TemplateTypes.Existence => 
                     ((IExistenceTemplate) template).GetCount().ToString(),
@@ -199,7 +202,7 @@ namespace DeclarativePM.UI.Pages
         {
             if (current is null)
                 return "";
-            return current.TemplateType switch
+            return current.TemplateDescription.TemplateParametersType switch
             {
                 TemplateTypes.Existence => first ? "Event" : "Occurrences",
                 TemplateTypes.BiTemplate => first ? "Event-A" : "Event-B",

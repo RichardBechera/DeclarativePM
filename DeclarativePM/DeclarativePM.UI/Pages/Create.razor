@@ -12,7 +12,8 @@
 {
     <MatButton OnClick="() => ChooseMethod(CreateMethod.Create)">Create DECLARE model</MatButton>
     <MatButton OnClick="() => ChooseMethod(CreateMethod.CreateWithLog)">Create DECLARE model from log</MatButton>
-    <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>}
+    <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>    
+}
 else if (method == CreateMethod.CreateWithLog && chooseLog)
 {
     <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
@@ -128,7 +129,7 @@ else
                     <th>Remove</th>
                 </MatTableHeader>
                 <MatTableRow>
-                    <td>@current.Template.ToString()</td>
+                    <td>@current.TemplateDescription.TemplateType.ToString()</td>
                     <td>@GetValue1(context)</td>
                     <td>@GetValue2(context)</td>
                     <td><MatIconButton Icon="remove" OnClick="@(() => RemoveTemplate(context))"></MatIconButton></td>

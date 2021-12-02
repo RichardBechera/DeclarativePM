@@ -147,7 +147,7 @@ namespace DeclarativePM.UI.Pages
         {
             if (e is null)
             {
-                CurrentTraceEvent = new(activities?.First() ?? "", SelectedTrace.Case);
+                CurrentTraceEvent = new(activities?.FirstOrDefault() ?? "", SelectedTrace.Case);
             }
             else
             {
@@ -161,7 +161,7 @@ namespace DeclarativePM.UI.Pages
             CurrentTraceEvent.CaseId = SelectedTrace.Case;
             SelectedTrace.Events.Add(CurrentTraceEvent);
 
-            CurrentTraceEvent = new(activities?.First() ?? "", SelectedTrace.Case);
+            CurrentTraceEvent = new(activities?.FirstOrDefault() ?? "", SelectedTrace.Case);
 
             await InvokeAsync(StateHasChanged);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using DeclarativePM.Lib.Import;
 using DeclarativePM.Lib.Models.LogModels;
@@ -96,10 +97,20 @@ namespace DeclarativePM.UI.Pages
             content = builder.ToString();
         }
 
-        public async Task Selection(EventLog log)
+        public void Selection(object log)
         {
-            selectedLog = log;
-            await InvokeAsync(StateHasChanged);
+            if (log is null)
+                return;
+            selectedLog = (EventLog)log;
+            StateHasChanged();
+        }
+
+        public bool RemoveLog(EventLog log)
+        {
+            if (StateContainer.EventLogs.Contains(log))
+                StateContainer.EventLogs.Remove(log);
+            StateHasChanged();
+            return true;
         }
 
         public void EnumChanged(HeaderType o, string key)

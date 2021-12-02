@@ -185,7 +185,8 @@ namespace DeclarativePM.Lib.Utils
         {
             double result = 0;
             List<Event> kOfConflictActivations = GetConflict(tree);
-            List<IBiTemplate> constraints = model.Where(x => x.TemplateType == TemplateTypes.BiTemplate)
+            List<IBiTemplate> constraints = model
+                .Where(x => x.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                 .SelectMany(x => x.TemplateInstances).Cast<IBiTemplate>().ToList();
             foreach (Event resolution in kOfConflictActivations)
             {
@@ -213,7 +214,7 @@ namespace DeclarativePM.Lib.Utils
                     if (!EvaluateExpression(trace, constraint.GetExpression()))
                     {
                         temp.constraints.Add(constraint);
-                        if (template.TemplateType == TemplateTypes.BiTemplate)
+                        if (template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                         {
                             ActivationBinaryTree tree = ActivationTreeBuilder.BuildTree(trace, (IBiTemplate)constraint);
                             temp.evals.Add(constraint, GetEventActivationTypes(tree, trace));

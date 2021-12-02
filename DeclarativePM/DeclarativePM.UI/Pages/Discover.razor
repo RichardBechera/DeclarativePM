@@ -4,8 +4,6 @@
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
 
-<h3>Discover</h3>
-
 @if (selectLog)
 {
     <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
@@ -13,6 +11,7 @@
 }
 else if (selectParameters)
 {
+    <h3>Choose templates for discovery</h3>
     <MatChipSet Filter="true" @bind-SelectedChips="@selectedTemplates">
         @foreach (var tit in value2Items)
         {
@@ -20,21 +19,22 @@ else if (selectParameters)
             <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit"></MatChip>
         }
     </MatChipSet>
-
-    //TODO description of templates
-
+    
     <MatButton OnClick="BackSelectionT">Back</MatButton>
     <MatButton OnClick="ContinueSelectionT">Continue</MatButton>
+    
+    <TemplateDescription Items="@_templateDescriptions"/>
 }
 else if (configureTemplates)
 {
+    <h3>Templates configuration</h3>
     <MatAccordion>
         @foreach (var tit in templates)
         {
             <MatExpansionPanel>
                 <MatExpansionPanelSummary>
                     <MatExpansionPanelHeader>
-                        @tit.Template.ToString()
+                        @tit.TemplateDescription.TemplateType.ToString()
                     </MatExpansionPanelHeader>
                 </MatExpansionPanelSummary>
                 <MatExpansionPanelDetails>
@@ -62,6 +62,7 @@ else if (configureTemplates)
 }
 else if (showDiscovered && treeTemplates is not null && _declareModel is not null)
 {
+    <h3>Discovered model</h3>
     <MatTreeView TNode="TreeNodeModel"
                  RootNode="@treeTemplates"
                  GetChildNodesCallback="@((n)=>n.Nodes)">

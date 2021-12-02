@@ -128,7 +128,7 @@ namespace DeclarativePM.Lib.Discovery
                 foreach (var template in templates)
                 {
                     bagOfEvents = ReduceEvents(ordering, template.Poe).ToArray();
-                    var args = template.TemplateType.GetTemplateEventArgs();
+                    var args = template.TemplateDescription.TemplateParametersType.GetTemplateEventArgs();
                     var combo = UtilMethods.Combinations(args, bagOfEvents, false);
                     InnerCandidateGeneration(template, combo, longestCase);
                 }
@@ -136,7 +136,7 @@ namespace DeclarativePM.Lib.Discovery
             }
             
             var neededCombinations = templates
-                .GroupBy(k => k.TemplateType.GetTemplateEventArgs(), v => v);
+                .GroupBy(k => k.TemplateDescription.TemplateParametersType.GetTemplateEventArgs(), v => v);
             bagOfEvents = ReduceEvents(ordering, poe).ToArray();
             foreach (var combination in neededCombinations)
             {
@@ -162,17 +162,17 @@ namespace DeclarativePM.Lib.Discovery
                 combinations = UtilMethods.RemoveReversedDuplicates(combinations);
             foreach (var combination in combinations)
             {
-                switch (template.TemplateType)
+                switch (template.TemplateDescription.TemplateParametersType)
                 {
                     case TemplateTypes.UniTemplate:
-                        template.TemplateInstances.Add(UniTemplateFactory.GetInstance(template.Template, combination[0]));
+                        template.TemplateInstances.Add(UniTemplateFactory.GetInstance(template.TemplateDescription.TemplateType, combination[0]));
                         break;
                     case TemplateTypes.BiTemplate:
-                        template.TemplateInstances.Add(BiTemplateFactory.GetInstance(template.Template, combination[0], combination[1]));
+                        template.TemplateInstances.Add(BiTemplateFactory.GetInstance(template.TemplateDescription.TemplateType, combination[0], combination[1]));
                         break;
                     case TemplateTypes.Existence:
                         for (var i = 1; i < longestCase; i++)
-                            template.TemplateInstances.Add(ExistenceFactory.GetInstance(template.Template, i, combination[0]));
+                            template.TemplateInstances.Add(ExistenceFactory.GetInstance(template.TemplateDescription.TemplateType, i, combination[0]));
                         break;
                     default:
                         return;
@@ -201,7 +201,6 @@ namespace DeclarativePM.Lib.Discovery
             candidates.ForEach(c =>
             {
                 CheckTemplate(c, treshold, enumerable, count, usePoi);
-                Console.WriteLine(c.Template);
             });
         }
 

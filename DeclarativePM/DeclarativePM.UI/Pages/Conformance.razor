@@ -9,12 +9,12 @@
 
 <h3>Conformance</h3>
 
-<div class="mat-layout-grid">
+<div class="mat-layout-grid" style="height: auto">
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
             <span>
-            <MatIconButton OnClick="AddCases" Icon="add"/>
-            <MatIconButton OnClick="@SeeActivities" Icon="remove_red_eye"/>
+                <MatIconButton OnClick="AddCases" Icon="add"/>
+                <MatIconButton OnClick="@SeeActivities" Icon="remove_red_eye"/>
             </span>
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5">
@@ -23,6 +23,8 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
             <MatIconButton OnClick="ChangeModel" Icon="import_export"/>
         </div>
+    </div>
+    <div class="mat-layout-grid-inner" style="height:60%; overflow:scroll">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
             <!-- ====CASES=== -->
             @if (!seeActivities)
@@ -65,10 +67,10 @@
 
                     <MatSelectValue @bind-Value="_evaluation" Items="@evaluations" ValueSelector="@(i => i)">
                         <ItemTemplate>
-                            <span>@context.Template.Template.ToString()</span>
+                            <span>@context.Template.TemplateDescription.TemplateType.ToString()</span>
                         </ItemTemplate>
                     </MatSelectValue>
-                    if (_evaluation is not null && _evaluation.Template.TemplateType == TemplateTypes.BiTemplate)
+                    if (_evaluation is not null && _evaluation.Template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                     {
                         <MatSelectValue @bind-Value="_constraint" Items="@_evaluation.constraints" ValueSelector="@(i => i)">
                             <ItemTemplate>
@@ -186,7 +188,7 @@
                              GetChildNodesCallback="@(n => n.Nodes)">
                     <NodeTemplate>
                         <div Style="@Utilities.GetTreeBackground(context.Name, evaluations)">
-                        @context.Name
+                            @context.Name
                         </div>
                     </NodeTemplate>
                 </MatTreeView>
@@ -194,3 +196,4 @@
         </div>
     </div>
 </div>
+<div><p>Hello world!</p></div>

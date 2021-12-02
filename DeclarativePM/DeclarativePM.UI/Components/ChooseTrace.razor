@@ -1,45 +1,26 @@
-@using DeclarativePM.UI.Utils
 @using DeclarativePM.UI.Data
-<MatAccordion>
-        @foreach (var trace in Traces)
-        {
-            <MatExpansionPanel Style="@Utilities.GetExpansionBackground(trace, SelectedTraces)">
-                <MatExpansionPanelSummary>
-                    <MatExpansionPanelHeader>
-                        <span>
-                            @if (!SelectedTraces.Contains(trace))
-                            {
-                                <MatIconButton OnClick="@(() => AddTrace(trace))" Icon="add"/>
-                            }
-                            else
-                            {
-                                <MatIconButton OnClick="@(() => RemoveTrace(trace))" Icon="remove"/>
-                            }
-                            @trace.Case
-                        </span>
-                    </MatExpansionPanelHeader>
-                    <MatExpansionPanelSubHeader>
-                        Count: @trace.Events.Count
-                    </MatExpansionPanelSubHeader>
-                </MatExpansionPanelSummary>
-                <MatExpansionPanelDetails>
-                    <ul>
-                        @foreach (var evnt in trace.Events.Take(10))
-                        {
-                            <li>Activity: @evnt.Activity @(evnt.TimeStamp is not null ? $"Timestamp: {evnt.TimeStamp.Value}" : "")</li>
-                        }
-                        @if (trace.Events.Count > 10)
-                        {
-                            <li>...</li>
-                        }
-                    </ul>
-                </MatExpansionPanelDetails>
-            </MatExpansionPanel>            
-        }
-    </MatAccordion>
+@using DeclarativePM.UI.Utils
+<MatTable Items="Traces" class="mat-elevation-z5" AllowSelection="true">
+    <MatTableHeader>
+        <th>Add/Remove</th>
+        <th>Case</th>
+    </MatTableHeader>
+    <MatTableRow>
+        <td style="@Utilities.GetExpansionBackground(context, SelectedTraces)">
+            <span>
+                @if (!SelectedTraces.Contains(context))
+                {
+                    <MatIconButton OnClick="@(() => AddTrace(context))" Icon="add"/>                }
+                else
+                {
+                    <MatIconButton OnClick="@(() => RemoveTrace(context))" Icon="remove"/>                }
+            </span>
+        </td>
+        <td style="@Utilities.GetExpansionBackground(context, SelectedTraces)">@context.Events.Count.ToString()</td>
+    </MatTableRow>
+</MatTable>
 
 @code {
-    //maybe table?
 
     [Parameter]
     public List<TraceDTO> Traces { get; set; }
@@ -49,7 +30,7 @@
 
     public void AddTrace(TraceDTO trace)
     {
-        if(SelectedTraces.Contains(trace))
+        if (SelectedTraces.Contains(trace))
             return;
         SelectedTraces.Add(trace);
         StateHasChanged();
@@ -57,7 +38,7 @@
 
     public void RemoveTrace(TraceDTO trace)
     {
-        if(!SelectedTraces.Contains(trace))
+        if (!SelectedTraces.Contains(trace))
             return;
         SelectedTraces.Remove(trace);
         StateHasChanged();

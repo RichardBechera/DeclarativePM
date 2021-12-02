@@ -8,12 +8,11 @@ namespace DeclarativePM.Lib.Models.DeclareModels
 {
     public class ParametrizedTemplate
     {
-        public TemplateInstanceType Template { get; }
         public List<ITemplate> TemplateInstances { get; set; }
         public decimal Poe { get; set; }
         public decimal Poi { get; set; }
 
-        public TemplateTypes TemplateType { get; }
+        public TemplateDescription TemplateDescription { get; }
 
         public ParametrizedTemplate(Type template, decimal poe = 100, decimal poi = 100) : this(template, new(), poe, poi)
         {
@@ -23,13 +22,13 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         {
             if (!(template.IsValueType && template.IsAssignableTo(typeof(ITemplate))))
                 throw new ArgumentException("Type has to be ValueType implementing ITemplate interface");
-            Template = template.GetPossibleTemplateType();
+            var temp = template.GetPossibleTemplateType();
+            TemplateDescription = temp.GetTemplateDescription();
             TemplateInstances = templateInstances;
             UtilMethods.CutIntoRange(ref poe, 1, 100);
             Poe = poe;
             UtilMethods.CutIntoRange(ref poi, 1, 100);
             Poi = poi;
-            TemplateType = Template.GetTemplateType();
         }
 
         public ParametrizedTemplate(TemplateInstanceType template, decimal poe = 100, decimal poi = 100) : this(
@@ -40,27 +39,26 @@ namespace DeclarativePM.Lib.Models.DeclareModels
 
         public ParametrizedTemplate(TemplateInstanceType template, List<ITemplate> templateInstances, decimal poe = 100, decimal poi = 100)
         {
-            Template = template;
+            TemplateDescription = template.GetTemplateDescription();
             TemplateInstances = templateInstances;
             UtilMethods.CutIntoRange(ref poe, 1, 100);
             Poe = poe;
             UtilMethods.CutIntoRange(ref poi, 1, 100);
             Poi = poi;
-            TemplateType = Template.GetTemplateType();
         }
 
         public ParametrizedTemplate(ParametrizedTemplate template, List<ITemplate> templateInstances)
         {
-            Template = template.Template;
+            TemplateDescription = template.TemplateDescription;
             TemplateInstances = templateInstances;
             Poe = template.Poe;
             Poi = template.Poi;
-            TemplateType = template.TemplateType;
         }
 
         public bool OrderMatters()
         {
-            return Template != TemplateInstanceType.Coexistence && Template != TemplateInstanceType.NotCoexistence;
+            return TemplateDescription.TemplateType != TemplateInstanceType.Coexistence 
+                   && TemplateDescription.TemplateType != TemplateInstanceType.NotCoexistence;
         }
     }
 }
