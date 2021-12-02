@@ -32,6 +32,13 @@ namespace DeclarativePM.Lib.Declare_Templates
         public bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA);
         
+        public LtlExpression GetExpressionWithWitness()
+        {
+            //phi && eventual(B)
+            return new LtlExpression(Operators.And, GetExpression(),
+                new LtlExpression(Operators.Eventual, new LtlExpression(LogEventA)));
+        }
+        
         public string GetEventA()
             => LogEventA;
 

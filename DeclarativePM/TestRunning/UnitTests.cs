@@ -17,6 +17,53 @@ namespace TestRunning
     {
         private Discovery _disco = new();
         
+        private List<Event> eventsNotActivated = new()
+        {
+            new("c", "1"),
+            new("c", "1"),
+            new("c", "1"),
+        };
+        
+        private List<Event> eventsANotOccurs = new()
+        {
+            new("c", "1"),
+            new("b", "1")
+        };
+            
+        private List<Event> eventsBNotOccurs = new()
+        {
+            new("a", "1"),
+            new("c", "1"),
+            new("c", "1")
+        };
+
+        /// <summary>
+        /// Checks whether vacuity detection
+        /// </summary>
+        /// <param name="template"></param>
+        /// <param name="activation">0 - both A and B are activators, 1 - A activates, 2 - B activates</param>
+        private void CheckVacuity(IBiTemplate template, short activation)
+        {
+            if (0 > activation || activation > 2)
+                throw new ArgumentException("Only values from 0 to 2 are allowed as activation");
+            
+            if (activation == 0)
+            {
+                Assert.True(MainMethods.EvaluateExpression(eventsNotActivated, template.GetExpression()));
+                Assert.False(MainMethods.EvaluateExpression(eventsNotActivated, template.GetExpressionWithWitness()));
+            }
+            else if (activation == 1)
+            {
+                Assert.True(MainMethods.EvaluateExpression(eventsANotOccurs, template.GetExpression()));
+                Assert.False(MainMethods.EvaluateExpression(eventsANotOccurs, template.GetExpressionWithWitness()));
+            }
+            else
+            {
+                Assert.True(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+                Assert.False(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpressionWithWitness()));
+            }
+        }
+
         [Fact]
         public void Test1()
         {
@@ -273,32 +320,28 @@ namespace TestRunning
             List<Event> eventsHolds = new List<Event>()
             {
                 new("a", "1"),
-                new("b", "1"),
-                new("b", "1"),
                 new("c", "1"),
+                new("c", "1"),
+                new("b", "1"),
             };
             
             List<Event> eventsNotHolds = new List<Event>()
             {
                 new("a", "1"),
-                new("b", "1"),
-                new("a", "1"),
                 new("c", "1"),
-            };
-            
-            List<Event> eventsNotFinish = new List<Event>()
-            {
                 new("a", "1"),
-                new("b", "1"),
                 new("b", "1"),
             };
 
-            AlternateResponse template = new AlternateResponse("a", "c");
+            AlternateResponse template = new AlternateResponse("a", "b");
 
             Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
             //This is true as there really was no other "a" until "c". => postprocessing later
-            Assert.True(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
+            //TODO subsequent(A => next(!A U B) && eventual(B))
+            Assert.True(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 1);
         }
         
         [Fact]
@@ -317,18 +360,6 @@ namespace TestRunning
                 new("b", "1"),
                 new("b", "1"),
             };
-            
-            List<Event> eventsANotOccurs = new List<Event>()
-            {
-                new("c", "1"),
-                new("b", "1")
-            };
-            
-            List<Event> eventsBNotOccurs = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1")
-            };
 
             AlternatePrecedence template = new AlternatePrecedence("a", "b");
 
@@ -341,7 +372,8 @@ namespace TestRunning
             
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsANotOccurs, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 2);
         }
         
         [Fact]
@@ -362,18 +394,6 @@ namespace TestRunning
                 new("c", "1"),
                 new("b", "1"),
             };
-            
-            List<Event> eventsNotFinish = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
-            
-            List<Event> eventsOnlyB = new List<Event>()
-            {
-                new("b", "1")
-            };
 
             AlternateSuccession template = new AlternateSuccession("a", "b");
     
@@ -381,9 +401,9 @@ namespace TestRunning
             Assert.False(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
             
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            //This is true as there really was no other "a" until "b". => postprocessing later
-            Assert.True(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            //This is true as there really was no other "a" until "b". => vacuity check
+            Assert.True(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsANotOccurs, template.GetExpression()));
             
             //with preprocessing
             eventsHolds = UtilMethods.PreprocessTraceForEvaluation(template, eventsHolds);
@@ -393,11 +413,13 @@ namespace TestRunning
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
 
             //This is true as there really was no other "a" until "b". => postprocessing later
-            eventsNotFinish = UtilMethods.PreprocessTraceForEvaluation(template, eventsNotFinish);
+            List<Event> eventsNotFinish = UtilMethods.PreprocessTraceForEvaluation(template, eventsBNotOccurs);
             Assert.True(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
 
-            eventsOnlyB = UtilMethods.PreprocessTraceForEvaluation(template, eventsOnlyB);
+            List<Event> eventsOnlyB = UtilMethods.PreprocessTraceForEvaluation(template, eventsANotOccurs);
             Assert.False(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            
+            CheckVacuity(template, 0);
         }
         
         [Fact]
@@ -436,6 +458,8 @@ namespace TestRunning
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsRepeats, template.GetExpression()));
+            
+            CheckVacuity(template, 1);
         }
         
         [Fact]
@@ -470,6 +494,8 @@ namespace TestRunning
             //with preprocessing
             eventsNotHolds = UtilMethods.PreprocessTraceForEvaluation(template, eventsNotHolds);
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            
+            CheckVacuity(template, 2);
         }
         
         [Fact]
@@ -508,6 +534,8 @@ namespace TestRunning
             //with preprocessing
             eventsOnlyB = UtilMethods.PreprocessTraceForEvaluation(template, eventsOnlyB);
             Assert.False(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            
+            CheckVacuity(template, 0);
         }
         
         [Fact]
@@ -520,18 +548,13 @@ namespace TestRunning
                 new("c", "1"),
                 new("b", "1"),
             };
-            
-            List<Event> eventsNotHolds = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
 
             Response template = new Response("a", "b");
 
             Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 1);
         }
         
         [Fact]
@@ -549,19 +572,14 @@ namespace TestRunning
             {
                 new("b", "1")
             };
-            
-            List<Event> eventsNotPreceded = new List<Event>()
-            {
-                new("c", "1"),
-                new("c", "1"),
-                new("b", "1"),
-            };
 
             Precedence template = new Precedence("a", "b");
 
             Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsStarts, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotPreceded, template.GetExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsANotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 2);
         }
         
         [Fact]
@@ -574,19 +592,13 @@ namespace TestRunning
                 new("c", "1"),
                 new("b", "1"),
             };
-            
-            List<Event> eventsNotHolds = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
 
             Succession template = new Succession("a", "b");
 
             Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            //fail not vacuously
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 0);
         }
         
         [Fact]
@@ -607,19 +619,14 @@ namespace TestRunning
                 new("c", "1"),
                 new("a", "1"),
             };
-            
-            List<Event> eventsBNotOccurs = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
 
             RespondedExistence template = new RespondedExistence("a", "b");
 
             Assert.True(MainMethods.EvaluateExpression(eventsAFirst, template.GetExpression()));
             Assert.True(MainMethods.EvaluateExpression(eventsBFirst, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 1);
         }
         
         [Fact]
@@ -633,13 +640,6 @@ namespace TestRunning
                 new("b", "1"),
             };
             
-            List<Event> eventsNoB = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1"),
-                new("c", "1")
-            };
-            
             List<Event> eventsBFirst = new List<Event>()
             {
                 new("b", "1"),
@@ -650,8 +650,10 @@ namespace TestRunning
             NotSuccession template = new NotSuccession("a", "b");
 
             Assert.False(MainMethods.EvaluateExpression(eventsABeforeB, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsNoB, template.GetExpression()));
+            Assert.True(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
             Assert.True(MainMethods.EvaluateExpression(eventsBFirst, template.GetExpression()));
+            
+            CheckVacuity(template, 0);
         }
         
         [Fact]
@@ -670,18 +672,14 @@ namespace TestRunning
                 new("a", "1"),
                 new("b", "1")
             };
-            
-            List<Event> eventsNotFinish = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1")
-            };
 
             NotChainSuccession template = new NotChainSuccession("a", "b");
 
             Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
+            Assert.True(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 0);
         }
         
         [Fact]
@@ -694,26 +692,14 @@ namespace TestRunning
                 new("c", "1"),
                 new("b", "1"),
             };
-            
-            List<Event> eventsOnlyA = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
-            
-            List<Event> eventsOnlyB = new List<Event>()
-            {
-                new("b", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
 
             NotCoexistence template = new NotCoexistence("a", "b");
 
             Assert.False(MainMethods.EvaluateExpression(eventsBoth, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsOnlyA, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            Assert.True(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            Assert.True(MainMethods.EvaluateExpression(eventsANotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 0);
         }
         
         [Fact]
@@ -829,26 +815,14 @@ namespace TestRunning
                 new("c", "1"),
                 new("b", "1"),
             };
-            
-            List<Event> eventsOnlyA = new List<Event>()
-            {
-                new("a", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
-            
-            List<Event> eventsOnlyB = new List<Event>()
-            {
-                new("b", "1"),
-                new("c", "1"),
-                new("c", "1"),
-            };
 
             Coexistence template = new Coexistence("a", "b");
 
             Assert.True(MainMethods.EvaluateExpression(eventsBoth, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsOnlyA, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsBNotOccurs, template.GetExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsANotOccurs, template.GetExpression()));
+            
+            CheckVacuity(template, 0);
         }
         
         [Fact]
