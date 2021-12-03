@@ -31,12 +31,12 @@ namespace DeclarativePM.Lib.Declare_Templates
         public bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
         
-        public LtlExpression GetExpressionWithWitness()
+        public LtlExpression GetVacuityCondition()
         {
-            //phi && (eventual(A) || eventual(B))
-            return new LtlExpression(Operators.And, GetExpression(),new LtlExpression(Operators.Or, 
+            //eventual(A) || eventual(B)
+            return new LtlExpression(Operators.Or, 
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventA)),
-                new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB))));
+                new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB)));
         }
         
         public string GetEventA()

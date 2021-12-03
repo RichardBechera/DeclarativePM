@@ -209,7 +209,7 @@ namespace DeclarativePM.Lib.Discovery
         {
             treshold = !usePoi ? (int)decimal.Round(allCount * (100 - candidate.Poi) / 100) : treshold;
             candidate.TemplateInstances = candidate.TemplateInstances.AsParallel()
-                .Where(c => CheckConstraint(c, treshold, instances)).ToList();
+                .Where(c => CheckConstraint(c, treshold, instances, candidate.CheckVacuously)).ToList();
         }
 
         /// <summary>
@@ -218,15 +218,21 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="candidate">DECLARE constraint.</param>
         /// <param name="treshold">Amount of instances on which checking can fail.</param>
         /// <param name="instances">Instances from event log, each represents a unique case.</param>
+        /// <param name="vacuity">Check templates vacuously or not</param>
         /// <returns>True if constraint hold, false else.</returns>
         private bool CheckConstraint(ITemplate candidate, int treshold, List<List< 
-            Event>> instances)
+            Event>> instances, bool vacuity)
         {
             int notHolds = 0;
+            bool wasActivated = false;
             
             foreach (var instance in instances)
             {
                 if (MainMethods.EvaluateTemplate(instance, candidate)) continue;
+                //TODO
+                if (!wasActivated && MainMethods.EvaluateTemplate(instance, candidate, vacuously:vacuity))
+                    continue;
+                
                 notHolds++;
                 if (notHolds < treshold) continue;
                 return false;

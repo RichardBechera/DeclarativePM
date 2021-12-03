@@ -12,6 +12,8 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         public decimal Poe { get; set; }
         public decimal Poi { get; set; }
 
+        public bool CheckVacuously { get; set; }
+
         public TemplateDescription TemplateDescription { get; }
 
         public ParametrizedTemplate(Type template, decimal poe = 100, decimal poi = 100) : this(template, new(), poe, poi)

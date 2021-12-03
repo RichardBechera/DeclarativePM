@@ -92,9 +92,15 @@ namespace DeclarativePM.Lib.Utils
             }
         }
 
-        public static bool EvaluateTemplate(List<Event> events, ITemplate template, bool preprocessing = true)
+        public static bool EvaluateTemplate(List<Event> events, ITemplate template,
+            bool preprocessing = true, bool vacuously = false)
         {
-            var expr = template.GetExpression();
+            LtlExpression expr;
+            if (template is IBiTemplate biTemplate)
+                expr = biTemplate.GetWitnessExpression();
+            else
+                expr = template.GetExpression();
+            
             if (expr is null)
                 return false;
             if(preprocessing)

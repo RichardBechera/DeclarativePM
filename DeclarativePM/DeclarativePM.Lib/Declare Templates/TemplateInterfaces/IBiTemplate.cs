@@ -1,3 +1,4 @@
+using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 
@@ -7,7 +8,10 @@ namespace DeclarativePM.Lib.Declare_Templates.TemplateInterfaces
     {
         public bool IsActivation(Event e);
 
-        public LtlExpression GetExpressionWithWitness();
+        public LtlExpression GetVacuityCondition();
+        
+        public LtlExpression GetWitnessExpression() =>
+            new LtlExpression(Operators.And, GetExpression(), GetVacuityCondition());
 
         public string GetEventA();
 
