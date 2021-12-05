@@ -5,8 +5,8 @@ using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Export;
-using DeclarativePM.Lib.Import;
+using DeclarativePM.Lib.IO.Export;
+using DeclarativePM.Lib.IO.Import;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Utils;
@@ -903,7 +903,7 @@ namespace TestRunning
                 responseP
             });
 
-            JsonModelExporter exporter = new JsonModelExporter();
+            Exporter exporter = new Exporter();
             string json = exporter.ExportModel(model);
             var m = importer.LoadModelFromJsonString(json);
             

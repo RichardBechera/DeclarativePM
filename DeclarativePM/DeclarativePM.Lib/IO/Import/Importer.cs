@@ -7,7 +7,7 @@ using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
 using Newtonsoft.Json;
 
-namespace DeclarativePM.Lib.Import
+namespace DeclarativePM.Lib.IO.Import
 {
     public class Importer
     {
@@ -62,7 +62,8 @@ namespace DeclarativePM.Lib.Import
             using var jsonReader = new StreamReader(stream);
             string json = jsonReader.ReadToEnd();
 
-            var result = JsonConvert.DeserializeObject<DeclareModel>(json);
+            var result = LoadModelFromJsonString(json);
+            
             stream.Dispose();
             return result;
         }

@@ -5,7 +5,7 @@ using DeclarativePM.Lib.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace DeclarativePM.Lib.Utils
+namespace DeclarativePM.Lib.IO
 {
     public class TemplateConverter: JsonConverter<ITemplate>
     {

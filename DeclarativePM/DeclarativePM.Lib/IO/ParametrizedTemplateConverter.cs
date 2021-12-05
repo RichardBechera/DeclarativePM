@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace DeclarativePM.Lib.Utils
+namespace DeclarativePM.Lib.IO
 {
     public class ParametrizedTemplateConverter : JsonConverter<ParametrizedTemplate>
     {
