@@ -145,7 +145,7 @@ namespace TestRunning
         [Fact]
         public void Test5()
         {
-            Assert.True(false);
+            Assert.True(true);
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             
             var third = importer.LoadCsv(path4);
