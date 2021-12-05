@@ -906,6 +906,9 @@ namespace TestRunning
             Exporter exporter = new Exporter();
             string json = exporter.ExportModel(model);
             var m = importer.LoadModelFromJsonString(json);
+
+            //exporter.ExportSaveModelAsync(model, "/home/richard/Documents/bakalarka/garbage", "testmodel");
+            //var m = importer.LoadModelFromJsonPath("/home/richard/Documents/bakalarka/garbage/testmodel.json");
             
             Assert.Equal(model.Name, m.Name);
             Assert.Equal(model.Constraints.Count, m.Constraints.Count);

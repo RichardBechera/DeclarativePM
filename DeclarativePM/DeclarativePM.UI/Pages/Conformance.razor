@@ -160,13 +160,13 @@
             {
                 <h5>Select Eventlog</h5>
                 <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
-                <MatButton OnClick="OnLogSelected">Continue</MatButton>
+                <MatButton OnClick="OnLogSelected" Disabled="@(_selectedLog is null)">Continue</MatButton>
             }
             else if (View == ConformancePageView.SelectModel)
             {
                 <h5>Select model</h5>
                 <ChooseModel DeclareModels="@StateContainer.DeclareModels" @bind-SelectedModel="_declareModel"></ChooseModel>
-                <MatButton OnClick="OnModelSelected">OK</MatButton>
+                <MatButton OnClick="OnModelSelected" Disabled="@(_declareModel is null)">OK</MatButton>
             }
             else if (View == ConformancePageView.SelectTraces)
             {

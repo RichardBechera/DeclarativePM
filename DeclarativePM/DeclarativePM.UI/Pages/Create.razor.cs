@@ -77,7 +77,7 @@ namespace DeclarativePM.UI.Pages
             }
 
             chooseLog = false;
-            activities = new();
+            activities = _selectedLog.Logs.Select(x => x.Activity).Distinct().ToList();
             templates = new();
             Utilities.CreateTreeNode(out treeTemplates, templates);
             currentTemplates = new();
@@ -88,7 +88,7 @@ namespace DeclarativePM.UI.Pages
         public async Task ModelContinueCreate()
         {
             chooseModel = false;
-            templates = _declareModel.Constraints;
+            templates = _declareModel.Constraints.ToList();
             activities = _declareModel.GetAllActivities();
             Utilities.CreateTreeNode(out treeTemplates, templates);
             
@@ -274,6 +274,10 @@ namespace DeclarativePM.UI.Pages
                 DeclareModel md = new DeclareModel(result.Trim(), templates);
                 _declareModel = md;
                 StateContainer.DeclareModels.Add(md);
+            }
+            else
+            {
+                _declareModel.Constraints = templates;
             }
         }
     }

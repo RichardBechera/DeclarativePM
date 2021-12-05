@@ -11,7 +11,7 @@ namespace DeclarativePM.Lib.Models.DeclareModels
     public class DeclareModel
     {
         public string Name { get; set; }
-        public List<ParametrizedTemplate> Constraints { get; }
+        public List<ParametrizedTemplate> Constraints { get; set; }
         
         [JsonIgnore]
         public EventLog Log { get; }

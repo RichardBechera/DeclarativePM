@@ -17,12 +17,10 @@
 else if (method == CreateMethod.CreateWithLog && chooseLog)
 {
     <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
-    //TODO dialog continue without log ?
     <MatButton OnClick="LogContinueCreate" Disabled="@(_selectedLog is null)">Continue</MatButton>}
 else if (method == CreateMethod.Edit && chooseModel)
 {
     <ChooseModel DeclareModels="@StateContainer.DeclareModels" @bind-SelectedModel="_declareModel"></ChooseModel>
-    //TODO dialog continue without log ?
     <MatButton OnClick="ModelContinueCreate" Disabled="@(_declareModel is null)">Continue</MatButton>}
 else
 {

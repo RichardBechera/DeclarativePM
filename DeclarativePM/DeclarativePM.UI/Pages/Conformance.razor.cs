@@ -183,7 +183,9 @@ namespace DeclarativePM.UI.Pages
         
         public async Task AddActivity()
         {
-            var result = await MatDialogService.PromptAsync("Name of activity: ");
+            var result = (await MatDialogService.PromptAsync("Name of activity: "))?.Trim();
+            if (result is null || result == String.Empty)
+                return;
             if (activities.Contains(result))
             {
                 await MatDialogService.AlertAsync("Activity is already in the list");
