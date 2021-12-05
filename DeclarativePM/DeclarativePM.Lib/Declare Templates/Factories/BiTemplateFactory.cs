@@ -6,7 +6,7 @@ namespace DeclarativePM.Lib.Declare_Templates.Factories
 {
     public static class BiTemplateFactory
     {
-        public static IBiTemplate GetInstance(TemplateInstanceType type, string evnt1, string evnt2)
+        public static BiTemplate GetInstance(TemplateInstanceType type, string evnt1, string evnt2)
         {
             switch (type)
             {

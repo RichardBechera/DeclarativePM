@@ -10,19 +10,13 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// Eventual(A && Next(Existence(n-1, A)))
     /// Eventual(A)
     /// </summary>
-    public struct Existence: IExistenceTemplate
+    public class Existence: ExistenceTemplate
     {
-        public readonly int Occurrences;
-        public readonly string LogEvent;
-        
-        public Existence(int occurrences, string logEvent)
+        public Existence(int occurrences, string logEvent): base(occurrences, logEvent)
         {
-            //what if 0 passed?
-            Occurrences = occurrences;
-            LogEvent = logEvent;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             if (Occurrences == 0)
             {
@@ -47,11 +41,5 @@ namespace DeclarativePM.Lib.Declare_Templates
         
         public override string ToString() 
             => $"Existence({Occurrences}, \"{LogEvent}\")";
-        
-        public string GetEvent()
-            => LogEvent;
-
-        public int GetCount()
-            => Occurrences;
     }
 }

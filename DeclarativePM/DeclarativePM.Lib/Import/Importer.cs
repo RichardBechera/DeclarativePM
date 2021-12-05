@@ -2,13 +2,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
+using DeclarativePM.Lib.Utils;
+using Newtonsoft.Json;
 
 namespace DeclarativePM.Lib.Import
 {
-    public static class ImportCsvLogs
+    public class Importer
     {
-        public static ImportedEventLog LoadCsv(Stream stream, bool hasHeaders = true, string[] missing = null, char separator = ',')
+        public ImportedEventLog LoadCsv(Stream stream, bool hasHeaders = true, string[] missing = null, char separator = ',')
         {
             var logs = new List<string[]>();
             string[] headers = null;
@@ -37,7 +40,7 @@ namespace DeclarativePM.Lib.Import
             return new ImportedEventLog(logs, headers);
         }
 
-        public static ImportedEventLog LoadCsv(string path, bool hasHeaders = true, string[] missing = null,
+        public ImportedEventLog LoadCsv(string path, bool hasHeaders = true, string[] missing = null,
             char separator = ',')
         {
             if (!File.Exists(path))
@@ -47,6 +50,40 @@ namespace DeclarativePM.Lib.Import
 
             var result = LoadCsv(stream, hasHeaders, missing, separator);
             stream.Dispose();
+            return result;
+        }
+
+        public DeclareModel LoadModelFromJsonPath(string path)
+        {
+            if (!File.Exists(path))
+                return null;
+
+            var stream = File.OpenRead(path);
+            using var jsonReader = new StreamReader(stream);
+            string json = jsonReader.ReadToEnd();
+
+            var result = JsonConvert.DeserializeObject<DeclareModel>(json);
+            stream.Dispose();
+            return result;
+        }
+        
+        public DeclareModel LoadModelFromJsonString(string json)
+        {
+            DeclareModel result = JsonConvert.DeserializeObject<DeclareModel>(json,
+                new ParametrizedTemplateConverter());
+            
+            //simple checks whether model is ok
+            if (result is null)
+                return null;
+            foreach (var pt in result.Constraints)
+            {
+                foreach (var t in pt.TemplateInstances)
+                {
+                    //corrupted template, wrong type in the list
+                    if (t.GetType().GetPossibleTemplateType() != pt.TemplateDescription.TemplateType)
+                        pt.TemplateInstances.Remove(t);
+                }
+            }
             return result;
         }
     }

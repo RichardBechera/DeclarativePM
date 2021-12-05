@@ -4,6 +4,7 @@ using System.Linq;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.LogModels;
+using Newtonsoft.Json;
 
 namespace DeclarativePM.Lib.Models.DeclareModels
 {
@@ -11,6 +12,8 @@ namespace DeclarativePM.Lib.Models.DeclareModels
     {
         public string Name { get; set; }
         public List<ParametrizedTemplate> Constraints { get; }
+        
+        [JsonIgnore]
         public EventLog Log { get; }
 
         public DeclareModel(string name, List<ParametrizedTemplate> constraints, EventLog log)
@@ -20,6 +23,7 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             Log = log;
         }
         
+        [JsonConstructor]
         public DeclareModel(string name, List<ParametrizedTemplate> constraints)
         {
             Name = name;
@@ -38,16 +42,16 @@ namespace DeclarativePM.Lib.Models.DeclareModels
                     switch(template.TemplateDescription.TemplateParametersType)
                     {
                         case TemplateTypes.Existence:
-                            IExistenceTemplate temp1 = (IExistenceTemplate) instance;
+                            ExistenceTemplate temp1 = (ExistenceTemplate) instance;
                             activities.Add(temp1.GetEvent());
                             break;
                         case TemplateTypes.BiTemplate:
-                            IBiTemplate temp2 = (IBiTemplate) instance;
+                            BiTemplate temp2 = (BiTemplate) instance;
                             activities.Add(temp2.GetEventA());
                             activities.Add(temp2.GetEventB());
                             break;
                         case TemplateTypes.UniTemplate:
-                            IUniTemplate temp3 = (IUniTemplate) instance;
+                            UniTemplate temp3 = (UniTemplate) instance;
                             activities.Add(temp3.GetEventA());
                             break;
                         default:

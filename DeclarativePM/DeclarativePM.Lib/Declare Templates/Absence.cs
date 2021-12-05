@@ -10,20 +10,15 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// A occurs at most n - 1 times
     /// !existence(n, a)
     /// </summary>
-    public struct Absence : IExistenceTemplate
+    public class Absence : ExistenceTemplate
     {
-        public readonly int Occurrences;
-        public readonly string LogEvent;
-        
-        public Absence(int occurrences, string logEvent)
+        public Absence(int occurrences, string logEvent): base(occurrences, logEvent)
         {
             if (occurrences < 1)
                 throw new ArgumentException("Absence template parameter occurrences has to be higher or equal 1");
-            LogEvent = logEvent;
-            Occurrences = occurrences;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //!existence(n, a)
             return new LtlExpression(Operators.Not, new Existence(Occurrences, LogEvent).GetExpression());
@@ -31,11 +26,5 @@ namespace DeclarativePM.Lib.Declare_Templates
 
         public override string ToString() 
             => $"Absence({Occurrences}, \"{LogEvent}\")";
-
-        public string GetEvent()
-            => LogEvent;
-
-        public int GetCount()
-            => Occurrences;
     }
 }

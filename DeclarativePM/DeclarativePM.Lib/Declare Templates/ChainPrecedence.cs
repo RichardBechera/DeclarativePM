@@ -10,18 +10,13 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// Each time B occurs, then A occurs immediately before
     /// subsequent(next(B) => A)
     /// </summary>
-    public struct ChainPrecedence: IBiTemplate
+    public class ChainPrecedence: BiTemplate
     {
-        public readonly string LogEventA;
-        public readonly string LogEventB;
-        
-        public ChainPrecedence(string logEventA, string logEventB)
+        public ChainPrecedence(string logEventA, string logEventB): base(logEventA, logEventB)
         {
-            LogEventA = logEventA;
-            LogEventB = logEventB;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //subsequent(next(B) => A)
             return new LtlExpression(Operators.Subsequent, new LtlExpression(Operators.Imply,
@@ -29,20 +24,14 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(LogEventA)));
         }
         
-        public bool IsActivation(Event e)
+        public override bool IsActivation(Event e)
             => e.Activity.Equals(LogEventB);
         
-        public LtlExpression GetVacuityCondition()
+        public override LtlExpression GetVacuityCondition()
         {
             //eventual(B)
             return new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB));
         }
-        
-        public string GetEventA()
-            => LogEventA;
-
-        public string GetEventB()
-            => LogEventB;
         
         public override string ToString() 
             => $"ChainPrecedence(\"{LogEventA}\", \"{LogEventB}\")";

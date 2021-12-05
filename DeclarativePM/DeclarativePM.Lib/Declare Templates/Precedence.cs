@@ -10,18 +10,13 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// B occurs only if preceded by A
     /// (!B U A) || subsequent(!B)
     /// </summary>
-    public struct Precedence: IBiTemplate
+    public class Precedence: BiTemplate
     {
-        public readonly string LogEventA;
-        public readonly string LogEventB;
-        
-        public Precedence(string logEventA, string logEventB)
+        public Precedence(string logEventA, string logEventB): base(logEventA, logEventB)
         {
-            LogEventA = logEventA;
-            LogEventB = logEventB;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //(!B U A) || subsequent(!B)
             return new LtlExpression(Operators.Or, new LtlExpression(Operators.Least,
@@ -31,20 +26,14 @@ namespace DeclarativePM.Lib.Declare_Templates
                     new LtlExpression(Operators.Not, new LtlExpression(LogEventB))));
         }
         
-        public bool IsActivation(Event e)
+        public override bool IsActivation(Event e)
             => e.Activity.Equals(LogEventB);
         
-        public LtlExpression GetVacuityCondition()
+        public override LtlExpression GetVacuityCondition()
         {
             //eventual(B)
             return new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB));
         }
-        
-        public string GetEventA()
-            => LogEventA;
-
-        public string GetEventB()
-            => LogEventB;
         
         public override string ToString() 
             => $"Precedence(\"{LogEventA}\", \"{LogEventB}\")";

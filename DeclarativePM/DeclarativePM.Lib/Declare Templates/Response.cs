@@ -10,18 +10,13 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// If A occurs, then B occurs after A
     /// subsequent(A => eventual(B))
     /// </summary>
-    public struct Response: IBiTemplate
+    public class Response: BiTemplate
     {
-        public readonly string LogEventA;
-        public readonly string LogEventB;
-        
-        public Response(string logEventA, string logEventB)
+        public Response(string logEventA, string logEventB): base(logEventA, logEventB)
         {
-            LogEventA = logEventA;
-            LogEventB = logEventB;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //subsequent(A => eventual(B))
             return new LtlExpression(Operators.Subsequent,
@@ -29,20 +24,14 @@ namespace DeclarativePM.Lib.Declare_Templates
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB))));
         }
         
-        public bool IsActivation(Event e)
+        public override bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA);
         
-        public LtlExpression GetVacuityCondition()
+        public override LtlExpression GetVacuityCondition()
         {
             //eventual(A)
             return new LtlExpression(Operators.Eventual, new LtlExpression(LogEventA));
         }
-        
-        public string GetEventA()
-            => LogEventA;
-
-        public string GetEventB()
-            => LogEventB;
         
         public override string ToString() 
             => $"Response(\"{LogEventA}\", \"{LogEventB}\")";

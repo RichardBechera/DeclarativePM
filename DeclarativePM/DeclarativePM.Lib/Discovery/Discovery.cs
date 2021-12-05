@@ -193,7 +193,7 @@ namespace DeclarativePM.Lib.Discovery
         private void GetMatchingConstraints(IEnumerable<List<Event>> instances,
             List<ParametrizedTemplate> candidates, decimal poi, bool usePoi = true)
         {
-            UtilMethods.CutIntoRange(ref poi, 1);
+            poi =  UtilMethods.CutIntoRange(poi, 1);
             int treshold = (int)decimal.Round(candidates.Count() * (100 - poi) / 100);
             var enumerable = instances.ToList();
             var count = candidates.Count;
@@ -224,21 +224,27 @@ namespace DeclarativePM.Lib.Discovery
             Event>> instances, bool vacuity)
         {
             int notHolds = 0;
-            bool wasActivated = false;
+            bool wasActivated = candidate is not BiTemplate;
             
             foreach (var instance in instances)
             {
-                if (MainMethods.EvaluateTemplate(instance, candidate)) continue;
-                //TODO
-                if (!wasActivated && MainMethods.EvaluateTemplate(instance, candidate, vacuously:vacuity))
+                if (MainMethods.EvaluateTemplate(instance, candidate))
+                {
+                    if (vacuity && !wasActivated && candidate is IVacuityDetection template)
+                    {
+                        wasActivated = MainMethods
+                            .EvaluateExpression(instance, template.GetVacuityCondition());
+                    }
                     continue;
+                }
                 
                 notHolds++;
                 if (notHolds < treshold) continue;
                 return false;
             }
 
-            return true;
+            // vacuity => activated
+            return !vacuity || wasActivated;
         }
 
         /// <summary>

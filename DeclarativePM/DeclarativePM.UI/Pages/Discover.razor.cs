@@ -94,6 +94,10 @@ namespace DeclarativePM.UI.Pages
         {
             configureTemplates = true;
             showDiscovered = false;
+            foreach (var pt in templates)
+            {
+                pt.TemplateInstances.Clear();
+            }
             await InvokeAsync(StateHasChanged);
         }
 

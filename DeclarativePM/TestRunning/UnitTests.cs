@@ -5,6 +5,7 @@ using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
+using DeclarativePM.Lib.Export;
 using DeclarativePM.Lib.Import;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
@@ -16,6 +17,7 @@ namespace TestRunning
     public class UnitTests
     {
         private Discovery _disco = new();
+        Importer importer = new Importer();
         
         private readonly List<Event> _eventsNotActivated = new()
         {
@@ -42,7 +44,7 @@ namespace TestRunning
         /// </summary>
         /// <param name="template"></param>
         /// <param name="activation">0 - both A and B are activators, 1 - A activates, 2 - B activates</param>
-        private void CheckVacuity(IBiTemplate template, short activation)
+        private void CheckVacuity(BiTemplate template, short activation)
         {
             if (0 > activation || activation > 2)
                 throw new ArgumentException("Only values from 0 to 2 are allowed as activation");
@@ -68,7 +70,7 @@ namespace TestRunning
         public void Test1()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample1.csv";
-            var third = ImportCsvLogs.LoadCsv(path4);
+            var third = importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new Response("C", "S"));
@@ -88,7 +90,7 @@ namespace TestRunning
         {
             //TODO relative path
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample2.csv";
-            var third = ImportCsvLogs.LoadCsv(path4);
+            var third = importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new AlternateResponse("H", "M"));
@@ -108,7 +110,7 @@ namespace TestRunning
         public void Test3()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = ImportCsvLogs.LoadCsv(path4);
+            var third = importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
@@ -129,7 +131,7 @@ namespace TestRunning
         public void Test4()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = ImportCsvLogs.LoadCsv(path4);
+            var third = importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
@@ -145,7 +147,8 @@ namespace TestRunning
         {
             Assert.True(false);
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = ImportCsvLogs.LoadCsv(path4);
+            
+            var third = importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
             var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
@@ -176,7 +179,8 @@ namespace TestRunning
         public void Test6()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = ImportCsvLogs.LoadCsv(path4);
+            
+            var third = importer.LoadCsv(path4);
             var log = third.BuildEventLog();
             var model = _disco.DiscoverModel(log, new List<ParametrizedTemplate>()
             {
@@ -342,6 +346,10 @@ namespace TestRunning
             Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 1);
+            
+            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetFinishingExpression()));
+            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetFinishingExpression()));
+            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetFinishingExpression()));
         }
         
         [Fact]
@@ -405,6 +413,9 @@ namespace TestRunning
             Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
             
+            //finishing
+            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetFinishingExpression()));
+            
             //with preprocessing
             eventsHolds = UtilMethods.PreprocessTraceForEvaluation(template, eventsHolds);
             Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
@@ -418,6 +429,9 @@ namespace TestRunning
 
             List<Event> eventsOnlyB = UtilMethods.PreprocessTraceForEvaluation(template, _eventsANotOccurs);
             Assert.False(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            
+            //finishing
+            Assert.False(MainMethods.EvaluateExpression(eventsNotFinish, template.GetFinishingExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -862,6 +876,58 @@ namespace TestRunning
             
             Assert.False(MainMethods.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
             Assert.True(MainMethods.EvaluateExpression(eventsOnce, templateTwo.GetExpression()));
+        }
+
+        [Fact]
+        public void ExporTest()
+        {
+            var coexistenceP = new ParametrizedTemplate(TemplateInstanceType.Coexistence, new List<ITemplate>()
+            {
+                new Coexistence("A", "B"),
+                new Coexistence("B", "C")
+            });
+            var notCoexistenceP = new ParametrizedTemplate(TemplateInstanceType.NotCoexistence, new List<ITemplate>()
+            {
+                new NotCoexistence("A", "B"),
+                new NotCoexistence("B", "C")
+            });
+            var responseP = new ParametrizedTemplate(TemplateInstanceType.Response, new List<ITemplate>()
+            {
+                new Response("A", "B"),
+                new Response("B", "C")
+            });
+            DeclareModel model = new DeclareModel("Default name", new()
+            {
+                coexistenceP,
+                notCoexistenceP,
+                responseP
+            });
+
+            JsonModelExporter exporter = new JsonModelExporter();
+            string json = exporter.ExportModel(model);
+            var m = importer.LoadModelFromJsonString(json);
+            
+            Assert.Equal(model.Name, m.Name);
+            Assert.Equal(model.Constraints.Count, m.Constraints.Count);
+            for (int i = 0;  i < model.Constraints.Count;  i++)
+            {
+                ParametrizedTemplate c1 = model.Constraints[i];
+                ParametrizedTemplate c2 = m.Constraints[i];
+                
+                Assert.Equal(c1.Poe, c2.Poe);
+                Assert.Equal(c1.Poi, c2.Poi);
+                Assert.Equal(c1.CheckVacuously, c2.CheckVacuously);
+                Assert.Equal(c1.TemplateDescription.TemplateType, c2.TemplateDescription.TemplateType);
+                
+                Assert.Equal(c1.TemplateInstances.Count, c1.TemplateInstances.Count);
+                for (int j = 0; j < c1.TemplateInstances.Count; j++)
+                {
+                    ITemplate t1 = c1.TemplateInstances[j];
+                    ITemplate t2 = c2.TemplateInstances[j];
+                    
+                    Assert.Equal(t1.GetExpression().ToString(), t2.GetExpression().ToString());
+                }
+            }
         }
 
     }

@@ -1,5 +1,6 @@
 @page "/Discover"
 @using DeclarativePM.UI.Data
+@using DeclarativePM.Lib.Enums
 @implements IDisposable
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
@@ -49,7 +50,9 @@ else if (configureTemplates)
                                            Minimum=0 Maximum=100>
                     </MatNumericUpDownField>
                     <MatTooltip Tooltip="Templates which were not activated will not be included in the resulting model">
-                        <MatCheckbox @bind-Value=@tit.CheckVacuously Label="Check Vacuously"></MatCheckbox>
+                        <MatCheckbox @bind-Value=@tit.CheckVacuously Label="Check Vacuously" 
+                                      Disabled="@(tit.TemplateDescription.TemplateParametersType == TemplateTypes.UniTemplate)"
+                                      RefBack="@context"></MatCheckbox>
                     </MatTooltip>
                 </MatExpansionPanelDetails>
             </MatExpansionPanel>

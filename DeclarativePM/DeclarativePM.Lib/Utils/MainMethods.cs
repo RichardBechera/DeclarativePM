@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
@@ -93,14 +94,15 @@ namespace DeclarativePM.Lib.Utils
         }
 
         public static bool EvaluateTemplate(List<Event> events, ITemplate template,
-            bool preprocessing = true, bool vacuously = false)
+            bool preprocessing = true)
         {
-            LtlExpression expr;
-            if (template is IBiTemplate biTemplate)
-                expr = biTemplate.GetWitnessExpression();
-            else
-                expr = template.GetExpression();
-            
+            LtlExpression expr = template switch
+            {
+                AlternateResponse ar => ar.GetFinishingExpression(),
+                AlternateSuccession asu => asu.GetFinishingExpression(),
+                _ => template.GetExpression()
+            };
+
             if (expr is null)
                 return false;
             if(preprocessing)
@@ -182,7 +184,7 @@ namespace DeclarativePM.Lib.Utils
                 .ToDictionary(x => x, y => LocalLikelihoodNode(y, na, tree.Constraint));
         }
 
-        private static double LocalLikelihoodNode(ActivationNode node, int na, IBiTemplate constraint)
+        private static double LocalLikelihoodNode(ActivationNode node, int na, BiTemplate constraint)
             => node.Subtrace.Count(constraint.IsActivation) / (double)na;
 
         //TODO
@@ -191,9 +193,9 @@ namespace DeclarativePM.Lib.Utils
         {
             double result = 0;
             List<Event> kOfConflictActivations = GetConflict(tree);
-            List<IBiTemplate> constraints = model
+            List<BiTemplate> constraints = model
                 .Where(x => x.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
-                .SelectMany(x => x.TemplateInstances).Cast<IBiTemplate>().ToList();
+                .SelectMany(x => x.TemplateInstances).Cast<BiTemplate>().ToList();
             foreach (Event resolution in kOfConflictActivations)
             {
                 int gama = 0;
@@ -217,15 +219,12 @@ namespace DeclarativePM.Lib.Utils
                 SimpleTemplateEvaluation temp = new(template);
                 foreach (var constraint in template.TemplateInstances)
                 {
-                    if (!EvaluateExpression(trace, constraint.GetExpression()))
-                    {
                         temp.constraints.Add(constraint);
                         if (template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                         {
-                            ActivationBinaryTree tree = ActivationTreeBuilder.BuildTree(trace, (IBiTemplate)constraint);
+                            ActivationBinaryTree tree = ActivationTreeBuilder.BuildTree(trace, (BiTemplate)constraint);
                             temp.evals.Add(constraint, GetEventActivationTypes(tree, trace));
                         }
-                    }
                 }
                 evaluations.Add(temp);
             }

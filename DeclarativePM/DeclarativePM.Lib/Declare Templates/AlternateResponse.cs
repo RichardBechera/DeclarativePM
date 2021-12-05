@@ -10,18 +10,13 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// Each time A occurs, then B occurs afterwards, before A recurs
     /// subsequent(A => next(!A U B))
     /// </summary>
-    public struct AlternateResponse: IBiTemplate
+    public class AlternateResponse: BiTemplate
     {
-        public readonly string LogEventA;
-        public readonly string LogEventB;
-        
-        public AlternateResponse(string logEventA, string logEventB)
+        public AlternateResponse(string logEventA, string logEventB): base(logEventA, logEventB)
         {
-            LogEventA = logEventA;
-            LogEventB = logEventB;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //subsequent(A => next(!A U B))
             return new LtlExpression(Operators.Subsequent, new LtlExpression(Operators.Imply,
@@ -31,20 +26,24 @@ namespace DeclarativePM.Lib.Declare_Templates
                         new LtlExpression(LogEventB)))));
         }
 
-        public bool IsActivation(Event e)
+        public LtlExpression GetFinishingExpression()
+        {
+            //subsequent(A => next(!A U B) && eventual(B))
+            LtlExpression expr = GetExpression();
+            expr.InnerLeft.InnerRight = new LtlExpression(Operators.And, expr.InnerLeft.InnerRight,
+                new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB)));
+
+            return expr;
+        }
+
+        public override bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA);
         
-        public LtlExpression GetVacuityCondition()
+        public override LtlExpression GetVacuityCondition()
         {
             //eventual(A)
             return new LtlExpression(Operators.Eventual, new LtlExpression(LogEventA));
         }
-        
-        public string GetEventA()
-            => LogEventA;
-
-        public string GetEventB()
-            => LogEventB;
 
         public override string ToString() 
             => $"AlternateResponse(\"{LogEventA}\", \"{LogEventB}\")";

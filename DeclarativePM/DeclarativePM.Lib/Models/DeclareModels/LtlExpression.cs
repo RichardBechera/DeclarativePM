@@ -29,8 +29,8 @@ namespace DeclarativePM.Lib.Models.DeclareModels
 
         public Operators Operator { get; }
 
-        public LtlExpression InnerLeft { get; }
-        public LtlExpression InnerRight { get; }
+        public LtlExpression InnerLeft { get; set; }
+        public LtlExpression InnerRight { get; set; }
         
         public string Atom { get; }
 

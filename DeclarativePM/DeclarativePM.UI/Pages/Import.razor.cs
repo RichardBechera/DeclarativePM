@@ -42,12 +42,13 @@ namespace DeclarativePM.UI.Pages
             try
             {
                 _stream = new MemoryStream();
+                Importer importer = new Importer();
 
                 await file.WriteToStreamAsync(_stream);
                 _stream.Seek(0, SeekOrigin.Begin);
                 GetUploadContent();
                 _stream.Seek(0, SeekOrigin.Begin);
-                _imported = ImportCsvLogs.LoadCsv(_stream);
+                _imported = importer.LoadCsv(_stream);
                 headersDict = _imported.Headers.ToDictionary(x => x, HeaderTypeSet);
 
                 uploadMode = true;

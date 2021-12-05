@@ -10,40 +10,29 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// A occurs if and only if B occurs after A
     /// response(A, B) && precedence(A, B)
     /// </summary>
-    public struct Succession: IBiTemplate
+    public class Succession: BiTemplate
     {
-        public readonly string LogEventA;
-        public readonly string LogEventB;
-        
-        public Succession(string logEventA, string logEventB)
+        public Succession(string logEventA, string logEventB): base(logEventA, logEventB)
         {
-            LogEventA = logEventA;
-            LogEventB = logEventB;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //response(A, B) && precedence(A, B)
             return new LtlExpression(Operators.And, new Response(LogEventA, LogEventB).GetExpression(),
                 new Precedence(LogEventA, LogEventB).GetExpression());
         }
         
-        public bool IsActivation(Event e)
+        public override bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
         
-        public LtlExpression GetVacuityCondition()
+        public override LtlExpression GetVacuityCondition()
         {
             //eventual(A) || eventual(B)
             return new LtlExpression(Operators.Or, 
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventA)),
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB)));
         }
-        
-        public string GetEventA()
-            => LogEventA;
-
-        public string GetEventB()
-            => LogEventB;
         
         public override string ToString() 
             => $"Succession(\"{LogEventA}\", \"{LogEventB}\")";

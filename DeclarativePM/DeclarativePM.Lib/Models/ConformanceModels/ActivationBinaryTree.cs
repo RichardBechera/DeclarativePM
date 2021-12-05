@@ -7,9 +7,9 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
     {
         public ActivationNode Root { get; set; }
         public List<ActivationNode> Leaves { get; }
-        public IBiTemplate Constraint { get; }
+        public BiTemplate Constraint { get; }
 
-        public ActivationBinaryTree(IBiTemplate constraint)
+        public ActivationBinaryTree(BiTemplate constraint)
         {
             Root = new();
             Leaves = new() {Root};

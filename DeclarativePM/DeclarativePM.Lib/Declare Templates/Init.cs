@@ -8,23 +8,19 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// A is the first to occur
     /// A
     /// </summary>
-    public struct Init: IUniTemplate
+    public class Init: UniTemplate
     {
-        public readonly string LogEvent;
-        
-        public Init(string logEvent)
+
+
+        public Init(string logEvent) : base(logEvent)
         {
-            LogEvent = logEvent;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //A
             return new LtlExpression(LogEvent);
         }
-
-        public string GetEventA()
-            => LogEvent;
 
         public override string ToString() 
             => $"Init(\"{LogEvent}\")";

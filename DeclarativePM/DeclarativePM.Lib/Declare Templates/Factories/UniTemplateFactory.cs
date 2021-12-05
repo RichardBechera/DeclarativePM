@@ -6,7 +6,7 @@ namespace DeclarativePM.Lib.Declare_Templates.Factories
 {
     public static class UniTemplateFactory
     {
-        public static IUniTemplate GetInstance(TemplateInstanceType type, string evnt)
+        public static UniTemplate GetInstance(TemplateInstanceType type, string evnt)
         {
             switch (type)
             {

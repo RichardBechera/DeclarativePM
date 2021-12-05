@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
+using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.ConformanceModels;
+using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Utils
 {
     public static class ActivationTreeBuilder
     {
-        public static ActivationBinaryTree BuildTree(List<Event> trace, IBiTemplate constraint)
+        public static ActivationBinaryTree BuildTree(List<Event> trace, BiTemplate constraint)
         {
             ActivationBinaryTree tree = new(constraint);
             int id = 1;
@@ -44,12 +46,19 @@ namespace DeclarativePM.Lib.Utils
             return tree;
         }
 
-        private static void AssignLeavesStatus(List<ActivationNode> nodes, IBiTemplate constraint)
+        private static void AssignLeavesStatus(List<ActivationNode> nodes, BiTemplate constraint)
         {
+            LtlExpression expr;
             foreach (var leaf in nodes)
             {
+                if (constraint is AlternateSuccession asu)
+                    expr = asu.GetFinishingExpression();
+                else if (constraint is AlternateResponse ar)
+                    expr = ar.GetFinishingExpression();
+                else
+                    expr = constraint.GetExpression();
                 leaf.IsDead = !MainMethods
-                    .EvaluateExpression(leaf.Subtrace, constraint.GetExpression());
+                    .EvaluateExpression(leaf.Subtrace, expr);
             }
 
             List<ActivationNode> maxFulfillingSubtraces = GetMaximalFulfillingSubtraces(nodes);

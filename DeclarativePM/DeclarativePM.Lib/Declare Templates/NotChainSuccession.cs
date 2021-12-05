@@ -10,18 +10,13 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// A and B occur if and only if the latter does not immediately follow the former 
     /// subsequent(A => next(!B))
     /// </summary>
-    public struct NotChainSuccession: IBiTemplate
+    public class NotChainSuccession: BiTemplate
     {
-        public readonly string LogEventA;
-        public readonly string LogEventB;
-        
-        public NotChainSuccession(string logEventA, string logEventB)
+        public NotChainSuccession(string logEventA, string logEventB): base(logEventA, logEventB)
         {
-            LogEventA = logEventA;
-            LogEventB = logEventB;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
             //subsequent(A => next(!B))
             return new LtlExpression(Operators.Subsequent, 
@@ -32,22 +27,16 @@ namespace DeclarativePM.Lib.Declare_Templates
                             new LtlExpression(LogEventB)))));
         }
         
-        public bool IsActivation(Event e)
+        public override bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
         
-        public LtlExpression GetVacuityCondition()
+        public override LtlExpression GetVacuityCondition()
         {
             //eventual(A) || eventual(B)
             return new LtlExpression(Operators.Or, 
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventA)),
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB)));
         }
-        
-        public string GetEventA()
-            => LogEventA;
-
-        public string GetEventB()
-            => LogEventB;
         
         public override string ToString() 
             => $"NotChainSuccession(\"{LogEventA}\", \"{LogEventB}\")";

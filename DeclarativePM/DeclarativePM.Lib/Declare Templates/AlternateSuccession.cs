@@ -10,40 +10,36 @@ namespace DeclarativePM.Lib.Declare_Templates
     /// A and B occur if and only if the latter follows the former, and they alternate each other
     /// alternateResponse(A, B) && AlternatePrecedence(A, B)
     /// </summary>
-    public struct AlternateSuccession: IBiTemplate
+    public class AlternateSuccession: BiTemplate
     {
-        public readonly string LogEventA;
-        public readonly string LogEventB;
-        
-        public AlternateSuccession(string logEventA, string logEventB)
+        public AlternateSuccession(string logEventA, string logEventB): base(logEventA, logEventB)
         {
-            LogEventA = logEventA;
-            LogEventB = logEventB;
         }
 
-        public LtlExpression GetExpression()
+        public override LtlExpression GetExpression()
         {
-            //alternateResponse(A, B) && AlternatePrecedence(A, B)
+            //AlternateResponse(A, B) && AlternatePrecedence(A, B)
             return new LtlExpression(Operators.And, new AlternateResponse(LogEventA, LogEventB).GetExpression(),
                 new AlternatePrecedence(LogEventA, LogEventB).GetExpression());
         }
         
-        public bool IsActivation(Event e)
+        public LtlExpression GetFinishingExpression()
+        {
+            //AlternateResponse(A, B) && AlternatePrecedence(A, B)
+            return new LtlExpression(Operators.And, new AlternateResponse(LogEventA, LogEventB).GetFinishingExpression(),
+                new AlternatePrecedence(LogEventA, LogEventB).GetExpression());
+        }
+        
+        public override bool IsActivation(Event e)
             => e.Activity.Equals(LogEventA) || e.Activity.Equals(LogEventB);
         
-        public LtlExpression GetVacuityCondition()
+        public override LtlExpression GetVacuityCondition()
         {
             //eventual(A) || eventual(B)
             return new LtlExpression(Operators.Or, 
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventA)),
                 new LtlExpression(Operators.Eventual, new LtlExpression(LogEventB)));
         }
-        
-        public string GetEventA()
-            => LogEventA;
-
-        public string GetEventB()
-            => LogEventB;
         
         public override string ToString() 
             => $"AlternateSuccession(\"{LogEventA}\", \"{LogEventB}\")";

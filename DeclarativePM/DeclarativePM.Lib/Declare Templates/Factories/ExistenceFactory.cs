@@ -6,7 +6,7 @@ namespace DeclarativePM.Lib.Declare_Templates.Factories
 {
     public static class ExistenceFactory
     {
-        public static IExistenceTemplate GetInstance(TemplateInstanceType type, int amount, string evnt)
+        public static ExistenceTemplate GetInstance(TemplateInstanceType type, int amount, string evnt)
         {
             switch (type)
             {

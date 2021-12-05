@@ -45,10 +45,11 @@ namespace DeclarativePM.Lib.Utils
             return res;
         }
 
-        public static void CutIntoRange(ref decimal p, decimal min = 0, decimal max = 100)
+        public static decimal CutIntoRange(decimal p, decimal min = 0, decimal max = 100)
         {
             p = p > max ? max : p;
             p = p < min ? min : p;
+            return p;
         }
         
         public static List<Event> PreprocessTraceForEvaluation(ITemplate template, List<Event> events)

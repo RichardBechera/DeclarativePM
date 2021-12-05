@@ -1,20 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Utils;
+using Newtonsoft.Json;
 
 namespace DeclarativePM.Lib.Models.DeclareModels
 {
     public class ParametrizedTemplate
     {
+        [JsonIgnore]
         public List<ITemplate> TemplateInstances { get; set; }
         public decimal Poe { get; set; }
         public decimal Poi { get; set; }
 
         public bool CheckVacuously { get; set; }
+        [JsonIgnore]
+        public TemplateDescription TemplateDescription { get; set; }
 
-        public TemplateDescription TemplateDescription { get; }
+        [JsonConstructor]
+        public ParametrizedTemplate(List<ITemplate> templateInstances, TemplateInstanceType templateType,
+            decimal poe = 100, decimal poi = 100, bool checkVacuously = false)
+        {
+            TemplateInstances = templateInstances;
+            Poe = UtilMethods.CutIntoRange(poe, 1, 100);
+            Poi = UtilMethods.CutIntoRange(poi, 1, 100);
+            CheckVacuously = checkVacuously;
+            TemplateDescription = templateType.GetTemplateDescription();
+            //ITemplate temp = TemplateInstances.FirstOrDefault() ?? new Existence(0, "");
+            //DescriptionFromType(temp.GetType());
+        }
 
         public ParametrizedTemplate(Type template, decimal poe = 100, decimal poi = 100) : this(template, new(), poe, poi)
         {
@@ -22,15 +39,10 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         
         public ParametrizedTemplate(Type template, List<ITemplate> templateInstances, decimal poe = 100, decimal poi = 100)
         {
-            if (!(template.IsValueType && template.IsAssignableTo(typeof(ITemplate))))
-                throw new ArgumentException("Type has to be ValueType implementing ITemplate interface");
-            var temp = template.GetPossibleTemplateType();
-            TemplateDescription = temp.GetTemplateDescription();
+            DescriptionFromType(template);
             TemplateInstances = templateInstances;
-            UtilMethods.CutIntoRange(ref poe, 1, 100);
-            Poe = poe;
-            UtilMethods.CutIntoRange(ref poi, 1, 100);
-            Poi = poi;
+            Poe = UtilMethods.CutIntoRange(poe, 1, 100);
+            Poi = UtilMethods.CutIntoRange(poi, 1, 100);
         }
 
         public ParametrizedTemplate(TemplateInstanceType template, decimal poe = 100, decimal poi = 100) : this(
@@ -43,10 +55,8 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         {
             TemplateDescription = template.GetTemplateDescription();
             TemplateInstances = templateInstances;
-            UtilMethods.CutIntoRange(ref poe, 1, 100);
-            Poe = poe;
-            UtilMethods.CutIntoRange(ref poi, 1, 100);
-            Poi = poi;
+            Poe = UtilMethods.CutIntoRange(poe, 1, 100);
+            Poi = UtilMethods.CutIntoRange(poi, 1, 100);
         }
 
         public ParametrizedTemplate(ParametrizedTemplate template, List<ITemplate> templateInstances)
@@ -56,6 +66,16 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             Poe = template.Poe;
             Poi = template.Poi;
         }
+        
+
+        private void DescriptionFromType(Type template)
+        {
+            if (!template.IsAssignableTo(typeof(ITemplate)))
+                throw new ArgumentException("Type has to be ValueType implementing ITemplate interface");
+            var temp = template.GetPossibleTemplateType();
+            TemplateDescription = temp.GetTemplateDescription();
+        }
+        
 
         public bool OrderMatters()
         {

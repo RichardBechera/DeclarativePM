@@ -142,15 +142,15 @@ namespace DeclarativePM.UI.Pages
             switch(current.TemplateDescription.TemplateParametersType)
             {
                 case TemplateTypes.Existence:
-                    IExistenceTemplate temp1 = (IExistenceTemplate) SelectedTemplateInstance;
+                    ExistenceTemplate temp1 = (ExistenceTemplate) SelectedTemplateInstance;
                     return new(temp1.GetEvent(), temp1.GetCount(), 
                         current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
                 case TemplateTypes.BiTemplate:
-                    IBiTemplate temp2 = (IBiTemplate) SelectedTemplateInstance;
+                    BiTemplate temp2 = (BiTemplate) SelectedTemplateInstance;
                     return new(temp2.GetEventA(), temp2.GetEventB(),
                         current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
                 case TemplateTypes.UniTemplate:
-                    IUniTemplate temp3 = (IUniTemplate) SelectedTemplateInstance;
+                    UniTemplate temp3 = (UniTemplate) SelectedTemplateInstance;
                     return new(temp3.GetEventA(), current.TemplateDescription.TemplateType,
                         current.TemplateDescription.TemplateParametersType);
                 default:
@@ -174,11 +174,11 @@ namespace DeclarativePM.UI.Pages
             return current.TemplateDescription.TemplateParametersType switch
             {
                 TemplateTypes.Existence =>
-                    ((IExistenceTemplate) template).GetEvent(),
+                    ((ExistenceTemplate) template).GetEvent(),
                 TemplateTypes.BiTemplate =>
-                    ((IBiTemplate) template).GetEventA(),
+                    ((BiTemplate) template).GetEventA(),
                 TemplateTypes.UniTemplate =>
-                    ((IUniTemplate) template).GetEventA(),
+                    ((UniTemplate) template).GetEventA(),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
@@ -190,9 +190,9 @@ namespace DeclarativePM.UI.Pages
             return current.TemplateDescription.TemplateParametersType switch
             {
                 TemplateTypes.Existence => 
-                    ((IExistenceTemplate) template).GetCount().ToString(),
+                    ((ExistenceTemplate) template).GetCount().ToString(),
                 TemplateTypes.BiTemplate => 
-                    ((IBiTemplate) template).GetEventB(),
+                    ((BiTemplate) template).GetEventB(),
                 TemplateTypes.UniTemplate => "",
                 _ => throw new ArgumentOutOfRangeException()
             };
