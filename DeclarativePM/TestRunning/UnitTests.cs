@@ -902,6 +902,9 @@ namespace TestRunning
                 notCoexistenceP,
                 responseP
             });
+            responseP.OptionalConstraints.Add(responseP.TemplateInstances[0]);
+            coexistenceP.OptionalConstraints.Add(coexistenceP.TemplateInstances[0]);
+            coexistenceP.OptionalConstraints.Add(coexistenceP.TemplateInstances[1]);
 
             Exporter exporter = new Exporter();
             string json = exporter.ExportModel(model);
@@ -927,6 +930,15 @@ namespace TestRunning
                 {
                     ITemplate t1 = c1.TemplateInstances[j];
                     ITemplate t2 = c2.TemplateInstances[j];
+                    
+                    Assert.Equal(t1.GetExpression().ToString(), t2.GetExpression().ToString());
+                }
+                
+                Assert.Equal(c1.OptionalConstraints.Count, c1.OptionalConstraints.Count);
+                for (int j = 0; j < c1.OptionalConstraints.Count; j++)
+                {
+                    ITemplate t1 = c1.OptionalConstraints[j];
+                    ITemplate t2 = c2.OptionalConstraints[j];
                     
                     Assert.Equal(t1.GetExpression().ToString(), t2.GetExpression().ToString());
                 }

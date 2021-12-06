@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
@@ -10,19 +11,33 @@ namespace DeclarativePM.Lib.IO
     public class TemplateConverter: JsonConverter<ITemplate>
     {
         private readonly TemplateInstanceType _type = TemplateInstanceType.None;
+        private readonly List<ITemplate> _optionals;
 
         public TemplateConverter(TemplateInstanceType type)
         {
             _type = type;
         }
 
-        public TemplateConverter()
+        public TemplateConverter(List<ITemplate> optionals)
         {
+            _optionals = optionals;
         }
 
         public override void WriteJson(JsonWriter writer, ITemplate value, JsonSerializer serializer)
         {
-            JObject.FromObject(value).WriteTo(writer);
+            var t = JObject.FromObject(value);
+
+            if (t.Type != JTokenType.Object)
+            {
+                t.WriteTo(writer);
+                return;
+            }
+            
+            var jo = (JObject) t;
+            jo.Add(new JProperty("Optional", _optionals.Contains(value)));
+            
+            
+            jo.WriteTo(writer);
         }
 
         public override ITemplate ReadJson(JsonReader reader, Type objectType, ITemplate existingValue, bool hasExistingValue,

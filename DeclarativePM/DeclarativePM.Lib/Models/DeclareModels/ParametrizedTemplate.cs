@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Utils;
@@ -13,6 +11,8 @@ namespace DeclarativePM.Lib.Models.DeclareModels
     {
         [JsonIgnore]
         public List<ITemplate> TemplateInstances { get; set; }
+
+        [JsonIgnore] public List<ITemplate> OptionalConstraints { get; set; } = new();
         public decimal Poe { get; set; }
         public decimal Poi { get; set; }
 
@@ -29,8 +29,6 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             Poi = UtilMethods.CutIntoRange(poi, 1, 100);
             CheckVacuously = checkVacuously;
             TemplateDescription = templateType.GetTemplateDescription();
-            //ITemplate temp = TemplateInstances.FirstOrDefault() ?? new Existence(0, "");
-            //DescriptionFromType(temp.GetType());
         }
 
         public ParametrizedTemplate(Type template, decimal poe = 100, decimal poi = 100) : this(template, new(), poe, poi)
@@ -81,6 +79,14 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         {
             return TemplateDescription.TemplateType != TemplateInstanceType.Coexistence 
                    && TemplateDescription.TemplateType != TemplateInstanceType.NotCoexistence;
+        }
+
+        public void AddOptional(ITemplate template)
+        {
+            if(!OptionalConstraints.Contains(template))
+                OptionalConstraints.Add(template);
+            if(!TemplateInstances.Contains(template))
+                TemplateInstances.Add(template);
         }
     }
 }
