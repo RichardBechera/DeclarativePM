@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Enums;
+using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;
@@ -57,11 +58,11 @@ namespace DeclarativePM.UI.Utils
             return from.Contains(current) ? "background: #ffd5ff" : "background: #f3f3f3";
         }
 
-        public static string GetTreeBackground(string current, List<SimpleTemplateEvaluation> evaluations)
+        public static string GetTreeBackground(string current, List<TemplateEvaluation> evaluations)
         {
             if (evaluations is null)
                 return "background: #ffffff";
-            if (evaluations.Any(x => x.constraints.Any(y => y.ToString().Equals(current))))
+            if (evaluations.Any(x => x.ConstraintEvaluations.Any(y => y.Constraint.ToString().Equals(current))))
             {
                 return "background: #ffd5ff";
             }

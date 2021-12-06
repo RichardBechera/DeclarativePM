@@ -6,6 +6,7 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
 {
     public struct Healthiness
     {
+        //TODO descriptions
         public double ActivationSparsity { get; set; }
         public double FulfillmentRation { get; set; }
         public double ViolationRation { get; set; }

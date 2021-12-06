@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
@@ -27,10 +28,10 @@ namespace DeclarativePM.UI.Pages
         public bool seeActivities = false;
         public List<string> activities = new();
         public Event CurrentTraceEvent;
-        private List<SimpleTemplateEvaluation> evaluations;
+        private TraceEvaluation _traceEvaluation;
         private bool showResults = false;
-        private SimpleTemplateEvaluation _evaluation;
-        private ITemplate _constraint;
+        private TemplateEvaluation _templateEvaluation;
+        private ConstraintEvaluation _constraintEvaluation;
         private MatChip selectedChip;
         public async Task AddCases()
         {
@@ -204,17 +205,17 @@ namespace DeclarativePM.UI.Pages
 
         public async Task EvaluateWhole()
         {
-            evaluations = MainMethods.EvaluateTrace(_declareModel, SelectedTrace.Events);
+            _traceEvaluation = MainMethods.EvaluateTrace(_declareModel, SelectedTrace.Events);
             showResults = true;
-            _evaluation = evaluations.First();
+            _templateEvaluation = _traceEvaluation.TemplateEvaluations.First();
             await InvokeAsync(StateHasChanged);
         }
         
         public string GetConformanceChipBackground(Event e)
         {
-            EventActivationType type = _evaluation.evals[_constraint][e];
+            WrappedEventActivation type = _constraintEvaluation.Activations.Find(w => w.Event == e);
 
-            return type switch
+            return type?.Activation switch
             {
                 EventActivationType.None => "background: #d9d9d9",
                 EventActivationType.Fulfilment => "background: #ff66ff",
@@ -222,6 +223,12 @@ namespace DeclarativePM.UI.Pages
                 EventActivationType.Violation => "background: #ff0000",
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+
+        public void ConstraintEvaluationChanged(object o)
+        {
+            _constraintEvaluation = (ConstraintEvaluation) o;
+            StateHasChanged();
         }
     }
 }

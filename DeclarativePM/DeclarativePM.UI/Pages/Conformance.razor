@@ -4,6 +4,7 @@
 @using DeclarativePM.UI.Enums
 @using DeclarativePM.UI.Utils
 @using DeclarativePM.Lib.Enums
+@using DeclarativePM.Lib.Models.ConformanceModels
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
 
@@ -65,19 +66,19 @@
                 if (showResults)
                 {
 
-                    <MatSelectValue @bind-Value="_evaluation" Items="@evaluations" ValueSelector="@(i => i)">
+                    <MatSelectValue @bind-Value="_templateEvaluation" Items="@_traceEvaluation.TemplateEvaluations" ValueSelector="@(i => i)">
                         <ItemTemplate>
                             <span>@context.Template.TemplateDescription.TemplateType.ToString()</span>
                         </ItemTemplate>
                     </MatSelectValue>
-                    if (_evaluation is not null && _evaluation.Template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
+                    if (_templateEvaluation is not null && _templateEvaluation.Template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                     {
-                        <MatSelectValue @bind-Value="_constraint" Items="@_evaluation.constraints" ValueSelector="@(i => i)">
+                        <MatSelectValue Items="@_templateEvaluation.ConstraintEvaluations" ValueSelector="@(i => i)" ValueChanged="@((ConstraintEvaluation o) => ConstraintEvaluationChanged(o))">
                             <ItemTemplate>
-                                <span>@context.ToString()</span>
+                                <span>@context.Constraint.ToString()</span>
                             </ItemTemplate>
                         </MatSelectValue>
-                        if (_constraint is not null && _evaluation.constraints.Contains(_constraint))
+                        if (_constraintEvaluation is not null)
                         {
                             <MatChipSet Choice="true" @bind-SelectedChip="selectedChip">
                                 @foreach (var e in SelectedTrace.Events)
@@ -187,7 +188,7 @@
                              RootNode="@TreeNodeModel"
                              GetChildNodesCallback="@(n => n.Nodes)">
                     <NodeTemplate>
-                        <div Style="@Utilities.GetTreeBackground(context.Name, evaluations)">
+                        <div Style="@Utilities.GetTreeBackground(context.Name, _traceEvaluation?.TemplateEvaluations)">
                             @context.Name
                         </div>
                     </NodeTemplate>

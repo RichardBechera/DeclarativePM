@@ -211,48 +211,60 @@ namespace DeclarativePM.Lib.Utils
             return result / kOfConflictActivations.Count;
         }
 
-        public static List<SimpleTemplateEvaluation> EvaluateTrace(DeclareModel model, List<Event> trace)
+        public static TraceEvaluation EvaluateTrace(DeclareModel model, List<Event> trace)
         {
-            List<SimpleTemplateEvaluation> evaluations = new();
+            List<TemplateEvaluation> templateEvaluations = new List<TemplateEvaluation>();
+            TraceEvaluation evaluation = new(trace, templateEvaluations);
+            
             foreach (var template in model.Constraints)
             {
-                SimpleTemplateEvaluation temp = new(template);
+                if (template.TemplateDescription.TemplateParametersType != TemplateTypes.BiTemplate)
+                    continue;
+                
+                List<ConstraintEvaluation> constraintEvaluations = new List<ConstraintEvaluation>();
+                TemplateEvaluation temp = new(constraintEvaluations, template);
                 foreach (var constraint in template.TemplateInstances)
                 {
-                        temp.constraints.Add(constraint);
-                        if (template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
-                        {
-                            ActivationBinaryTree tree = ActivationTreeBuilder.BuildTree(trace, (BiTemplate)constraint);
-                            temp.evals.Add(constraint, GetEventActivationTypes(tree, trace));
-                        }
+                    ActivationBinaryTree tree = ActivationTreeBuilder.BuildTree(trace, (BiTemplate)constraint);
+                    List<Event> f = GetFulfillment(tree);
+                    List<Event> v = GetViolation(tree);
+                    List<Event> c = GetConflict(tree, v, f);
+                    List<WrappedEventActivation> eventActivations =
+                        GetEventActivationTypes(tree, trace, f, c, v);
+                    Healthiness healthiness = new Healthiness(tree, v.Count, f.Count, c.Count);
+
+                    ConstraintEvaluation constraintEvaluation =
+                        new ConstraintEvaluation(constraint, healthiness, eventActivations);
+                    constraintEvaluations.Add(constraintEvaluation);
                 }
-                evaluations.Add(temp);
+                templateEvaluations.Add(temp);
             }
 
-            return evaluations;
+            return evaluation;
         }
 
-        private static Dictionary<Event, EventActivationType> GetEventActivationTypes(ActivationBinaryTree tree, List<Event> events)
+        private static List<WrappedEventActivation> GetEventActivationTypes(ActivationBinaryTree tree, List<Event> events,
+            List<Event> fulfilment, List<Event> conflict, List<Event> violation)
         {
-            List<Event> f = GetFulfillment(tree);
-            List<Event> v = GetViolation(tree);
-            List<Event> c = GetConflict(tree, v, f);
+            fulfilment ??= GetFulfillment(tree);
+            violation ??= GetViolation(tree);
+            conflict ??= GetConflict(tree, violation, fulfilment);
             
 
-            Dictionary<Event, EventActivationType> dic = new();
+            List<WrappedEventActivation> lst = new();
             foreach (var e in events)
             {
-                if (f.Contains(e, new EventEqualityComparer()))
-                    dic.Add(e, EventActivationType.Fulfilment);
-                else if (c.Contains(e, new EventEqualityComparer()))
-                    dic.Add(e, EventActivationType.Conflict);
-                else if (v.Contains(e, new EventEqualityComparer()))
-                    dic.Add(e, EventActivationType.Violation);
+                if (fulfilment.Contains(e, new EventEqualityComparer()))
+                    lst.Add(new(e, EventActivationType.Fulfilment));
+                else if (conflict.Contains(e, new EventEqualityComparer()))
+                    lst.Add(new(e, EventActivationType.Conflict));
+                else if (violation.Contains(e, new EventEqualityComparer()))
+                    lst.Add(new(e, EventActivationType.Violation));
                 else
-                    dic.Add(e, EventActivationType.None);
+                    lst.Add(new(e, EventActivationType.None));
             }
 
-            return dic;
+            return lst;
         }
         
         
