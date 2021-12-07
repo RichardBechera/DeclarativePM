@@ -52,7 +52,7 @@ namespace DeclarativePM.Lib.Models.LogModels
         //TODO Add() and AddRange()
         
 
-        public void ChooseTokens(string activity, string caseId, string timeStamp = null, params string[] resources)
+        public void ChooseTokens(string activity = null, string caseId = null, string timeStamp = null, params string[] resources)
         {
             if ((timeStamp is not null && !Headers.Contains(timeStamp)) ||
                 !Headers.Contains(activity) || !Headers.Contains(caseId) ||
@@ -74,6 +74,47 @@ namespace DeclarativePM.Lib.Models.LogModels
             }*/
             //TODO RESET
 
+        }
+
+        public void ChangeActivity(string activity)
+        {
+            if (!Headers.Contains(activity))
+                throw new Exception($"Header {activity} does not exist in the current log");
+            
+            _activity = Array.IndexOf(Headers, activity);
+            
+            if (_resources.Contains(_activity))
+                _resources.Remove(_activity);
+        }
+        
+        public void ChangeCase(string @case)
+        {
+            if (!Headers.Contains(@case))
+                throw new Exception($"Header {@case} does not exist in the current log");
+            
+            _caseId = Array.IndexOf(Headers, @case);
+            
+            if (_resources.Contains(_caseId))
+                _resources.Remove(_caseId);
+        }
+        
+        public void ChangeTimestamp(string timestamp)
+        {
+            if (!Headers.Contains(timestamp))
+                throw new Exception($"Header {timestamp} does not exist in the current log");
+            
+            _timeStamp = Array.IndexOf(Headers, timestamp);
+            
+            if (_resources.Contains(_timeStamp))
+                _resources.Remove(_timeStamp);
+        }
+
+        public void ChangeResource(string resource)
+        {
+            if (!Headers.Contains(resource))
+                throw new Exception($"Header {resource} does not exist in the current log");
+            
+            _resources.Add(Array.IndexOf(Headers, resource));
         }
 
         public EventLog BuildEventLog(string name = null)

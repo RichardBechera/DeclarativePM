@@ -4,6 +4,7 @@
     <MatTableHeader>
         <th>Add/Remove</th>
         <th>Case</th>
+        <th>Events</th>
     </MatTableHeader>
     <MatTableRow>
         <td style="@Utilities.GetExpansionBackground(context, SelectedTraces)">
@@ -16,6 +17,7 @@
                     <MatIconButton OnClick="@(() => RemoveTrace(context))" Icon="remove"/>                }
             </span>
         </td>
+        <td style="@Utilities.GetExpansionBackground(context, SelectedTraces)">@context.Case</td>
         <td style="@Utilities.GetExpansionBackground(context, SelectedTraces)">@context.Events.Count.ToString()</td>
     </MatTableRow>
 </MatTable>

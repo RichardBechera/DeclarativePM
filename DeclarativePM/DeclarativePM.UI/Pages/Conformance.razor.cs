@@ -46,6 +46,7 @@ namespace DeclarativePM.UI.Pages
                 SelectedTrace = new TraceDTO(new());
                 SelectedTrace.Case = String.Empty;
                 CurrentTraceEvent = new Event(activities?.FirstOrDefault(), SelectedTrace.Case);
+                seeActivities = true;
                 View = ConformancePageView.CreateTrace;
             }
             else if (result == "Import traces from log")
@@ -166,7 +167,20 @@ namespace DeclarativePM.UI.Pages
 
             await InvokeAsync(StateHasChanged);
         }
-        
+
+        public void CaseChanged(string s)
+        {
+            SelectedTrace.Case = s;
+            
+            //change this case in each event
+            foreach (var e in SelectedTrace.Events)
+            {
+                e.CaseId = s;
+            }
+            
+            StateHasChanged();
+        }
+
         public async Task SaveTrace()
         {
             View = ConformancePageView.Conformance;

@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using DeclarativePM.Lib.IO.Import;
 using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.UI.Enums;
 using MatBlazor;
-using Microsoft.AspNetCore.Components;
 
 namespace DeclarativePM.UI.Pages
 {
-    public partial class Import : ComponentBase
+    public partial class Import
     {
         EventLog selectedLog;
         private MemoryStream _stream;
@@ -64,8 +62,15 @@ namespace DeclarativePM.UI.Pages
             }
         }
 
-        private void ImportLog()
+        private async Task ImportLog()
         {
+            var act = headersDict.Where(x => x.Value == HeaderType.Activity);
+            var caseId = headersDict.Where(x => x.Value == HeaderType.Case);
+            if (!act.Any() || !caseId.Any())
+            {
+                await MatDialogService.AlertAsync("You need at least 1 activity and 1 case!");
+                return;
+            }
             StateContainer.EventLogs.Add(_imported.BuildEventLog(LogName));
             _stream.Dispose();
             file = null;
@@ -117,6 +122,25 @@ namespace DeclarativePM.UI.Pages
         public void EnumChanged(HeaderType o, string key)
         {
             headersDict[key] = o;
+            switch (o)
+            {
+                case HeaderType.Activity:
+                    _imported.ChangeActivity(key);
+                    break;
+                case HeaderType.Case:
+                    _imported.ChangeCase(key);
+                    break;
+                case HeaderType.Timestamp:
+                    _imported.ChangeTimestamp(key);
+                    break;
+                //TODO remove from log ?
+                case HeaderType.Unused:
+                case HeaderType.Resource:
+                    _imported.ChangeResource(key);
+                    break;
+            }
+            
+            StateHasChanged();
         }
 
         public async Task ChooseTokens()

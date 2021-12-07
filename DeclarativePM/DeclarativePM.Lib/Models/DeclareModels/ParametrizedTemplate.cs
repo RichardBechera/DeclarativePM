@@ -16,7 +16,7 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         public decimal Poe { get; set; }
         public decimal Poi { get; set; }
 
-        public bool CheckVacuously { get; set; }
+        public bool CheckVacuously { get; set; } = true;
         [JsonIgnore]
         public TemplateDescription TemplateDescription { get; set; }
 

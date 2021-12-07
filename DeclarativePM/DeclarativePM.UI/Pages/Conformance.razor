@@ -14,15 +14,22 @@
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
             <span>
-                <MatIconButton OnClick="AddCases" Icon="add"/>
-                <MatIconButton OnClick="@SeeActivities" Icon="remove_red_eye"/>
+                <MatButton OnClick="@SeeActivities" Icon="remove_red_eye" Label="@(seeActivities ? "See cases" : "See Activities")"/>
+                @if (seeActivities)
+                {
+                    <MatButton OnClick="AddActivity" Icon="add" Label="Add activity"/>
+                }
+                else
+                {
+                    <MatButton OnClick="AddCases" Icon="add" Label="Add trace"/>
+                }
             </span>
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5">
-            <MatIconButton OnClick="ShowCase" Icon="remove_red_eye"/>
+            <MatButton OnClick="ShowCase" Icon="remove_red_eye" Label="Show trace"/>
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
-            <MatIconButton OnClick="ChangeModel" Icon="import_export"/>
+            <MatButton OnClick="ChangeModel" Icon="import_export" Label="Add/Change model"/>
         </div>
     </div>
     <div class="mat-layout-grid-inner" style="height:60%; overflow:scroll">
@@ -42,7 +49,6 @@
             else
             {
                 <!-- ====ACTIVITIES=== -->
-                <MatIconButton OnClick="AddActivity" Icon="add"/>
                 <MatVirtualScroll style="height: auto" ItemType="string" Items="@activities" ItemHeight="50" Disabled="true">
                     <ItemTemplate>
                         <div>
@@ -98,12 +104,11 @@
             else if (View == ConformancePageView.CreateTrace)
             {
                 <h5>Create Trace</h5>
-                <MatTextField @bind-Value="@SelectedTrace.Case" Label="Trace case"/>
+                <MatTextField Label="Trace case" ValueChanged="@((string s) => CaseChanged(s))"/>
                 <MatSelectItem @bind-Value="@CurrentTraceEvent.Activity" Items="@activities" Label="Activity"/>
                 <MatDatePicker @bind-Value="@CurrentTraceEvent.TimeStamp" EnableTime="true" Enable24hours="true"/>
-                <MatIconButton OnClick="AddEvent" Icon="add">Add event</MatIconButton>
-                <MatIconButton OnClick="SaveTrace" Icon="save">Save trace</MatIconButton>
-                //TODO resouces => button on click generates DOM element, save into list, here in for render using ref=""
+                <MatButton OnClick="AddEvent" Icon="add" Label="Add event"/>
+                <MatButton OnClick="SaveTrace" Icon="save" Label="Save trace"/>
                         
                 <MatTable Items="SelectedTrace.Events" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
                     <MatTableHeader>

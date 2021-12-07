@@ -29,28 +29,38 @@ else if (selectParameters)
 else if (configureTemplates)
 {
     <h3>Templates configuration</h3>
+    <MatButton OnClick="BackConfigure">Back</MatButton>
+    <MatButton OnClick="ContinueConfigure">Continue</MatButton>
     <MatAccordion>
         @foreach (var tit in templates)
         {
-            <MatExpansionPanel>
+            <MatExpansionPanel Expanded="@true">
                 <MatExpansionPanelSummary>
                     <MatExpansionPanelHeader>
                         @tit.TemplateDescription.TemplateType.ToString()
                     </MatExpansionPanelHeader>
                 </MatExpansionPanelSummary>
                 <MatExpansionPanelDetails>
+                    <MatTooltip Tooltip="PoI says how many instances (traces) a constraint must satisfy.
+ If PoI is set to 95%, for a constraint to be discovered, a candidate must satisfy at least 95% of traces.">
                     <MatNumericUpDownField Label="Percentage of Instances"
                                            @bind-Value=@tit.Poi
                                            DecimalPlaces=0
-                                           Minimum=0 Maximum=100>
+                                           Minimum=0 Maximum=100
+                                           RefBack="@context">
                     </MatNumericUpDownField>
+                    </MatTooltip>
+                    <MatTooltip Tooltip="PoE says how frequently events should occur in the log to be included in a resulting model. 
+                     With PoE = 30% only 30% of most common events are considered.">
                     <MatNumericUpDownField Label="Percentage of Events"
                                            @bind-Value=@tit.Poe
                                            DecimalPlaces=0
-                                           Minimum=0 Maximum=100>
+                                           Minimum=0 Maximum=100
+                                           RefBack="@context">
                     </MatNumericUpDownField>
-                    <MatTooltip Tooltip="Templates which were not activated will not be included in the resulting model">
-                        <MatCheckbox @bind-Value=@tit.CheckVacuously Label="Check Vacuously" 
+                    </MatTooltip>
+                    <MatTooltip Tooltip="Constraints which were not triggered will not be included in the resulting model">
+                        <MatCheckbox @bind-Value=@tit.CheckVacuously Label="Check Vacuously"
                                       Disabled="@(tit.TemplateDescription.TemplateParametersType == TemplateTypes.UniTemplate)"
                                       RefBack="@context"></MatCheckbox>
                     </MatTooltip>
@@ -63,8 +73,6 @@ else if (configureTemplates)
         <MatProgressCircle Indeterminate="true" Size="MatProgressCircleSize.Large" />
         //<MatButton OnClick="AbortDiscovery">Abort</MatButton>
     }
-    <MatButton OnClick="BackConfigure">Back</MatButton>
-    <MatButton OnClick="ContinueConfigure">Continue</MatButton>
 }
 else if (showDiscovered && treeTemplates is not null && _declareModel is not null)
 {
