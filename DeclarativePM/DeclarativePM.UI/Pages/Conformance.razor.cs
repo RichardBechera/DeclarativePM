@@ -244,5 +244,31 @@ namespace DeclarativePM.UI.Pages
             _constraintEvaluation = (ConstraintEvaluation) o;
             StateHasChanged();
         }
+
+        public TemplateEvaluation GetMostViolatingTemplate()
+        {
+            return _traceEvaluation.TemplateEvaluations.Aggregate((t1, t2) =>
+                t1.Healthiness.ViolationRation > t2.Healthiness.ViolationRation ? t1 : t2);
+        }
+        
+        public TemplateEvaluation GetMostConflictingTemplate()
+        {
+            return _traceEvaluation.TemplateEvaluations.Aggregate((t1, t2) =>
+                t1.Healthiness.ConflictRation > t2.Healthiness.ConflictRation ? t1 : t2);
+        }
+        
+        public ConstraintEvaluation GetMostViolatingConstraint()
+        {
+            return _traceEvaluation.TemplateEvaluations.SelectMany(t => t.ConstraintEvaluations)
+                .Aggregate((t1, t2) =>
+                t1.Healthiness.ViolationRation > t2.Healthiness.ViolationRation ? t1 : t2);
+        }
+        
+        public ConstraintEvaluation GetMostConflictingConstraint()
+        {
+            return _traceEvaluation.TemplateEvaluations.SelectMany(t => t.ConstraintEvaluations)
+                .Aggregate((t1, t2) =>
+                    t1.Healthiness.ConflictRation > t2.Healthiness.ConflictRation ? t1 : t2);
+        }
     }
 }

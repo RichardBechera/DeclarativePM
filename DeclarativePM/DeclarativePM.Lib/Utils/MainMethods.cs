@@ -183,6 +183,16 @@ namespace DeclarativePM.Lib.Utils
             return conflictResolution
                 .ToDictionary(x => x, y => LocalLikelihoodNode(y, na, tree.Constraint));
         }
+        
+        public static double LocalLikelihood(ActivationBinaryTree tree,
+            ActivationNode conflictResolution)
+        {
+            ActivationBinaryTree tree2 = ActivationTreeBuilder.BuildTree(conflictResolution.Subtrace, tree.Constraint);
+            int nf = GetFulfillment(tree2).Count(e => conflictResolution.Subtrace.Contains(e));
+            int na = conflictResolution.Subtrace.Count(tree.Constraint.IsActivation);
+
+            return nf / (double) na;
+        }
 
         private static double LocalLikelihoodNode(ActivationNode node, int na, BiTemplate constraint)
             => node.Subtrace.Count(constraint.IsActivation) / (double)na;
@@ -202,7 +212,10 @@ namespace DeclarativePM.Lib.Utils
                 foreach (var constraint in constraints)
                 {
                     ActivationBinaryTree tempTree = ActivationTreeBuilder.BuildTree(conflictResolution.Subtrace, constraint);
-                    gama += GetFulfillment(tempTree).Contains(resolution) ? 1 : 0;
+                    if (GetFulfillment(tempTree).Contains(resolution))
+                        gama += 1;
+                    else if (GetViolation(tempTree).Contains(resolution))
+                        gama += 1;
                 }
 
                 result += gama;
@@ -237,9 +250,10 @@ namespace DeclarativePM.Lib.Utils
                         new ConstraintEvaluation(constraint, healthiness, eventActivations);
                     constraintEvaluations.Add(constraintEvaluation);
                 }
+                temp.UpdateHealthiness();
                 templateEvaluations.Add(temp);
             }
-
+            evaluation.UpdateHealthiness();
             return evaluation;
         }
 

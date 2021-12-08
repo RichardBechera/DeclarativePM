@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
@@ -43,6 +44,22 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
             FulfillmentRation = fulfillments / (double)na;
             ViolationRation = violations / (double)na;
             ConflictRation = conflicts / (double)na;
+        }
+
+        public Healthiness(List<Healthiness> constraintHealthiness)
+        {
+            var averages =
+                constraintHealthiness.Aggregate(((double)0, (double)0, (double)0, (double)0), 
+                    (i, healthiness) => 
+                        (healthiness.ActivationSparsity + i.Item1,
+                        healthiness.FulfillmentRation + i.Item2,
+                        healthiness.ViolationRation + i.Item3,
+                        healthiness.ConflictRation + i.Item4)
+                    );
+            ActivationSparsity = averages.Item1;
+            FulfillmentRation = averages.Item2;
+            ViolationRation = averages.Item3;
+            ConflictRation = averages.Item4;
         }
 
         public override string ToString()

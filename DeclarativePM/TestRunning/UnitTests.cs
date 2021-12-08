@@ -140,6 +140,11 @@ namespace TestRunning
             Assert.Equal(2, result.Count);
             Assert.Equal(result.First().Value, 2/(double)3);
             Assert.Equal(result.Last().Value, 1/(double)3);
+
+            var cr = MainMethods.GetConflictNodes(tree);
+            Assert.Equal(2/(double)3, MainMethods.LocalLikelihood(tree, cr.First()));
+            Assert.Equal(1/(double)3, MainMethods.LocalLikelihood(tree, cr.Last()));
+            
         }
         
         [Fact]
@@ -150,19 +155,16 @@ namespace TestRunning
             
             var third = importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
-                new NotCoexistence("L", "H"));
+            NotCoexistence nc = new NotCoexistence("L", "H"); 
+            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, nc);
 
             List<ParametrizedTemplate> templates = new List<ParametrizedTemplate>()
             {
-                new(TemplateInstanceType.NotCoexistence, new List<ITemplate>()
-                {
-                    new NotCoexistence("L", "H"),
-                }),
                 new(TemplateInstanceType.AlternateResponse, new List<ITemplate>()
                 {
                     new AlternateResponse("H", "M"),
                 }),
+                new(TemplateInstanceType.NotCoexistence, new List<ITemplate>(){nc})
             };
             var cr = MainMethods.GetConflictNodes(tree);
 
@@ -342,7 +344,6 @@ namespace TestRunning
             Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
             Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
             //This is true as there really was no other "a" until "c". => postprocessing later
-            //TODO subsequent(A => next(!A U B) && eventual(B))
             Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 1);

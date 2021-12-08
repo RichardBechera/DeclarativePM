@@ -12,6 +12,7 @@ namespace DeclarativePM.Lib.Utils
     {
         public static ActivationBinaryTree BuildTree(List<Event> trace, BiTemplate constraint)
         {
+            trace = UtilMethods.PreprocessTraceForEvaluation(constraint, trace);
             ActivationBinaryTree tree = new(constraint);
             int id = 1;
             foreach (var e in trace)

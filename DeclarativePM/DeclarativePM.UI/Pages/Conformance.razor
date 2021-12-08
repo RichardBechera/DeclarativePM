@@ -71,6 +71,21 @@
 
                 if (showResults)
                 {
+                    <div>
+                        <span><b>Overall trace healthiness</b></span><br/>
+                        <span>Activation sparsity: @_traceEvaluation.Healthiness.ActivationSparsity</span><br/>
+                        <span>Fulfillment ratio: @_traceEvaluation.Healthiness.FulfillmentRation</span><br/>
+                        <span>Conflict ratio: @_traceEvaluation.Healthiness.ConflictRation</span><br/>
+                        <span>Violation ratio: @_traceEvaluation.Healthiness.ViolationRation</span><br/>
+                        <span><b>Most violating template</b></span><br/>
+                        <span>@GetMostViolatingTemplate().Template.TemplateDescription.ReadableName</span><br/>
+                        <span><b>Most conflicting template</b></span><br/>
+                        <span>@GetMostConflictingTemplate().Template.TemplateDescription.ReadableName</span><br/>
+                        <span><b>Most violating constraint</b></span><br/>
+                        <span>@GetMostViolatingConstraint().Constraint.ToString()</span><br/>
+                        <span><b>Most conflicting constraint</b></span><br/>
+                        <span>@GetMostConflictingConstraint().Constraint.ToString()</span><br/>
+                    </div>
 
                     <MatSelectValue @bind-Value="_templateEvaluation" Items="@_traceEvaluation.TemplateEvaluations" ValueSelector="@(i => i)">
                         <ItemTemplate>
@@ -148,7 +163,7 @@
                     <MatTableRow>
                         <td>@context.Activity</td>
                         <td>@context.CaseId</td>
-                        @if (@context.TimeStamp is not null)
+                        @if (context.TimeStamp is not null)
                         {
                             <td>@context.TimeStamp</td>
                         }

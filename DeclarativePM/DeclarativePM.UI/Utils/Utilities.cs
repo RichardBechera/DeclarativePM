@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Enums;
@@ -62,7 +63,7 @@ namespace DeclarativePM.UI.Utils
         {
             if (evaluations is null)
                 return "background: #ffffff";
-            if (evaluations.Any(x => x.ConstraintEvaluations.Any(y => y.Constraint.ToString().Equals(current))))
+            if (evaluations.Any(x => x.ConstraintEvaluations.Any(y => y.Constraint.ToString().Equals(current) && Math.Abs(x.Healthiness.FulfillmentRation - 1) > 0.01)))
             {
                 return "background: #ffd5ff";
             }
