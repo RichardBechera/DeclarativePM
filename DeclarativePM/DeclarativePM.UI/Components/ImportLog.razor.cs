@@ -9,9 +9,9 @@ using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.UI.Enums;
 using MatBlazor;
 
-namespace DeclarativePM.UI.Pages
+namespace DeclarativePM.UI.Components
 {
-    public partial class Import
+    public partial class ImportLog
     {
         EventLog selectedLog;
         private MemoryStream _stream;
@@ -62,7 +62,7 @@ namespace DeclarativePM.UI.Pages
             }
         }
 
-        private async Task ImportLog()
+        private async Task Import()
         {
             var act = headersDict.Where(x => x.Value == HeaderType.Activity);
             var caseId = headersDict.Where(x => x.Value == HeaderType.Case);
@@ -158,7 +158,7 @@ namespace DeclarativePM.UI.Pages
             var resources = headersDict.Where(x => x.Value == HeaderType.Resource).Select(x => x.Key).ToArray();
             _imported.ChooseTokens(act.FirstOrDefault().Key, caseId.FirstOrDefault().Key, time, resources);
         }
-
+        
         public void Dispose()
         {
             _stream?.Dispose();

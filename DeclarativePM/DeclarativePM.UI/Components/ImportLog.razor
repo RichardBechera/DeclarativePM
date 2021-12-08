@@ -23,7 +23,7 @@
                        HelperTextPersistent="true"></MatSelectItem>
     }
 
-    <MatButton OnClick="ImportLog">Import</MatButton>
+    <MatButton OnClick="Import">Import</MatButton>
     <!--<MatButton OnClick="ChooseTokens">Choose Tokens</MatButton>-->
 }
 
@@ -43,18 +43,3 @@
         </td>
     </MatTableRow>
     </MatTable>
-
-@if (selectedLog is not null)
-   {
-       @selectedLog.Name
-       <br/>
-       @foreach(var header in selectedLog.Headers)
-       {
-           @header
-           <br/>
-       }
-   }
-   else
-   {
-       <p>Nothing selected</p>
-   }
