@@ -1,13 +1,9 @@
-@page "/Import"
-@page "/"
 @using DeclarativePM.UI.Enums
 @using DeclarativePM.UI.Data
 @implements IDisposable
 
 @inject IMatDialogService MatDialogService
 @inject StateContainer StateContainer
-
-<h3>Import</h3>
 
 <MatFileUpload OnChange="@UploadLog" AllowMultiple="false" Label="Drop files here or Browse"></MatFileUpload>
 
