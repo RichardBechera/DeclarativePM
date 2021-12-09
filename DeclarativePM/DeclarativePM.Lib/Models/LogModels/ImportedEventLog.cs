@@ -5,6 +5,9 @@ using DeclarativePM.Lib.Exceptions;
 
 namespace DeclarativePM.Lib.Models.LogModels
 {
+    /// <summary>
+    /// Represents configurable imported event log
+    /// </summary>
     public class ImportedEventLog
     {
         
@@ -48,10 +51,15 @@ namespace DeclarativePM.Lib.Models.LogModels
             this.rows = rows;
             _resources = Enumerable.Range(2, headers.Length - 2).ToList();
         }
-        
-        //TODO Add() and AddRange()
-        
 
+        /// <summary>
+        /// Changes column types
+        /// </summary>
+        /// <param name="activity">column/header string for activity</param>
+        /// <param name="caseId">column/header string for case</param>
+        /// <param name="timeStamp">column/header string for time stamp</param>
+        /// <param name="resources">column/header string resource</param>
+        /// <exception cref="Exception">One of columns does not exist</exception>
         public void ChooseTokens(string activity = null, string caseId = null, string timeStamp = null, params string[] resources)
         {
             if ((timeStamp is not null && !Headers.Contains(timeStamp)) ||
@@ -67,15 +75,13 @@ namespace DeclarativePM.Lib.Models.LogModels
             _timeStamp = Array.IndexOf(Headers, timeStamp);
 
             _resources = resources.Select(r => Array.IndexOf(Headers, r)).ToList();
-            /*if (DateTime.TryParse(Data[timeStamp], out var time))
-            {
-                TimeStamp = time;
-                _timeStampName = timeStamp;
-            }*/
-            //TODO RESET
-
         }
 
+        /// <summary>
+        /// Changes column type to activity
+        /// </summary>
+        /// <param name="activity">column/header string</param>
+        /// <exception cref="Exception">Column does not exist</exception>
         public void ChangeActivity(string activity)
         {
             if (!Headers.Contains(activity))
@@ -87,6 +93,11 @@ namespace DeclarativePM.Lib.Models.LogModels
                 _resources.Remove(_activity);
         }
         
+        /// <summary>
+        /// Changes column type to case
+        /// </summary>
+        /// <param name="case">column/header string</param>
+        /// <exception cref="Exception">Column does not exist</exception>
         public void ChangeCase(string @case)
         {
             if (!Headers.Contains(@case))
@@ -98,6 +109,11 @@ namespace DeclarativePM.Lib.Models.LogModels
                 _resources.Remove(_caseId);
         }
         
+        /// <summary>
+        /// Changes column type to timestamp
+        /// </summary>
+        /// <param name="timestamp">column/header string</param>
+        /// <exception cref="Exception">Column does not exist</exception>
         public void ChangeTimestamp(string timestamp)
         {
             if (!Headers.Contains(timestamp))
@@ -109,6 +125,11 @@ namespace DeclarativePM.Lib.Models.LogModels
                 _resources.Remove(_timeStamp);
         }
 
+        /// <summary>
+        /// Changes column type to resource
+        /// </summary>
+        /// <param name="resource">column/header string</param>
+        /// <exception cref="Exception">Column does not exist</exception>
         public void ChangeResource(string resource)
         {
             if (!Headers.Contains(resource))

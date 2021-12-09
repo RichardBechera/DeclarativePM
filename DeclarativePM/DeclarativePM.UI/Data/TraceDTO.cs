@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.UI.Data
 {

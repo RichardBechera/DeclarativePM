@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DeclarativePM.Lib.Models.LogModels
 {
+    /// <summary>
+    /// Compares events on activity, case and its position in the case (ActivityInTraceId)
+    /// </summary>
     public class EventEqualityComparer : IEqualityComparer<Event>
     {
         public bool Equals(Event x, Event y)

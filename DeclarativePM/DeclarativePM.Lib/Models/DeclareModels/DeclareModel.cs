@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace DeclarativePM.Lib.Models.DeclareModels
 {
+    /// <summary>
+    /// Declare model containing all the templates and corresponding instances (constraints)
+    /// </summary>
     public class DeclareModel
     {
         public string Name { get; set; }
@@ -30,6 +33,12 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             Constraints = constraints;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>all unique activities in the model</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Log does not exist and there is template of other type than
+        /// those defined.</exception>
         public List<string> GetAllActivities()
         {
             if (Log is not null)

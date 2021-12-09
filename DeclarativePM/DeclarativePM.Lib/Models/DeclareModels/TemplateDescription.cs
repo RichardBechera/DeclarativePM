@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace DeclarativePM.Lib.Models.DeclareModels
 {
+    /// <summary>
+    /// Description and specifications of template
+    /// </summary>
     public readonly struct TemplateDescription
     {
         [JsonIgnore]

@@ -2,6 +2,9 @@ using System;
 
 namespace DeclarativePM.Lib.Exceptions
 {
+    /// <summary>
+    /// Exception when try to get header which does not exist
+    /// </summary>
     public class LogValueNotSetException : Exception
     {
         public LogValueNotSetException() { }

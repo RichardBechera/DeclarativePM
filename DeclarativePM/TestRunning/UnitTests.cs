@@ -7,8 +7,8 @@ using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.IO.Export;
 using DeclarativePM.Lib.IO.Import;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
 using Xunit;
 
@@ -17,7 +17,9 @@ namespace TestRunning
     public class UnitTests
     {
         private Discovery _disco = new();
-        Importer importer = new Importer();
+        private Importer _importer = new();
+        private ActivationTreeBuilder _builder = new();
+        
         
         private readonly List<Event> _eventsNotActivated = new()
         {
@@ -70,9 +72,9 @@ namespace TestRunning
         public void Test1()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample1.csv";
-            var third = importer.LoadCsv(path4);
+            var third = _importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
+            var tree = _builder.BuildTree(log2.Logs, 
                 new Response("C", "S"));
             
             var ful = MainMethods.GetFulfillment(tree);
@@ -90,9 +92,9 @@ namespace TestRunning
         {
             //TODO relative path
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample2.csv";
-            var third = importer.LoadCsv(path4);
+            var third = _importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
+            var tree = _builder.BuildTree(log2.Logs, 
                 new AlternateResponse("H", "M"));
             
             var ful = MainMethods.GetFulfillment(tree);
@@ -110,9 +112,9 @@ namespace TestRunning
         public void Test3()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = importer.LoadCsv(path4);
+            var third = _importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
+            var tree = _builder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
             
             var ful = MainMethods.GetFulfillment(tree);
@@ -131,9 +133,9 @@ namespace TestRunning
         public void Test4()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = importer.LoadCsv(path4);
+            var third = _importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
-            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, 
+            var tree = _builder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
             var result = MainMethods.LocalLikelihood(tree);
@@ -153,10 +155,10 @@ namespace TestRunning
             Assert.True(true);
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             
-            var third = importer.LoadCsv(path4);
+            var third = _importer.LoadCsv(path4);
             var log2 = third.BuildEventLog();
             NotCoexistence nc = new NotCoexistence("L", "H"); 
-            var tree = ActivationTreeBuilder.BuildTree(log2.Logs, nc);
+            var tree = _builder.BuildTree(log2.Logs, nc);
 
             List<ParametrizedTemplate> templates = new List<ParametrizedTemplate>()
             {
@@ -182,7 +184,7 @@ namespace TestRunning
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             
-            var third = importer.LoadCsv(path4);
+            var third = _importer.LoadCsv(path4);
             var log = third.BuildEventLog();
             var model = _disco.DiscoverModel(log, new List<ParametrizedTemplate>()
             {
@@ -909,7 +911,7 @@ namespace TestRunning
 
             Exporter exporter = new Exporter();
             string json = exporter.ExportModel(model);
-            var m = importer.LoadModelFromJsonString(json);
+            var m = _importer.LoadModelFromJsonString(json);
 
             //exporter.ExportSaveModelAsync(model, "/home/richard/Documents/bakalarka/garbage", "testmodel");
             //var m = importer.LoadModelFromJsonPath("/home/richard/Documents/bakalarka/garbage/testmodel.json");

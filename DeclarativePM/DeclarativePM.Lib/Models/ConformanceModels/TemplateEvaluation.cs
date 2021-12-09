@@ -5,6 +5,9 @@ using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Models.ConformanceModels
 {
+    /// <summary>
+    /// Conformance of a template on a trace
+    /// </summary>
     public record TemplateEvaluation
     {
         public List<ConstraintEvaluation> ConstraintEvaluations { get; }
@@ -14,10 +17,14 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
 
         public TemplateEvaluation(List<ConstraintEvaluation> constraintEvaluations, ParametrizedTemplate template)
         {
-            ConstraintEvaluations = constraintEvaluations;
+            ConstraintEvaluations = constraintEvaluations ?? new();
             Template = template;
+            UpdateHealthiness();
         }
-
+        
+        /// <summary>
+        /// Updates healthiness in case new constraint evaluations were added or some were removed
+        /// </summary>
         public void UpdateHealthiness()
         {
             Healthiness = new Healthiness(ConstraintEvaluations.Select(e => e.Healthiness).ToList());

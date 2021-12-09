@@ -7,6 +7,11 @@ namespace DeclarativePM.Lib.Utils
 {
     public static class ExtensionMethods
     {
+        /// <summary>
+        /// Assigns template type if Type is assignable to its corresponding class.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>Concrete template type</returns>
         public static TemplateInstanceType GetPossibleTemplateType(this Type type)
         {
             if (type.IsAssignableTo(typeof(Absence)))
@@ -48,6 +53,11 @@ namespace DeclarativePM.Lib.Utils
             return TemplateInstanceType.None;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns>Template type of specific instance type</returns>
         public static TemplateTypes GetTemplateType(this TemplateInstanceType template)
         {
             switch (template)
@@ -78,6 +88,12 @@ namespace DeclarativePM.Lib.Utils
             }
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns>Return category into which template belongs.</returns>
+        /// <exception cref="Exception"></exception>
         public static TemplateBookType GetTemplateBookType(this TemplateInstanceType template)
         {
             switch (template)
@@ -108,6 +124,12 @@ namespace DeclarativePM.Lib.Utils
             }
         }
         
+        /// <summary>
+        /// Returns amount of events a single template concerns
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>Number of events template takes</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static int GetTemplateEventArgs(this TemplateTypes type)
         {
             switch (type)
@@ -122,6 +144,12 @@ namespace DeclarativePM.Lib.Utils
             }
         }
         
+        /// <summary>
+        /// Returns detailed template description based on on template instance type.
+        /// </summary>
+        /// <param name="template">Template type</param>
+        /// <returns>Template description</returns>
+        /// <exception cref="Exception">When enum out of defined range is passed</exception>
         public static TemplateDescription GetTemplateDescription(this TemplateInstanceType template)
         {
             switch (template)

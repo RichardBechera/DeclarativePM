@@ -7,13 +7,25 @@ using Newtonsoft.Json;
 
 namespace DeclarativePM.Lib.Models.DeclareModels
 {
+    /// <summary>
+    /// Ltl (Linear temporal logic) template containing list of constraints - instances of its type
+    /// </summary>
     public class ParametrizedTemplate
     {
         [JsonIgnore]
         public List<ITemplate> TemplateInstances { get; set; }
 
-        [JsonIgnore] public List<ITemplate> OptionalConstraints { get; set; } = new();
+        [JsonIgnore] 
+        public List<ITemplate> OptionalConstraints { get; set; } = new();
+        
+        /// <summary>
+        /// Percentage of instances
+        /// </summary>
         public decimal Poe { get; set; }
+        
+        /// <summary>
+        /// Percentage of events
+        /// </summary>
         public decimal Poi { get; set; }
 
         public bool CheckVacuously { get; set; } = true;
@@ -65,7 +77,11 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             Poi = template.Poi;
         }
         
-
+        /// <summary>
+        /// Creates TemplateDescription for template from the Type
+        /// </summary>
+        /// <param name="template"></param>
+        /// <exception cref="ArgumentException">Type was not assignable to ITemplate</exception>
         private void DescriptionFromType(Type template)
         {
             if (!template.IsAssignableTo(typeof(ITemplate)))
@@ -74,7 +90,10 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             TemplateDescription = temp.GetTemplateDescription();
         }
         
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>whether order of template parameters matters</returns>
         public bool OrderMatters()
         {
             return TemplateDescription.TemplateType != TemplateInstanceType.Coexistence 

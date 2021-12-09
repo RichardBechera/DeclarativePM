@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DeclarativePM.Lib.Models
+namespace DeclarativePM.Lib.Models.LogModels
 {
+    /// <summary>
+    /// Represents single row in an event log
+    /// </summary>
     public record Event
     {
         public string Activity { get; set; }

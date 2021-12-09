@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace DeclarativePM.Lib.IO
 {
+    /// <summary>
+    /// Specifies how to convert ITemplate - constraints
+    /// </summary>
     public class TemplateConverter: JsonConverter<ITemplate>
     {
         private readonly TemplateInstanceType _type = TemplateInstanceType.None;

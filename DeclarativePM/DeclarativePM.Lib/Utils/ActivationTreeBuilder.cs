@@ -5,12 +5,22 @@ using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Utils
 {
-    public static class ActivationTreeBuilder
+    /// <summary>
+    /// Class for building an activation trees for conformance checking.
+    /// </summary>
+    public class ActivationTreeBuilder
     {
-        public static ActivationBinaryTree BuildTree(List<Event> trace, BiTemplate constraint)
+        /// <summary>
+        /// Builds an ActivationBinaryTree from a trace and a constraint.
+        /// </summary>
+        /// <param name="trace">Trace</param>
+        /// <param name="constraint">Constraint</param>
+        /// <returns></returns>
+        public ActivationBinaryTree BuildTree(List<Event> trace, BiTemplate constraint)
         {
             trace = UtilMethods.PreprocessTraceForEvaluation(constraint, trace);
             ActivationBinaryTree tree = new(constraint);
@@ -47,7 +57,13 @@ namespace DeclarativePM.Lib.Utils
             return tree;
         }
 
-        private static void AssignLeavesStatus(List<ActivationNode> nodes, BiTemplate constraint)
+        /// <summary>
+        /// Checks a set of leaves whether they fulfill the constraint and
+        /// assigns them dead status. Dead if they do no fulfill the constraint, true otherwise. 
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="constraint"></param>
+        private void AssignLeavesStatus(List<ActivationNode> nodes, BiTemplate constraint)
         {
             LtlExpression expr;
             foreach (var leaf in nodes)
@@ -69,7 +85,12 @@ namespace DeclarativePM.Lib.Utils
             }
         }
 
-        private static List<ActivationNode> GetMaximalFulfillingSubtraces(List<ActivationNode> nodes)
+        /// <summary>
+        /// From set of subtraces chooses those which are maximal fulfilling in the given set.
+        /// </summary>
+        /// <param name="nodes">Nodes containing subtraces</param>
+        /// <returns>Nodes containing maximal fulfilling subtraces</returns>
+        private List<ActivationNode> GetMaximalFulfillingSubtraces(List<ActivationNode> nodes)
         {
             Queue<ActivationNode> fifo = new(nodes
                 .Where(node => !node.IsDead)
@@ -105,7 +126,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="a">Trace a</param>
         /// <param name="b">Trace b</param>
         /// <returns></returns>
-        private static bool IsSubtrace(Stack<Event> a, Stack<Event> b)
+        private bool IsSubtrace(Stack<Event> a, Stack<Event> b)
         {
             if (a.Count < b.Count)
                 return false;

@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace DeclarativePM.Lib.IO
 {
+    /// <summary>
+    /// Specifies how to convert Parametrized templates
+    /// </summary>
     public class ParametrizedTemplateConverter : JsonConverter<ParametrizedTemplate>
     {
         public override void WriteJson(JsonWriter writer, ParametrizedTemplate value, JsonSerializer serializer)

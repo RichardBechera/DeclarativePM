@@ -4,6 +4,7 @@ using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Utils
 {
@@ -45,6 +46,13 @@ namespace DeclarativePM.Lib.Utils
             return res;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static decimal CutIntoRange(decimal p, decimal min = 0, decimal max = 100)
         {
             p = p > max ? max : p;

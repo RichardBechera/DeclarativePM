@@ -1,6 +1,7 @@
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Declare_Templates.TemplateInterfaces
 {

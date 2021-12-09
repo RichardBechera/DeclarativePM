@@ -3,6 +3,9 @@ using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 
 namespace DeclarativePM.Lib.Models.ConformanceModels
 {
+    /// <summary>
+    /// Conformance of a constraint on a trace
+    /// </summary>
     public record ConstraintEvaluation
     {
         public ITemplate Constraint { get; }

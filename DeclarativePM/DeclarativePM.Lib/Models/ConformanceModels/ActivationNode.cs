@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Models.ConformanceModels
 {
+    /// <summary>
+    /// Represents a node in Activation binary tree and a subtrace of tree trace
+    /// </summary>
     public class ActivationNode
     {
         public ActivationNode Left;

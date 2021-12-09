@@ -2,6 +2,10 @@ using DeclarativePM.Lib.Models.DeclareModels;
 
 namespace DeclarativePM.Lib.Declare_Templates.TemplateInterfaces
 {
+    /// <summary>
+    /// Represent templates of Existential type, those templates check
+    /// an amount in which an event occurs, or not occurs.
+    /// </summary>
     public abstract class ExistenceTemplate : ITemplate
     {
         public readonly int Occurrences;

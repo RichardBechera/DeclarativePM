@@ -5,12 +5,29 @@ using DeclarativePM.Lib.Utils;
 
 namespace DeclarativePM.Lib.Models.ConformanceModels
 {
+    /// <summary>
+    /// A struct holding healthiness values
+    /// </summary>
     public struct Healthiness
     {
-        //TODO descriptions
+        /// <summary>
+        /// Activation sparsity on a given trace to all activities
+        /// </summary>
         public double ActivationSparsity { get; set; }
+        
+        /// <summary>
+        /// Ratio of fulfilling activations to all activations
+        /// </summary>
         public double FulfillmentRation { get; set; }
+        
+        /// <summary>
+        /// Ratio of violating activations to all activations
+        /// </summary>
         public double ViolationRation { get; set; }
+        
+        /// <summary>
+        /// Ratio of conflicting activations to all activations
+        /// </summary>
         public double ConflictRation { get; set; }
 
         public Healthiness(ActivationBinaryTree tree)
@@ -45,7 +62,11 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
             ViolationRation = violations / (double)na;
             ConflictRation = conflicts / (double)na;
         }
-
+        
+        /// <summary>
+        /// Constructs healthiness as as average of values other healthiness structs 
+        /// </summary>
+        /// <param name="constraintHealthiness"></param>
         public Healthiness(List<Healthiness> constraintHealthiness)
         {
             var withoutNaN = constraintHealthiness.Where(h =>

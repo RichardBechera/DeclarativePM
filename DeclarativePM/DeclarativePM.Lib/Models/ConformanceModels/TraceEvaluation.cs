@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Models.ConformanceModels
 {
+    /// <summary>
+    /// Conformance of a multiple templates (model) on a trace
+    /// </summary>
     public class TraceEvaluation
     {
         public List<Event> Trace { get; }
@@ -13,9 +17,12 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
         {
             Trace = trace;
             TemplateEvaluations = templateEvaluations;
-            Healthiness = new Healthiness(templateEvaluations.Select(e => e.Healthiness).ToList());
+            UpdateHealthiness();
         }
         
+        /// <summary>
+        /// Updates healthiness in case new constraint evaluations were added or some were removed
+        /// </summary>
         public void UpdateHealthiness()
         {
             Healthiness = new Healthiness(TemplateEvaluations.Select(e => e.Healthiness).ToList());

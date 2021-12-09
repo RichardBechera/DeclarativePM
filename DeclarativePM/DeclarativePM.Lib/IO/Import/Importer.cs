@@ -10,8 +10,19 @@ using Newtonsoft.Json;
 
 namespace DeclarativePM.Lib.IO.Import
 {
+    /// <summary>
+    /// Class responsible for import of logs and models
+    /// </summary>
     public class Importer
     {
+        /// <summary>
+        /// Imports a csv log
+        /// </summary>
+        /// <param name="stream">stream of file with the log</param>
+        /// <param name="hasHeaders">File contains headers</param>
+        /// <param name="missing">How is missing value in the csv specified</param>
+        /// <param name="separator">csv separator</param>
+        /// <returns>Configurable log class</returns>
         public ImportedEventLog LoadCsv(Stream stream, bool hasHeaders = true, string[] missing = null, char separator = ',')
         {
             var logs = new List<string[]>();
@@ -41,6 +52,14 @@ namespace DeclarativePM.Lib.IO.Import
             return new ImportedEventLog(logs, headers);
         }
 
+        /// <summary>
+        /// Imports a csv log
+        /// </summary>
+        /// <param name="path">path to the file with the log</param>
+        /// <param name="hasHeaders">File contains headers</param>
+        /// <param name="missing">How is missing value in the csv specified</param>
+        /// <param name="separator">csv separator</param>
+        /// <returns>Configurable log class</returns>
         public ImportedEventLog LoadCsv(string path, bool hasHeaders = true, string[] missing = null,
             char separator = ',')
         {
@@ -54,6 +73,11 @@ namespace DeclarativePM.Lib.IO.Import
             return result;
         }
 
+        /// <summary>
+        /// Imports a Declare model from json file specified by path
+        /// </summary>
+        /// <param name="path">Path to the file</param>
+        /// <returns>Declare model</returns>
         public DeclareModel LoadModelFromJsonPath(string path)
         {
             if (!File.Exists(path))
@@ -69,6 +93,11 @@ namespace DeclarativePM.Lib.IO.Import
             return result;
         }
 
+        /// <summary>
+        /// Imports a Declare model from json file stream
+        /// </summary>
+        /// <param name="stream">Json file stream</param>
+        /// <returns>Declare model</returns>
         public async Task<DeclareModel> LoadModelFromJsonStream(Stream stream)
         {
             using var jsonReader = new StreamReader(stream);
@@ -78,6 +107,11 @@ namespace DeclarativePM.Lib.IO.Import
             return LoadModelFromJsonString(json);
         }
 
+        /// <summary>
+        /// Imports a Declare model from json string
+        /// </summary>
+        /// <param name="json">string containing json/param>
+        /// <returns>Declare model</returns>
         public DeclareModel LoadModelFromJsonString(string json)
         {
             DeclareModel result = JsonConvert.DeserializeObject<DeclareModel>(json,
