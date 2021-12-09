@@ -69,7 +69,7 @@
                 }
                 <MatButton OnClick="EvaluateWhole" Icon="add" Disabled="@(SelectedTrace is null || _declareModel is null)">Evaluate</MatButton>
 
-                if (showResults)
+                if (showResults && _templateEvaluation is not null)
                 {
                     <div>
                         <span><b>Overall trace healthiness</b></span><br/>
@@ -217,4 +217,3 @@
         </div>
     </div>
 </div>
-<div><p>Hello world!</p></div>

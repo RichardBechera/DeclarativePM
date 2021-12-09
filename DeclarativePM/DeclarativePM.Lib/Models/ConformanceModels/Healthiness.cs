@@ -48,18 +48,22 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
 
         public Healthiness(List<Healthiness> constraintHealthiness)
         {
+            var withoutNaN = constraintHealthiness.Where(h =>
+                !double.IsNaN(h.ActivationSparsity) && !double.IsNaN(h.ConflictRation) &&
+                !double.IsNaN(h.ViolationRation) && !double.IsNaN(h.FulfillmentRation));
             var averages =
-                constraintHealthiness.Aggregate(((double)0, (double)0, (double)0, (double)0), 
+                withoutNaN.Aggregate(((double)0, (double)0, (double)0, (double)0), 
                     (i, healthiness) => 
                         (healthiness.ActivationSparsity + i.Item1,
                         healthiness.FulfillmentRation + i.Item2,
                         healthiness.ViolationRation + i.Item3,
                         healthiness.ConflictRation + i.Item4)
                     );
-            ActivationSparsity = averages.Item1;
-            FulfillmentRation = averages.Item2;
-            ViolationRation = averages.Item3;
-            ConflictRation = averages.Item4;
+            var all = withoutNaN.Count();
+            ActivationSparsity = averages.Item1 / all;
+            FulfillmentRation = averages.Item2 / all;
+            ViolationRation = averages.Item3 / all;
+            ConflictRation = averages.Item4 / all;
         }
 
         public override string ToString()

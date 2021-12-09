@@ -78,12 +78,14 @@ namespace DeclarativePM.UI.Pages
         
         public async Task ChangeModel()
         {
+            showResults = false;
             View = ConformancePageView.SelectModel;
             await InvokeAsync(StateHasChanged);
         }
         
         public async Task ChooseTrace(TraceDTO trace)
         {
+            showResults = false;
             SelectedTrace = trace;
             await InvokeAsync(StateHasChanged);
         }

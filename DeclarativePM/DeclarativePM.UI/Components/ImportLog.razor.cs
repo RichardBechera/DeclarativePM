@@ -13,7 +13,6 @@ namespace DeclarativePM.UI.Components
 {
     public partial class ImportLog
     {
-        EventLog selectedLog;
         private MemoryStream _stream;
         string content;
         ImportedEventLog _imported;
@@ -24,19 +23,16 @@ namespace DeclarativePM.UI.Components
         Dictionary<string, HeaderType> headersDict;
         HeaderType[] value2Items = Enum.GetValues(typeof(HeaderType)).Cast<HeaderType>().ToArray();
 
-
-        protected override void OnInitialized()
-        {
-            selectedLog = StateContainer.EventLogs.FirstOrDefault();
-        }
-
         public async Task UploadLog(IMatFileUploadEntry[] files)
         {
             file = files.FirstOrDefault();
             if (file is null)
                 return;
             if (file.Type != "text/csv")
-                return; //??
+            {
+                await MatDialogService.AlertAsync("Log has to be in csv");
+                return;
+            }
             try
             {
                 _stream = new MemoryStream();
@@ -101,14 +97,6 @@ namespace DeclarativePM.UI.Components
             }
 
             content = builder.ToString();
-        }
-
-        public void Selection(object log)
-        {
-            if (log is null)
-                return;
-            selectedLog = (EventLog)log;
-            StateHasChanged();
         }
 
         public bool RemoveLog(EventLog log)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
@@ -67,7 +68,16 @@ namespace DeclarativePM.Lib.IO.Import
             stream.Dispose();
             return result;
         }
-        
+
+        public async Task<DeclareModel> LoadModelFromJsonStream(Stream stream)
+        {
+            using var jsonReader = new StreamReader(stream);
+
+            string json = await jsonReader.ReadToEndAsync();
+
+            return LoadModelFromJsonString(json);
+        }
+
         public DeclareModel LoadModelFromJsonString(string json)
         {
             DeclareModel result = JsonConvert.DeserializeObject<DeclareModel>(json,

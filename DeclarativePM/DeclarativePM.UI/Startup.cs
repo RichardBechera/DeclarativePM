@@ -1,3 +1,4 @@
+using BlazorDownloadFile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ namespace DeclarativePM.UI
             services.AddMatBlazor();
             services.AddHttpClient();
             services.AddScoped<StateContainer>();
+            services.AddBlazorDownloadFile();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

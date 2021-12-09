@@ -9,11 +9,11 @@
 
 @if (uploadMode)
 {
-    <span style="white-space: pre-line">
+    <pre style="white-space: pre-line">
         Filename: @file.Name
         Size: @file.Size.ToString()
         @content
-    </span>
+    </pre>
 
     <MatTextField @bind-Value="@LogName" Label="Log name" ></MatTextField><br/>
     @foreach (var head in headersDict)
@@ -24,22 +24,19 @@
     }
 
     <MatButton OnClick="Import">Import</MatButton>
-    <!--<MatButton OnClick="ChooseTokens">Choose Tokens</MatButton>-->
 }
 
-<MatTable Items="StateContainer.EventLogs" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="Selection">
+<MatTable Items="StateContainer.EventLogs" class="mat-elevation-z5" AllowSelection="true">
     <MatTableHeader>
         <th>Name</th>
         <th>Traces</th>
         <th>Events</th>
         <th>Remove</th>
-        </MatTableHeader>
+    </MatTableHeader>
     <MatTableRow>
-        <td style="width: fit-content"><span>@context.Name</span></td>
+        <td>@context.Name</td>
         <td>@context.Cases().Count.ToString()</td>
         <td>@context.Logs.Count.ToString()</td>
-        <td style="background: #ff0d00">
-            <MatIconButton OnClick="@(() => RemoveLog(context))" Icon="remove"></MatIconButton>
-        </td>
+        <td style="background: #ff0d00"><MatIconButton OnClick="@(() => RemoveLog(context))" Icon="remove"></MatIconButton></td>
     </MatTableRow>
-    </MatTable>
+</MatTable>
