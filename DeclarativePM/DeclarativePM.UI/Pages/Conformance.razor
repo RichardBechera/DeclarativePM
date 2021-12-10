@@ -72,6 +72,7 @@
                 {
                     <ExpansionTraceEvaluation TraceEvaluation="@_traceEvaluation"></ExpansionTraceEvaluation>
 
+                    <Select It></Select>
                     <MatSelectValue Value="@_templateEvaluation" Items="@_traceEvaluation.TemplateEvaluations" ValueSelector="@(i => i)" ValueChanged="@((TemplateEvaluation o) => TemplateEvaluationChanged(o))">
                         <ItemTemplate>
                             <span>@context.Template.TemplateDescription.TemplateType.ToString()</span>
@@ -79,19 +80,18 @@
                     </MatSelectValue>
                     if (_templateEvaluation is not null && _templateEvaluation.Template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                     {
-                        <MatSelectValue Value="@_constraintEvaluation" Items="@_templateEvaluation.ConstraintEvaluations" ValueSelector="@(i => i)" ValueChanged="@((ConstraintEvaluation o) => ConstraintEvaluationChanged(o))">
+                        <MatSelectValue @bind-value="@_constraintEvaluation" Items="@_templateEvaluation.ConstraintEvaluations" ValueSelector="@(i => i)"><!--ValueChanged="@((ConstraintEvaluation o) => ConstraintEvaluationChanged(o))">-->
                             <ItemTemplate>
-                                <span>@context.Constraint.ToString()</span>
+                                <span>@(context?.Constraint.ToString() ?? "None")</span>
                             </ItemTemplate>
                         </MatSelectValue>
                         if (_constraintEvaluation is not null)
                         {
-                            <MatChipSet Choice="true" @bind-SelectedChip="selectedChip">
+                            <MatChipSet>
                                 @foreach (var e in SelectedTrace.Events)
                                 {
                                     <MatChip Label="@e.Activity" Style="@GetConformanceChipBackground(e)"></MatChip>
                                 }
-                                <p class="mt-2">Your choice: @selectedChip?.Label</p>
                             </MatChipSet>
                         }
                     }

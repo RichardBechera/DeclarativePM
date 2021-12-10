@@ -223,8 +223,12 @@ namespace DeclarativePM.UI.Pages
         public async Task EvaluateWhole()
         {
             _traceEvaluation = MainMethods.EvaluateTrace(_declareModel, SelectedTrace.Events);
+            //show only not empty evaluations
+            var temp = _traceEvaluation.TemplateEvaluations.Where(t => t.ConstraintEvaluations.Count > 0).ToList();
+            _traceEvaluation.TemplateEvaluations.Clear();
+            _traceEvaluation.TemplateEvaluations.AddRange(temp);
             showResults = true;
-            _templateEvaluation = _traceEvaluation.TemplateEvaluations.First();
+            _templateEvaluation = _traceEvaluation.TemplateEvaluations.FirstOrDefault();
             await InvokeAsync(StateHasChanged);
         }
         
@@ -251,9 +255,13 @@ namespace DeclarativePM.UI.Pages
         public void TemplateEvaluationChanged(TemplateEvaluation o)
         {
             _templateEvaluation = o;
+            StateHasChanged();
+            
             if (_templateEvaluation.ConstraintEvaluations.Count == 1)
             {
-                _constraintEvaluation = _templateEvaluation.ConstraintEvaluations.First();
+                //:( unfortunately bug in matblazor, have to insert none until fixed: https://github.com/SamProf/MatBlazor/issues/651
+                _templateEvaluation.ConstraintEvaluations.Add(null);
+                //_constraintEvaluation = _templateEvaluation.ConstraintEvaluations.First();
             }
 
             StateHasChanged();
