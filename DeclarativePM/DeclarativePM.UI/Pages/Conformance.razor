@@ -31,8 +31,8 @@
             <MatButton OnClick="ChangeModel" Icon="import_export" Label="Add/Change model"/>
         </div>
     </div>
-    <div class="mat-layout-grid-inner" style="height:60%; overflow:scroll">
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3" style="overflow-scrolling: auto; overflow: scroll">
+    <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
             <!-- ====CASES=== -->
             @if (!seeActivities)
             {
@@ -58,7 +58,7 @@
                 </MatVirtualScroll>
             }
         </div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5" style="overflow-scrolling: auto; overflow: scroll">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5">
             <!-- ====VIEW=== -->
             @if (View == ConformancePageView.Conformance)
             {
@@ -79,7 +79,7 @@
                     </MatSelectValue>
                     if (_templateEvaluation is not null && _templateEvaluation.Template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                     {
-                        <MatSelectValue @bind-value="@_constraintEvaluation" Items="@_templateEvaluation.ConstraintEvaluations" ValueSelector="@(i => i)"><!--ValueChanged="@((ConstraintEvaluation o) => ConstraintEvaluationChanged(o))">-->
+                        <MatSelectValue @bind-value="@_constraintEvaluation" Items="@_templateEvaluation.ConstraintEvaluations" ValueSelector="@(i => i)">
                             <ItemTemplate>
                                 <span>@(context?.Constraint.ToString() ?? "None")</span>
                             </ItemTemplate>
@@ -177,7 +177,7 @@
                 <MatButton OnClick="OnTracesSelected">OK</MatButton>
             }
         </div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4" style="overflow-scrolling: auto; overflow: scroll">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
             <!-- ====TREE=== -->
             @if (_declareModel is null)
             {

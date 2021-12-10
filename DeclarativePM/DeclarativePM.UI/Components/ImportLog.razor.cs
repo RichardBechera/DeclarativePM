@@ -28,7 +28,7 @@ namespace DeclarativePM.UI.Components
             file = files.FirstOrDefault();
             if (file is null)
                 return;
-            if (file.Type != "text/csv")
+            if (file.Type != "text/csv" && file.Type != "application/vnd.ms-excel")
             {
                 await MatDialogService.AlertAsync("Log has to be in csv");
                 return;
@@ -49,8 +49,7 @@ namespace DeclarativePM.UI.Components
             }
             catch
             {
-                Console.WriteLine("Something went wrong");
-                throw;
+                await MatDialogService.AlertAsync("There was an error while uploading file. Check that file is .csv format");
             }
             finally
             {
