@@ -1,4 +1,5 @@
 @using DeclarativePM.Lib.Models.ConformanceModels
+<div style="padding-bottom: 30px">
 <MatAccordion>
     <MatExpansionPanel Expanded="@true">
         <MatExpansionPanelSummary>
@@ -8,9 +9,9 @@
         </MatExpansionPanelSummary>
         <MatExpansionPanelDetails>
             <span><b>Activation sparsity:</b> @TraceEvaluation.Healthiness.ActivationSparsity</span><br/>
-            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00">@TraceEvaluation.Healthiness.FulfillmentRation</p></span><br/>
-            <span><b>Conflict ratio:</b> <p style="color:#feb810">@TraceEvaluation.Healthiness.ConflictRation</p></span><br/>
-            <span><b>Violation ratio:</b> <p style="color:red">@TraceEvaluation.Healthiness.ViolationRation</p></span><br/>
+            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00; display: inline">@TraceEvaluation.Healthiness.FulfillmentRation</p></span><br/>
+            <span><b>Conflict ratio:</b> <p style="color:#feb810; display: inline">@TraceEvaluation.Healthiness.ConflictRation</p></span><br/>
+            <span><b>Violation ratio:</b> <p style="color:red; display: inline">@TraceEvaluation.Healthiness.ViolationRation</p></span><br/>
         </MatExpansionPanelDetails>
     </MatExpansionPanel>
 
@@ -25,9 +26,9 @@
         </MatExpansionPanelSummary>
         <MatExpansionPanelDetails>
             <span><b>Activation sparsity:</b> @GetMostViolatingTemplate().Healthiness.ActivationSparsity</span><br/>
-            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00">@GetMostViolatingTemplate().Healthiness.FulfillmentRation</p></span><br/>
-            <span><b>Conflict ratio:</b> <p style="color:#feb810">@GetMostViolatingTemplate().Healthiness.ConflictRation</p></span><br/>
-            <span><b>Violation ratio:</b> <p style="color:#ff0000">@GetMostViolatingTemplate().Healthiness.ViolationRation</p></span><br/>
+            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00; display: inline">@GetMostViolatingTemplate().Healthiness.FulfillmentRation</p></span><br/>
+            <span><b>Conflict ratio:</b> <p style="color:#feb810; display: inline">@GetMostViolatingTemplate().Healthiness.ConflictRation</p></span><br/>
+            <span><b>Violation ratio:</b> <p style="color:#ff0000; display: inline">@GetMostViolatingTemplate().Healthiness.ViolationRation</p></span><br/>
         </MatExpansionPanelDetails>
     </MatExpansionPanel>
 
@@ -42,9 +43,9 @@
         </MatExpansionPanelSummary>
         <MatExpansionPanelDetails>
             <span><b>Activation sparsity:</b> @GetMostConflictingTemplate().Healthiness.ActivationSparsity</span><br/>
-            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00">@GetMostConflictingTemplate().Healthiness.FulfillmentRation</p></span><br/>
-            <span><b>Conflict ratio:</b> <p style="color:#feb810">@GetMostConflictingTemplate().Healthiness.ConflictRation</p></span><br/>
-            <span><b>Violation ratio:</b> <p style="color:red">@GetMostConflictingTemplate().Healthiness.ViolationRation</p></span><br/>
+            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00; display: inline">@GetMostConflictingTemplate().Healthiness.FulfillmentRation</p></span><br/>
+            <span><b>Conflict ratio:</b> <p style="color:#feb810; display: inline">@GetMostConflictingTemplate().Healthiness.ConflictRation</p></span><br/>
+            <span><b>Violation ratio:</b> <p style="color:red; display: inline">@GetMostConflictingTemplate().Healthiness.ViolationRation</p></span><br/>
         </MatExpansionPanelDetails>
     </MatExpansionPanel>
 
@@ -59,9 +60,9 @@
         </MatExpansionPanelSummary>
         <MatExpansionPanelDetails>
             <span><b>Activation sparsity:</b> @GetMostViolatingConstraint().Healthiness.ActivationSparsity</span><br/>
-            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00">@GetMostViolatingConstraint().Healthiness.FulfillmentRation</p></span><br/>
-            <span><b>Conflict ratio:</b> <p style="color:#feb810">@GetMostViolatingConstraint().Healthiness.ConflictRation</p></span><br/>
-            <span><b>Violation ratio:</b> <p style="color:red">@GetMostViolatingConstraint().Healthiness.ViolationRation</p></span><br/>
+            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00; display: inline">@GetMostViolatingConstraint().Healthiness.FulfillmentRation</p></span><br/>
+            <span><b>Conflict ratio:</b> <p style="color:#feb810; display: inline">@GetMostViolatingConstraint().Healthiness.ConflictRation</p></span><br/>
+            <span><b>Violation ratio:</b> <p style="color:red; display: inline">@GetMostViolatingConstraint().Healthiness.ViolationRation</p></span><br/>
         </MatExpansionPanelDetails>
     </MatExpansionPanel>
 
@@ -76,13 +77,13 @@
         </MatExpansionPanelSummary>
         <MatExpansionPanelDetails>
             <span><b>Activation sparsity:</b> @GetMostConflictingConstraint().Healthiness.ActivationSparsity</span><br/>
-            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00">@GetMostConflictingConstraint().Healthiness.FulfillmentRation</p></span><br/>
-            <span><b>Conflict ratio:</b> <p style="color:#feb810">@GetMostConflictingConstraint().Healthiness.ConflictRation</p></span><br/>
-            <span><b>Violation ratio:</b> <p style="color:red">@GetMostConflictingConstraint().Healthiness.ViolationRation</p></span><br/>
+            <span><b>Fulfillment ratio:</b> <p style="color:#13ff00; display: inline">@GetMostConflictingConstraint().Healthiness.FulfillmentRation</p></span><br/>
+            <span><b>Conflict ratio:</b> <p style="color:#feb810; display: inline">@GetMostConflictingConstraint().Healthiness.ConflictRation</p></span><br/>
+            <span><b>Violation ratio:</b> <p style="color:red; display: inline">@GetMostConflictingConstraint().Healthiness.ViolationRation</p></span><br/>
         </MatExpansionPanelDetails>
     </MatExpansionPanel>
 </MatAccordion>
-
+</div>
 @code {
 
     [Parameter]

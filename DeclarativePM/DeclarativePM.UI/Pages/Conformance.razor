@@ -72,7 +72,6 @@
                 {
                     <ExpansionTraceEvaluation TraceEvaluation="@_traceEvaluation"></ExpansionTraceEvaluation>
 
-                    <Select It></Select>
                     <MatSelectValue Value="@_templateEvaluation" Items="@_traceEvaluation.TemplateEvaluations" ValueSelector="@(i => i)" ValueChanged="@((TemplateEvaluation o) => TemplateEvaluationChanged(o))">
                         <ItemTemplate>
                             <span>@context.Template.TemplateDescription.TemplateType.ToString()</span>
