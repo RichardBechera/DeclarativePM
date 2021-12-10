@@ -9,7 +9,6 @@
 @inject IMatDialogService MatDialogService
 
 <h3>Conformance</h3>
-
 <div class="mat-layout-grid" style="height: auto">
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
@@ -33,7 +32,7 @@
         </div>
     </div>
     <div class="mat-layout-grid-inner" style="height:60%; overflow:scroll">
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3" style="overflow-scrolling: auto; overflow: scroll">
             <!-- ====CASES=== -->
             @if (!seeActivities)
             {
@@ -59,7 +58,7 @@
                 </MatVirtualScroll>
             }
         </div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5" style="overflow-scrolling: auto; overflow: scroll">
             <!-- ====VIEW=== -->
             @if (View == ConformancePageView.Conformance)
             {
@@ -71,30 +70,16 @@
 
                 if (showResults && _templateEvaluation is not null)
                 {
-                    <div>
-                        <span><b>Overall trace healthiness</b></span><br/>
-                        <span>Activation sparsity: @_traceEvaluation.Healthiness.ActivationSparsity</span><br/>
-                        <span>Fulfillment ratio: @_traceEvaluation.Healthiness.FulfillmentRation</span><br/>
-                        <span>Conflict ratio: @_traceEvaluation.Healthiness.ConflictRation</span><br/>
-                        <span>Violation ratio: @_traceEvaluation.Healthiness.ViolationRation</span><br/>
-                        <span><b>Most violating template</b></span><br/>
-                        <span>@GetMostViolatingTemplate().Template.TemplateDescription.ReadableName</span><br/>
-                        <span><b>Most conflicting template</b></span><br/>
-                        <span>@GetMostConflictingTemplate().Template.TemplateDescription.ReadableName</span><br/>
-                        <span><b>Most violating constraint</b></span><br/>
-                        <span>@GetMostViolatingConstraint().Constraint.ToString()</span><br/>
-                        <span><b>Most conflicting constraint</b></span><br/>
-                        <span>@GetMostConflictingConstraint().Constraint.ToString()</span><br/>
-                    </div>
+                    <ExpansionTraceEvaluation TraceEvaluation="@_traceEvaluation"></ExpansionTraceEvaluation>
 
-                    <MatSelectValue @bind-Value="_templateEvaluation" Items="@_traceEvaluation.TemplateEvaluations" ValueSelector="@(i => i)">
+                    <MatSelectValue Value="@_templateEvaluation" Items="@_traceEvaluation.TemplateEvaluations" ValueSelector="@(i => i)" ValueChanged="@((TemplateEvaluation o) => TemplateEvaluationChanged(o))">
                         <ItemTemplate>
                             <span>@context.Template.TemplateDescription.TemplateType.ToString()</span>
                         </ItemTemplate>
                     </MatSelectValue>
                     if (_templateEvaluation is not null && _templateEvaluation.Template.TemplateDescription.TemplateParametersType == TemplateTypes.BiTemplate)
                     {
-                        <MatSelectValue Items="@_templateEvaluation.ConstraintEvaluations" ValueSelector="@(i => i)" ValueChanged="@((ConstraintEvaluation o) => ConstraintEvaluationChanged(o))">
+                        <MatSelectValue Value="@_constraintEvaluation" Items="@_templateEvaluation.ConstraintEvaluations" ValueSelector="@(i => i)" ValueChanged="@((ConstraintEvaluation o) => ConstraintEvaluationChanged(o))">
                             <ItemTemplate>
                                 <span>@context.Constraint.ToString()</span>
                             </ItemTemplate>
@@ -108,9 +93,7 @@
                                 }
                                 <p class="mt-2">Your choice: @selectedChip?.Label</p>
                             </MatChipSet>
-
                         }
-
                     }
                 }
             }
@@ -179,9 +162,8 @@
             }
             else if (View == ConformancePageView.SelectLog)
             {
-                <h5>Select Eventlog</h5>
-                <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
-                <MatButton OnClick="OnLogSelected" Disabled="@(_selectedLog is null)">Continue</MatButton>
+                    <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
+                    <MatButton OnClick="OnLogSelected" Disabled="@(_selectedLog is null)">Continue</MatButton>
             }
             else if (View == ConformancePageView.SelectModel)
             {
@@ -196,7 +178,7 @@
                 <MatButton OnClick="OnTracesSelected">OK</MatButton>
             }
         </div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4" style="overflow-scrolling: auto; overflow: scroll">
             <!-- ====TREE=== -->
             @if (_declareModel is null)
             {

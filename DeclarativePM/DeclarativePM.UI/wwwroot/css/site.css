@@ -123,3 +123,7 @@ a, .btn-link {
     align-self: center;
     grid-area: Chip;
 }
+
+body.mdc-dialog-scroll-lock {
+    overflow: inherit;
+}

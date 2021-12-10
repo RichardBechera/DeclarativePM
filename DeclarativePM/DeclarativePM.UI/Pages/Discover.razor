@@ -77,6 +77,7 @@ else if (configureTemplates)
 else if (showDiscovered && treeTemplates is not null && _declareModel is not null)
 {
     <h3>Discovered model</h3>
+    <div style="overflow-scrolling: auto; overflow: scroll">
     <MatTreeView TNode="TreeNodeModel"
                  RootNode="@treeTemplates"
                  GetChildNodesCallback="@((n)=>n.Nodes)">
@@ -87,4 +88,5 @@ else if (showDiscovered && treeTemplates is not null && _declareModel is not nul
     <MatTextField @bind-Value="@_declareModel.Name" Label="Model name" ></MatTextField><br/>
     <MatButton OnClick="SaveModel">Save</MatButton>
     <MatButton OnClick="BackDiscover">Back</MatButton>
+    </div>
 }

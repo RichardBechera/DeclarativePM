@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
@@ -87,6 +85,9 @@ namespace DeclarativePM.UI.Pages
         {
             showResults = false;
             SelectedTrace = trace;
+            _traceEvaluation = null;
+            _templateEvaluation = null;
+            _constraintEvaluation = null;
             await InvokeAsync(StateHasChanged);
         }
 
@@ -237,40 +238,25 @@ namespace DeclarativePM.UI.Pages
                 EventActivationType.Fulfilment => "background: #ff66ff",
                 EventActivationType.Conflict => "background: #ffff00",
                 EventActivationType.Violation => "background: #ff0000",
-                _ => throw new ArgumentOutOfRangeException()
+                _ => "background: #d9d9d9"
             };
         }
 
-        public void ConstraintEvaluationChanged(object o)
+        public void ConstraintEvaluationChanged(ConstraintEvaluation o)
         {
-            _constraintEvaluation = (ConstraintEvaluation) o;
+            _constraintEvaluation = o;
             StateHasChanged();
         }
 
-        public TemplateEvaluation GetMostViolatingTemplate()
+        public void TemplateEvaluationChanged(TemplateEvaluation o)
         {
-            return _traceEvaluation.TemplateEvaluations.Aggregate((t1, t2) =>
-                t1.Healthiness.ViolationRation > t2.Healthiness.ViolationRation ? t1 : t2);
-        }
-        
-        public TemplateEvaluation GetMostConflictingTemplate()
-        {
-            return _traceEvaluation.TemplateEvaluations.Aggregate((t1, t2) =>
-                t1.Healthiness.ConflictRation > t2.Healthiness.ConflictRation ? t1 : t2);
-        }
-        
-        public ConstraintEvaluation GetMostViolatingConstraint()
-        {
-            return _traceEvaluation.TemplateEvaluations.SelectMany(t => t.ConstraintEvaluations)
-                .Aggregate((t1, t2) =>
-                t1.Healthiness.ViolationRation > t2.Healthiness.ViolationRation ? t1 : t2);
-        }
-        
-        public ConstraintEvaluation GetMostConflictingConstraint()
-        {
-            return _traceEvaluation.TemplateEvaluations.SelectMany(t => t.ConstraintEvaluations)
-                .Aggregate((t1, t2) =>
-                    t1.Healthiness.ConflictRation > t2.Healthiness.ConflictRation ? t1 : t2);
+            _templateEvaluation = o;
+            if (_templateEvaluation.ConstraintEvaluations.Count == 1)
+            {
+                _constraintEvaluation = _templateEvaluation.ConstraintEvaluations.First();
+            }
+
+            StateHasChanged();
         }
     }
 }

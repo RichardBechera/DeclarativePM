@@ -31,6 +31,7 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         {
             Name = name;
             Constraints = constraints;
+            Log = new (new());
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace DeclarativePM.Lib.Models.DeclareModels
         /// those defined.</exception>
         public List<string> GetAllActivities()
         {
-            if (Log is not null)
+            if (Log is not null && Log.Logs.Count != 0)
                 return Log.GetAllActivities();
             HashSet<string> activities = new();
             foreach (var template in Constraints)

@@ -59,7 +59,7 @@ namespace DeclarativePM.UI.Pages
         public async Task LogContinueCreate()
         {
 
-            if (StateContainer.DeclareModels.Any(x => x.Log.Equals(_selectedLog)))
+            if (StateContainer.DeclareModels.Any(x => x.Log ==_selectedLog))
             {
                 var result = await MatDialogService.AskAsync($"For {_selectedLog.Name} already existing" +
                                                              $" DECLARE model was found, would you like to import it?", new[] {"YES", "NO", "CANCEL"});
