@@ -31,7 +31,9 @@ Once you chosen trace on the left by clicking at it, and you have already chosed
 You will see diferet statistics or you can choose from different templates and its instances and see where they have been activated, violated or conflicted in the trace.
 
 Purple - activation
+
 Yellow - conflict
+
 Red - violation
 
 ## Library
@@ -40,26 +42,26 @@ Red - violation
 
 Discovery.cs for discovery
 
-ActivationBinaryTree.cs for conformance checking
-ActivationTreeBuilder.cs to build ActivationBinaryTree from the trace and constraint
+`ActivationBinaryTree.cs` for conformance checking
+`ActivationTreeBuilder.cs` to build ActivationBinaryTree from the trace and constraint
 
 //TODO divide into files and folders
-MainMethods.cs for main methods like trace and expression evaluation, but also evaluation for conformance
+`MainMethods.cs` for main methods like trace and expression evaluation, but also evaluation for conformance
 
 #Declare Templates
 
-ITemplate.cs main interface for each template
-IVacuityDetection.cs for templates could be checked with vacuity condition
+`ITemplate.cs` main interface for each template
+`IVacuityDetection.cs` for templates could be checked with vacuity condition
 
-ExistenceTemplate.cs, UniTemplate.cs and BiTemplate are abstract classes for different categories of templates
+`ExistenceTemplate.cs`, UniTemplate.cs and BiTemplate are abstract classes for different categories of templates
 
-BiTemplateFactory.cs, UniTemplateFactory.cs and ExistenceFactory.cs are factories for creation of template instances. Mainly generation of candidates.
+`BiTemplateFactory.cs`, `UniTemplateFactory.cs` and `ExistenceFactory.cs` are factories for creation of template instances. Mainly generation of candidates.
 
 The rest are classes for specific templates implementing abstract classses and interfaces defined above.
 
 ### LtlExpression
 
-LtlExpression.cs is recursive class representing expressions from linear temporal logic. For now they can be either:
+`LtlExpression.cs` is recursive class representing expressions from linear temporal logic. For now they can be either:
   - atomic, consisting of None operator and Atom as atomic expression 
   - unary, consisting of unary operator and one subexpression on the left
   - binary, consiting of binary operator and two subexpressions on the left and right
