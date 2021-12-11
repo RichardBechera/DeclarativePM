@@ -32,9 +32,10 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
 
         public Healthiness(ActivationBinaryTree tree)
         {
-            int violations = MainMethods.GetViolation(tree).Count;
-            int fulfilments = MainMethods.GetFulfillment(tree).Count;
-            int conflicts = MainMethods.GetConflict(tree).Count;
+            ConformanceEvaluator evaluator = new();
+            int violations = evaluator.GetViolation(tree).Count;
+            int fulfilments = evaluator.GetFulfillment(tree).Count;
+            int conflicts = evaluator.GetConflict(tree).Count;
             int na = violations + fulfilments + conflicts;
             int n = tree.Leaves
                 .SelectMany(x => x.Subtrace)
@@ -71,7 +72,7 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
         {
             var withoutNaN = constraintHealthiness.Where(h =>
                 !double.IsNaN(h.ActivationSparsity) && !double.IsNaN(h.ConflictRation) &&
-                !double.IsNaN(h.ViolationRation) && !double.IsNaN(h.FulfillmentRation));
+                !double.IsNaN(h.ViolationRation) && !double.IsNaN(h.FulfillmentRation)).ToList();
             var averages =
                 withoutNaN.Aggregate(((double)0, (double)0, (double)0, (double)0), 
                     (i, healthiness) => 

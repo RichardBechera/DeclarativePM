@@ -224,14 +224,15 @@ namespace DeclarativePM.Lib.Discovery
         {
             int notHolds = 0;
             bool wasActivated = candidate is not BiTemplate;
+            ConstraintEvaluator evaluator = new();
             
             foreach (var instance in instances)
             {
-                if (MainMethods.EvaluateConstraint(instance, candidate))
+                if (evaluator.EvaluateConstraint(instance, candidate))
                 {
                     if (vacuity && !wasActivated && candidate is IVacuityDetection template)
                     {
-                        wasActivated = MainMethods
+                        wasActivated = evaluator
                             .EvaluateExpression(instance, template.GetVacuityCondition());
                     }
                     continue;

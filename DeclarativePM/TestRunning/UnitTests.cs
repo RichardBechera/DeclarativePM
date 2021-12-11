@@ -19,6 +19,8 @@ namespace TestRunning
         private Discovery _disco = new();
         private Importer _importer = new();
         private ActivationTreeBuilder _builder = new();
+        private ConstraintEvaluator _constraintEvaluator = new();
+        private ConformanceEvaluator _conformanceEvaluator = new();
         
         
         private readonly List<Event> _eventsNotActivated = new()
@@ -53,18 +55,18 @@ namespace TestRunning
             
             if (activation == 0)
             {
-                Assert.True(MainMethods.EvaluateExpression(_eventsNotActivated, template.GetExpression()));
-                Assert.False(MainMethods.EvaluateExpression(_eventsNotActivated, template.GetWitnessExpression()));
+                Assert.True(_constraintEvaluator.EvaluateExpression(_eventsNotActivated, template.GetExpression()));
+                Assert.False(_constraintEvaluator.EvaluateExpression(_eventsNotActivated, template.GetWitnessExpression()));
             }
             else if (activation == 1)
             {
-                Assert.True(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
-                Assert.False(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetWitnessExpression()));
+                Assert.True(_constraintEvaluator.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
+                Assert.False(_constraintEvaluator.EvaluateExpression(_eventsANotOccurs, template.GetWitnessExpression()));
             }
             else
             {
-                Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
-                Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetWitnessExpression()));
+                Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+                Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetWitnessExpression()));
             }
         }
 
@@ -77,13 +79,13 @@ namespace TestRunning
             var tree = _builder.BuildTree(log2.Logs, 
                 new Response("C", "S"));
             
-            var ful = MainMethods.GetFulfillment(tree);
+            var ful = _conformanceEvaluator.GetFulfillment(tree);
             Assert.True(ful.Exists(x => x.Activity == "C" && x.ActivityInTraceId == 1));
             
-            var vio = MainMethods.GetViolation(tree);
+            var vio = _conformanceEvaluator.GetViolation(tree);
             Assert.True(vio.Exists(x => x.Activity == "C" && x.ActivityInTraceId == 3));
             
-            var conf = MainMethods.GetConflict(tree);
+            var conf = _conformanceEvaluator.GetConflict(tree);
             Assert.Empty(conf);
         }
         
@@ -97,13 +99,13 @@ namespace TestRunning
             var tree = _builder.BuildTree(log2.Logs, 
                 new AlternateResponse("H", "M"));
             
-            var ful = MainMethods.GetFulfillment(tree);
+            var ful = _conformanceEvaluator.GetFulfillment(tree);
             Assert.True(ful.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 1));
             
-            var vio = MainMethods.GetViolation(tree);
+            var vio = _conformanceEvaluator.GetViolation(tree);
             Assert.Empty(vio);
             
-            var conf = MainMethods.GetConflict(tree);
+            var conf = _conformanceEvaluator.GetConflict(tree);
             Assert.True(conf.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 3));
             Assert.True(conf.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 4));
         }
@@ -117,13 +119,13 @@ namespace TestRunning
             var tree = _builder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
             
-            var ful = MainMethods.GetFulfillment(tree);
+            var ful = _conformanceEvaluator.GetFulfillment(tree);
             Assert.Empty(ful);
             
-            var vio = MainMethods.GetViolation(tree);
+            var vio = _conformanceEvaluator.GetViolation(tree);
             Assert.Empty(vio);
             
-            var conf = MainMethods.GetConflict(tree);
+            var conf = _conformanceEvaluator.GetConflict(tree);
             Assert.True(conf.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 1));
             Assert.True(conf.Exists(x => x.Activity == "L" && x.ActivityInTraceId == 3));
             Assert.True(conf.Exists(x => x.Activity == "L" && x.ActivityInTraceId == 4));
@@ -138,14 +140,14 @@ namespace TestRunning
             var tree = _builder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
 
-            var result = MainMethods.LocalLikelihood(tree);
+            var result = _conformanceEvaluator.LocalLikelihood(tree);
             Assert.Equal(2, result.Count);
             Assert.Equal(result.First().Value, 2/(double)3);
             Assert.Equal(result.Last().Value, 1/(double)3);
 
-            var cr = MainMethods.GetConflictNodes(tree);
-            Assert.Equal(2/(double)3, MainMethods.LocalLikelihood(tree, cr.First()));
-            Assert.Equal(1/(double)3, MainMethods.LocalLikelihood(tree, cr.Last()));
+            var cr = _conformanceEvaluator.GetConflictNodes(tree);
+            Assert.Equal(2/(double)3, _conformanceEvaluator.LocalLikelihood(tree, cr.First()));
+            Assert.Equal(1/(double)3, _conformanceEvaluator.LocalLikelihood(tree, cr.Last()));
             
         }
         
@@ -168,14 +170,14 @@ namespace TestRunning
                 }),
                 new(TemplateInstanceType.NotCoexistence, new List<ITemplate>(){nc})
             };
-            var cr = MainMethods.GetConflictNodes(tree);
+            var cr = _conformanceEvaluator.GetConflictNodes(tree);
 
             Assert.Equal(2, cr.Count);
             
-            var gl1 = MainMethods.GlobalLikelihood(tree, templates, cr.First());
+            var gl1 = _conformanceEvaluator.GlobalLikelihood(tree, templates, cr.First());
             //Assert.Equal(0, gl1);
             
-            var gl2 = MainMethods.GlobalLikelihood(tree, templates, cr.Last());
+            var gl2 = _conformanceEvaluator.GlobalLikelihood(tree, templates, cr.Last());
             //Assert.Equal(1/(double)6, gl2);
         }
         
@@ -234,10 +236,10 @@ namespace TestRunning
                     new LtlExpression("c")),
                 new LtlExpression("b"));
 
-            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, expr));
-            Assert.False(MainMethods.EvaluateExpression(eventsANotHolds, expr));
-            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, exprNotC));
-            Assert.False(MainMethods.EvaluateExpression(eventsANotHolds, exprNotC));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsAHolds, expr));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsANotHolds, expr));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsAHolds, exprNotC));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsANotHolds, exprNotC));
         }
         
         
@@ -262,9 +264,9 @@ namespace TestRunning
             LtlExpression exprB = new LtlExpression(Operators.Next,
                 new LtlExpression("b"));
 
-            Assert.True(MainMethods.EvaluateExpression(eventsNextB, exprB));
-            Assert.True(MainMethods.EvaluateExpression(eventsNextB, exprNotA));
-            Assert.False(MainMethods.EvaluateExpression(eventsNextB, exprA));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsNextB, exprB));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsNextB, exprNotA));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNextB, exprA));
         }
         
         [Fact]
@@ -292,9 +294,9 @@ namespace TestRunning
             LtlExpression exprNotC = new LtlExpression(Operators.Next,
                 new LtlExpression(Operators.Not, new LtlExpression("c")));
 
-            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, exprA));
-            Assert.False(MainMethods.EvaluateExpression(eventsANotHolds, exprA));
-            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, exprNotC));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsAHolds, exprA));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsANotHolds, exprA));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsAHolds, exprNotC));
         }
         
         [Fact]
@@ -318,8 +320,8 @@ namespace TestRunning
             LtlExpression exprA = new LtlExpression(Operators.Eventual,
                 new LtlExpression("a"));
 
-            Assert.True(MainMethods.EvaluateExpression(eventsAHolds, exprA));
-            Assert.False(MainMethods.EvaluateExpression(eventsANotHolds, exprA));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsAHolds, exprA));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsANotHolds, exprA));
         }
         
         [Fact]
@@ -343,16 +345,16 @@ namespace TestRunning
 
             AlternateResponse template = new AlternateResponse("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
             //This is true as there really was no other "a" until "c". => postprocessing later
-            Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 1);
             
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetFinishingExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetFinishingExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetFinishingExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetFinishingExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetFinishingExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetFinishingExpression()));
         }
         
         [Fact]
@@ -375,14 +377,14 @@ namespace TestRunning
             AlternatePrecedence template = new AlternatePrecedence("a", "b");
 
             //Algorithm from paper cant deal with b being last in the log
-            Assert.False(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
             
             //with preprocessing 
             eventsHolds = UtilMethods.PreprocessTraceForEvaluation(template, eventsHolds);
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
             
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 2);
         }
@@ -409,32 +411,32 @@ namespace TestRunning
             AlternateSuccession template = new AlternateSuccession("a", "b");
     
             ////Algorithm from paper cant deal with b being last in the log
-            Assert.False(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
             
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
             //This is true as there really was no other "a" until "b". => vacuity check
-            Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
             
             //finishing
-            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetFinishingExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetFinishingExpression()));
             
             //with preprocessing
             eventsHolds = UtilMethods.PreprocessTraceForEvaluation(template, eventsHolds);
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
 
             eventsNotHolds = UtilMethods.PreprocessTraceForEvaluation(template, eventsNotHolds);
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
 
             //This is true as there really was no other "a" until "b". => postprocessing later
             List<Event> eventsNotFinish = UtilMethods.PreprocessTraceForEvaluation(template, _eventsBNotOccurs);
-            Assert.True(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsNotFinish, template.GetExpression()));
 
             List<Event> eventsOnlyB = UtilMethods.PreprocessTraceForEvaluation(template, _eventsANotOccurs);
-            Assert.False(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnlyB, template.GetExpression()));
             
             //finishing
-            Assert.False(MainMethods.EvaluateExpression(eventsNotFinish, template.GetFinishingExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotFinish, template.GetFinishingExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -471,10 +473,10 @@ namespace TestRunning
 
             ChainResponse template = new ChainResponse("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotFinish, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsRepeats, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotFinish, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsRepeats, template.GetExpression()));
             
             CheckVacuity(template, 1);
         }
@@ -503,14 +505,14 @@ namespace TestRunning
 
             ChainPrecedence template = new ChainPrecedence("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
             //Algorithm from paper cant deal with b being first in the log => preprocessing
-            Assert.True(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsFar, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsFar, template.GetExpression()));
             
             //with preprocessing
             eventsNotHolds = UtilMethods.PreprocessTraceForEvaluation(template, eventsNotHolds);
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
             
             CheckVacuity(template, 2);
         }
@@ -542,15 +544,15 @@ namespace TestRunning
 
             ChainSuccession template = new ChainSuccession("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsOnlyA, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnlyA, template.GetExpression()));
             //Algorithm from paper cant deal with b being first in the log => preprocessing
-            Assert.True(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsOnlyB, template.GetExpression()));
             
             //with preprocessing
             eventsOnlyB = UtilMethods.PreprocessTraceForEvaluation(template, eventsOnlyB);
-            Assert.False(MainMethods.EvaluateExpression(eventsOnlyB, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnlyB, template.GetExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -568,8 +570,8 @@ namespace TestRunning
 
             Response template = new Response("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 1);
         }
@@ -592,9 +594,9 @@ namespace TestRunning
 
             Precedence template = new Precedence("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsStarts, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsStarts, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 2);
         }
@@ -612,8 +614,8 @@ namespace TestRunning
 
             Succession template = new Succession("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -639,9 +641,9 @@ namespace TestRunning
 
             RespondedExistence template = new RespondedExistence("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsAFirst, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsBFirst, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsAFirst, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsBFirst, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 1);
         }
@@ -666,9 +668,9 @@ namespace TestRunning
 
             NotSuccession template = new NotSuccession("a", "b");
 
-            Assert.False(MainMethods.EvaluateExpression(eventsABeforeB, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsBFirst, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsABeforeB, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsBFirst, template.GetExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -692,9 +694,9 @@ namespace TestRunning
 
             NotChainSuccession template = new NotChainSuccession("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -712,9 +714,9 @@ namespace TestRunning
 
             NotCoexistence template = new NotCoexistence("a", "b");
 
-            Assert.False(MainMethods.EvaluateExpression(eventsBoth, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsBoth, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -736,8 +738,8 @@ namespace TestRunning
 
             Init template = new Init("a");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsHolds, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsNotHolds, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
         }
         
         [Fact]
@@ -768,17 +770,17 @@ namespace TestRunning
             Existence templateThree = new Existence(3, "a");
             Existence templateZero = new Existence(0, "a");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsThree, templateOne.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsThree, templateThree.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsThree, templateZero.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsThree, templateOne.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsThree, templateThree.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsThree, templateZero.GetExpression()));
             
-            Assert.False(MainMethods.EvaluateExpression(eventsZero, templateOne.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsZero, templateZero.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsZero, templateThree.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsZero, templateOne.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsZero, templateZero.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsZero, templateThree.GetExpression()));
             
-            Assert.True(MainMethods.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsOnce, templateZero.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsOnce, templateThree.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsOnce, templateZero.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnce, templateThree.GetExpression()));
         }
         
         [Fact]
@@ -809,17 +811,17 @@ namespace TestRunning
             Exactly templateThree = new Exactly(3, "a");
             Exactly templateZero = new Exactly(0, "a");
 
-            Assert.False(MainMethods.EvaluateExpression(eventsThree, templateOne.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsThree, templateThree.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsThree, templateZero.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsThree, templateOne.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsThree, templateThree.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsThree, templateZero.GetExpression()));
             
-            Assert.False(MainMethods.EvaluateExpression(eventsZero, templateOne.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsZero, templateZero.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsZero, templateThree.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsZero, templateOne.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsZero, templateZero.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsZero, templateThree.GetExpression()));
             
-            Assert.True(MainMethods.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsOnce, templateZero.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsOnce, templateThree.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnce, templateZero.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnce, templateThree.GetExpression()));
         }
         
         [Fact]
@@ -835,9 +837,9 @@ namespace TestRunning
 
             Coexistence template = new Coexistence("a", "b");
 
-            Assert.True(MainMethods.EvaluateExpression(eventsBoth, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsBoth, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(_eventsANotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 0);
         }
@@ -871,14 +873,14 @@ namespace TestRunning
             
             Assert.Throws<ArgumentException>(() => new Absence(0, "a"));
 
-            Assert.False(MainMethods.EvaluateExpression(eventsThree, templateOne.GetExpression()));
-            Assert.False(MainMethods.EvaluateExpression(eventsThree, templateTwo.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsThree, templateOne.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsThree, templateTwo.GetExpression()));
             
-            Assert.True(MainMethods.EvaluateExpression(eventsZero, templateOne.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsZero, templateTwo.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsZero, templateOne.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsZero, templateTwo.GetExpression()));
             
-            Assert.False(MainMethods.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
-            Assert.True(MainMethods.EvaluateExpression(eventsOnce, templateTwo.GetExpression()));
+            Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
+            Assert.True(_constraintEvaluator.EvaluateExpression(eventsOnce, templateTwo.GetExpression()));
         }
 
         [Fact]

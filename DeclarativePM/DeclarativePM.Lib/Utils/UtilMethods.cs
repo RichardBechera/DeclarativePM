@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Utils

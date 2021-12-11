@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
@@ -65,6 +64,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="constraint"></param>
         private void AssignLeavesStatus(List<ActivationNode> nodes, BiTemplate constraint)
         {
+            ConstraintEvaluator evaluator = new();
             LtlExpression expr;
             foreach (var leaf in nodes)
             {
@@ -74,7 +74,7 @@ namespace DeclarativePM.Lib.Utils
                     expr = ar.GetFinishingExpression();
                 else
                     expr = constraint.GetExpression();
-                leaf.IsDead = !MainMethods
+                leaf.IsDead = !evaluator
                     .EvaluateExpression(leaf.Subtrace, expr);
             }
 
@@ -95,6 +95,8 @@ namespace DeclarativePM.Lib.Utils
             Queue<ActivationNode> fifo = new(nodes
                 .Where(node => !node.IsDead)
                 .OrderByDescending(x => x.Subtrace.Count));
+            if (fifo.Count == 0)
+                return new();
             ActivationNode longest = fifo.Dequeue();
             List<ActivationNode> result = new();
             int counter = fifo.Count;
