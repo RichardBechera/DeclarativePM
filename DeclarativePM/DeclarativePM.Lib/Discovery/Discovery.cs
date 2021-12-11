@@ -13,7 +13,7 @@ using DeclarativePM.Lib.Utils;
 
 namespace DeclarativePM.Lib.Discovery
 {
-    public class Discovery
+    public class Discovery : IDiscovery
     {
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
@@ -24,9 +24,19 @@ namespace DeclarativePM.Lib.Discovery
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
-        public DeclareModel DiscoverModel(EventLog log, decimal poe = 100, decimal poi = 100)
+        public DeclareModel DiscoverModel(EventLog log, decimal poe, decimal poi)
         {
             return DiscoverModel(log, GetTemplates(), poe, poi);
+        }
+
+        /// <summary>
+        /// Method discovers DECLARE model on top of an event log.
+        /// </summary>
+        /// <param name="log">Event log.</param>
+        /// <returns>DECLARE model representing an event log.</returns>
+        public DeclareModel DiscoverModel(EventLog log)
+        {
+            return DiscoverModel(log, 100, 100);
         }
         
         /// <summary>
