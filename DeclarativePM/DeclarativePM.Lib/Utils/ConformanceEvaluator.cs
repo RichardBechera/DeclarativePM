@@ -1,129 +1,21 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
 
 namespace DeclarativePM.Lib.Utils
 {
-    public static class MainMethods
+    public class ConformanceEvaluator
     {
-        /// <summary>
-        /// Evaluates whether expression holds for the case.
-        /// </summary>
-        /// <param name="events">Sorted list of event in a case.</param>
-        /// <param name="expression">Expression to be evaluated.</param>
-        /// <param name="position">Starting position from which we start the evaluation.</param>
-        /// <returns>Bool whether expression holds.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Expression contains undefined operator.</exception>
-        public static bool EvaluateExpression(List<Event> events, LtlExpression expression, int position = 0)
-        {
-            if (position >= events.Count)
-                return false;
-            
-            switch (expression.Operator)
-            {
-                case Operators.None:
-                    return events[position].Activity == expression.Atom;
-                    
-                case Operators.Not:
-                    return !EvaluateExpression(events, expression.InnerLeft, position);
-                    
-                case Operators.Next:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerLeft, position + 1);
-                    }
-
-                    return false;
-                    
-                case Operators.Subsequent:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerLeft, position) &&
-                               EvaluateExpression(events, expression, position + 1);
-                    }
-
-                    return EvaluateExpression(events, expression.InnerLeft, position);
-                
-                case Operators.Eventual:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerLeft, position) ||
-                               EvaluateExpression(events, expression, position + 1);
-                    }
-
-                    return EvaluateExpression(events, expression.InnerLeft, position);
-                    
-                case Operators.And:
-                    return EvaluateExpression(events, expression.InnerLeft, position) &&
-                           EvaluateExpression(events, expression.InnerRight, position);
-                    
-                case Operators.Or:
-                    return EvaluateExpression(events, expression.InnerLeft, position) ||
-                           EvaluateExpression(events, expression.InnerRight, position);
-                    
-                case Operators.Imply:
-                    return !EvaluateExpression(events, expression.InnerLeft, position) ||
-                           EvaluateExpression(events, expression.InnerRight, position);
-                    
-                case Operators.Equivalence:
-                    bool a = EvaluateExpression(events, expression.InnerLeft, position);
-                    bool b = EvaluateExpression(events, expression.InnerRight, position);
-                    return (a && b) || (!a && !b);
-                
-                case Operators.Least:
-                    if (position >= 0 && position < (events.Count - 1))
-                    {
-                        return EvaluateExpression(events, expression.InnerRight, position) ||
-                               (EvaluateExpression(events, expression.InnerLeft, position) &&
-                                EvaluateExpression(events, expression, position + 1));
-                    }
-
-                    return EvaluateExpression(events, expression.InnerLeft, position) ||
-                           EvaluateExpression(events, expression.InnerRight, position);
-                
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        /// <summary>
-        /// Evaluates whether trace is complaint with the the constraint.
-        /// </summary>
-        /// <param name="events">A trace for evaluation</param>
-        /// <param name="template">constraint for evaluation</param>
-        /// <param name="preprocessing">Some expressions need preprocessing for strict evaluation.
-        /// This involves mainly expressions containing precedence. True to preprocess, False otherwise.</param>
-        /// <returns></returns>
-        public static bool EvaluateConstraint(List<Event> events, ITemplate template,
-            bool preprocessing = true)
-        {
-            LtlExpression expr = template switch
-            {
-                AlternateResponse ar => ar.GetFinishingExpression(),
-                AlternateSuccession asu => asu.GetFinishingExpression(),
-                _ => template.GetExpression()
-            };
-
-            if (expr is null)
-                return false;
-            if(preprocessing)
-                events = UtilMethods.PreprocessTraceForEvaluation(template, events);
-            return EvaluateExpression(events, expr);
-        }
-
         /// <summary>
         /// Get all fulfilling activations from the activation tree.
         /// </summary>
         /// <param name="tree">Tree representing evaluation of constraint over some trace.</param>
         /// <returns>All fulfilling activations.</returns>
-        public static List<Event> GetFulfillment(ActivationBinaryTree tree)
+        public List<Event> GetFulfillment(ActivationBinaryTree tree)
         {
             return tree.Leaves
                 .Where(x => x.MaxFulfilling)
@@ -140,7 +32,7 @@ namespace DeclarativePM.Lib.Utils
         /// </summary>
         /// <param name="tree">Tree representing evaluation of constraint over some trace.</param>
         /// <returns>All violating activations.</returns>
-        public static List<Event> GetViolation(ActivationBinaryTree tree)
+        public List<Event> GetViolation(ActivationBinaryTree tree)
         {
             var all = tree.Leaves
                 .Where(x => x.MaxFulfilling)
@@ -157,7 +49,7 @@ namespace DeclarativePM.Lib.Utils
         /// </summary>
         /// <param name="tree">Tree representing evaluation of constraint over some trace.</param>
         /// <returns>All conflicting activations.</returns>
-        public static List<Event> GetConflict(ActivationBinaryTree tree, List<Event> violations = null, List<Event> fulfilments = null)
+        public List<Event> GetConflict(ActivationBinaryTree tree, List<Event> violations = null, List<Event> fulfilments = null)
 
         {
             violations ??= GetViolation(tree);
@@ -178,7 +70,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="conflicts">List of conflicting activations for which nodes should be returned.
         /// If null, all conflicting nodes in the tree will be returned.</param>
         /// <returns>List of conflicting nodes</returns>
-        public static List<ActivationNode> GetConflictNodes(ActivationBinaryTree tree, List<Event> conflicts = null)
+        public List<ActivationNode> GetConflictNodes(ActivationBinaryTree tree, List<Event> conflicts = null)
         {
             conflicts ??= GetConflict(tree);
             return GetNodesWith(tree, conflicts).ToList();
@@ -191,7 +83,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="conflicts">List of violating activations for which nodes should be returned.
         /// If null, all violating nodes in the tree will be returned.</param>
         /// <returns>List of violating nodes</returns>
-        public static List<ActivationNode> GetViolationNodes(ActivationBinaryTree tree, List<Event> violations = null)
+        public List<ActivationNode> GetViolationNodes(ActivationBinaryTree tree, List<Event> violations = null)
         {
             violations ??= GetViolation(tree);
             return GetNodesWith(tree, violations).ToList();
@@ -204,7 +96,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="conflicts">List of fulfilling activations for which nodes should be returned.
         /// If null, all fulfilling nodes in the tree will be returned.</param>
         /// <returns>List of fulfilling nodes</returns>
-        public static List<ActivationNode> GetFulfillNodes(ActivationBinaryTree tree, List<Event> fulfillments = null)
+        public List<ActivationNode> GetFulfillNodes(ActivationBinaryTree tree, List<Event> fulfillments = null)
         {
             fulfillments ??= GetFulfillment(tree);
             return GetNodesWith(tree, fulfillments).ToList();
@@ -216,7 +108,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="tree">Tree representing evaluation of constraint over some trace.</param>
         /// <param name="intr">List of activations for which corresponding nodes should be returned.</param>
         /// <returns>List of nodes containing at least one of activities from parameter intr</returns>
-        private static IEnumerable<ActivationNode> GetNodesWith(ActivationBinaryTree tree, List<Event> intr)
+        private IEnumerable<ActivationNode> GetNodesWith(ActivationBinaryTree tree, List<Event> intr)
         {
             if (intr is null)
                 return new List<ActivationNode>();
@@ -232,7 +124,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="conflictResolution">List of conflicting leaves/subtraces</param>
         /// <returns>Dictionary where key is conflicting resolution and value is its
         /// local likelihood from interval (0, 1)</returns>
-        public static Dictionary<ActivationNode, double> LocalLikelihood(ActivationBinaryTree tree,
+        public Dictionary<ActivationNode, double> LocalLikelihood(ActivationBinaryTree tree,
             List<ActivationNode> conflictResolution = null)
         {
             List<Event> conflicts = GetConflict(tree);
@@ -245,7 +137,7 @@ namespace DeclarativePM.Lib.Utils
                 .ToDictionary(x => x, y => LocalLikelihoodNode(y, na, tree.Constraint));
         }
         
-        public static double LocalLikelihood(ActivationBinaryTree tree,
+        public double LocalLikelihood(ActivationBinaryTree tree,
             ActivationNode conflictResolution)
         {
             ActivationTreeBuilder treeBuilder = new();
@@ -256,11 +148,11 @@ namespace DeclarativePM.Lib.Utils
             return nf / (double) na;
         }
 
-        private static double LocalLikelihoodNode(ActivationNode node, int na, BiTemplate constraint)
+        private double LocalLikelihoodNode(ActivationNode node, int na, BiTemplate constraint)
             => node.Subtrace.Count(constraint.IsActivation) / (double)na;
 
         //TODO
-        public static double GlobalLikelihood(ActivationBinaryTree tree,
+        public double GlobalLikelihood(ActivationBinaryTree tree,
             List<ParametrizedTemplate> model, ActivationNode conflictResolution)
         {
             double result = 0;
@@ -294,7 +186,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="model">Declare model towards which trace is to be checked</param>
         /// <param name="trace">Trace to be checked</param>
         /// <returns>Evaluation of trace for a model and each template and constraint in it.</returns>
-        public static TraceEvaluation EvaluateTrace(DeclareModel model, List<Event> trace)
+        public TraceEvaluation EvaluateTrace(DeclareModel model, List<Event> trace)
         {
             List<TemplateEvaluation> templateEvaluations = new List<TemplateEvaluation>();
             TraceEvaluation evaluation = new(trace, templateEvaluations);
@@ -317,7 +209,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="template">Template towards which trace is to be checked</param>
         /// <param name="trace">Trace to be checked</param>
         /// <returns>Evaluation of trace for template and each constraint in it.</returns>
-        public static TemplateEvaluation EvaluateTrace(ParametrizedTemplate template, List<Event> trace)
+        public TemplateEvaluation EvaluateTrace(ParametrizedTemplate template, List<Event> trace)
         {
             if (template.TemplateDescription.TemplateParametersType != TemplateTypes.BiTemplate)
                 //TODO evaluate others ?
@@ -342,7 +234,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="constraint">Constraint towards which trace is to be confirmed</param>
         /// <param name="trace">Trace to be checked</param>
         /// <returns>Conformance of trace for constraint.</returns>
-        public static ConstraintEvaluation ConformTrace(BiTemplate constraint, List<Event> trace)
+        public ConstraintEvaluation ConformTrace(BiTemplate constraint, List<Event> trace)
         {
             ActivationTreeBuilder treeBuilder = new();
             ActivationBinaryTree tree = treeBuilder.BuildTree(trace, (BiTemplate) constraint);
@@ -363,7 +255,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="tree">Tree representing evaluation of constraint over some trace.</param>
         /// <param name="events">Events to which type should be assigned.</param>
         /// <returns>Wrapped events from list events with assigned type.</returns>
-        private static List<WrappedEventActivation> GetEventActivationTypes(ActivationBinaryTree tree, List<Event> events)
+        private List<WrappedEventActivation> GetEventActivationTypes(ActivationBinaryTree tree, List<Event> events)
         {
             List<Event> fulfilment = GetFulfillment(tree);
             List<Event> violation = GetViolation(tree);
@@ -381,7 +273,7 @@ namespace DeclarativePM.Lib.Utils
         /// <param name="conflict">Conflicts</param>
         /// <param name="violation">Violations</param>
         /// <returns>Wrapped events from list events with assigned type.</returns>
-        private static List<WrappedEventActivation> GetEventActivationTypes(List<Event> events,
+        private List<WrappedEventActivation> GetEventActivationTypes(List<Event> events,
             List<Event> fulfilment, List<Event> conflict, List<Event> violation)
         {
             List<WrappedEventActivation> lst = new();
