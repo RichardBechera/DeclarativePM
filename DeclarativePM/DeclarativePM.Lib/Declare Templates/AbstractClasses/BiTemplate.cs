@@ -1,9 +1,9 @@
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.Models;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
 
-namespace DeclarativePM.Lib.Declare_Templates.TemplateInterfaces
+namespace DeclarativePM.Lib.Declare_Templates.AbstractClasses
 {
     public abstract class BiTemplate : ITemplate, IVacuityDetection
     {

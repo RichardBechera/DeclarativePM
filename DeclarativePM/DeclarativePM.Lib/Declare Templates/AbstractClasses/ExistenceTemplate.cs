@@ -1,6 +1,7 @@
+using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models.DeclareModels;
 
-namespace DeclarativePM.Lib.Declare_Templates.TemplateInterfaces
+namespace DeclarativePM.Lib.Declare_Templates.AbstractClasses
 {
     /// <summary>
     /// Represent templates of Existential type, those templates check

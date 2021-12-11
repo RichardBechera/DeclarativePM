@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DeclarativePM.Lib.Declare_Templates.AbstractClasses;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 
 namespace DeclarativePM.Lib.Models.ConformanceModels

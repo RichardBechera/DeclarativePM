@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DeclarativePM.Lib.Declare_Templates.AbstractClasses;
 using DeclarativePM.Lib.Declare_Templates.Factories;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;

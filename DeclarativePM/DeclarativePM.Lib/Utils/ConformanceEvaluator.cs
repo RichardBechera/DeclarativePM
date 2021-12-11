@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DeclarativePM.Lib.Declare_Templates.AbstractClasses;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.ConformanceModels;
