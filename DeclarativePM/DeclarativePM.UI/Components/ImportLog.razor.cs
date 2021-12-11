@@ -36,13 +36,13 @@ namespace DeclarativePM.UI.Components
             try
             {
                 _stream = new MemoryStream();
-                Importer importer = new Importer();
+                CsvLogImporter csvLogImporter = new CsvLogImporter();
 
                 await file.WriteToStreamAsync(_stream);
                 _stream.Seek(0, SeekOrigin.Begin);
                 GetUploadContent();
                 _stream.Seek(0, SeekOrigin.Begin);
-                _imported = importer.LoadCsv(_stream);
+                _imported = csvLogImporter.LoadLog(_stream);
                 headersDict = _imported.Headers.ToDictionary(x => x, HeaderTypeSet);
 
                 uploadMode = true;

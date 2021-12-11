@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using DeclarativePM.Lib.IO.IOInterfaces;
 using DeclarativePM.Lib.Models.DeclareModels;
 using Newtonsoft.Json;
 
@@ -9,7 +10,7 @@ namespace DeclarativePM.Lib.IO.Export
     /// <summary>
     /// Class responsible for export of models
     /// </summary>
-    public class Exporter
+    public class JsonModelExporter: IModelExporter
     {
         /// <summary>
         /// Exports Declare model into json string

@@ -18,7 +18,9 @@ namespace TestRunning
     public class UnitTests
     {
         private Discovery _disco = new();
-        private Importer _importer = new();
+        private CsvLogImporter _csvLogImporter = new();
+        private JsonModelImporter _jsonModelImporter = new();
+        private JsonModelExporter _jsonModelExporter = new();
         private ActivationTreeBuilder _builder = new();
         private ConstraintEvaluator _constraintEvaluator = new();
         private ConformanceEvaluator _conformanceEvaluator = new();
@@ -75,7 +77,7 @@ namespace TestRunning
         public void Test1()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample1.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = _csvLogImporter.LoadLog(path4);
             var log2 = third.BuildEventLog();
             var tree = _builder.BuildTree(log2.Logs, 
                 new Response("C", "S"));
@@ -95,7 +97,7 @@ namespace TestRunning
         {
             //TODO relative path
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample2.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = _csvLogImporter.LoadLog(path4);
             var log2 = third.BuildEventLog();
             var tree = _builder.BuildTree(log2.Logs, 
                 new AlternateResponse("H", "M"));
@@ -115,7 +117,7 @@ namespace TestRunning
         public void Test3()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = _csvLogImporter.LoadLog(path4);
             var log2 = third.BuildEventLog();
             var tree = _builder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
@@ -136,7 +138,7 @@ namespace TestRunning
         public void Test4()
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = _importer.LoadCsv(path4);
+            var third = _csvLogImporter.LoadLog(path4);
             var log2 = third.BuildEventLog();
             var tree = _builder.BuildTree(log2.Logs, 
                 new NotCoexistence("L", "H"));
@@ -158,7 +160,7 @@ namespace TestRunning
             Assert.True(true);
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             
-            var third = _importer.LoadCsv(path4);
+            var third = _csvLogImporter.LoadLog(path4);
             var log2 = third.BuildEventLog();
             NotCoexistence nc = new NotCoexistence("L", "H"); 
             var tree = _builder.BuildTree(log2.Logs, nc);
@@ -187,7 +189,7 @@ namespace TestRunning
         {
             var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
             
-            var third = _importer.LoadCsv(path4);
+            var third = _csvLogImporter.LoadLog(path4);
             var log = third.BuildEventLog();
             var model = _disco.DiscoverModel(log, new List<ParametrizedTemplate>()
             {
@@ -885,7 +887,7 @@ namespace TestRunning
         }
 
         [Fact]
-        public void ExporTest()
+        public void ExportTest()
         {
             var coexistenceP = new ParametrizedTemplate(TemplateInstanceType.Coexistence, new List<ITemplate>()
             {
@@ -912,12 +914,11 @@ namespace TestRunning
             coexistenceP.OptionalConstraints.Add(coexistenceP.TemplateInstances[0]);
             coexistenceP.OptionalConstraints.Add(coexistenceP.TemplateInstances[1]);
 
-            Exporter exporter = new Exporter();
-            string json = exporter.ExportModel(model);
-            var m = _importer.LoadModelFromJsonString(json);
+            //string json = _jsonModelExporter.ExportModel(model);
+            //var m = _jsonModelImporter.LoadModelFromString(json);
 
-            //exporter.ExportSaveModelAsync(model, "/home/richard/Documents/bakalarka/garbage", "testmodel");
-            //var m = importer.LoadModelFromJsonPath("/home/richard/Documents/bakalarka/garbage/testmodel.json");
+            _jsonModelExporter.ExportSaveModelAsync(model, "/home/richard/Documents/bakalarka/garbage", "testmodel");
+            var m = _jsonModelImporter.LoadModel("/home/richard/Documents/bakalarka/garbage/testmodel.json");
             
             Assert.Equal(model.Name, m.Name);
             Assert.Equal(model.Constraints.Count, m.Constraints.Count);

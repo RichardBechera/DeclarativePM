@@ -25,11 +25,11 @@
         MemoryStream stream = new MemoryStream();
         try
         {
-            Importer importer = new Importer();
+            JsonModelImporter jsonModelImporter = new ();
 
             await file.WriteToStreamAsync(stream);
             stream.Seek(0, SeekOrigin.Begin);
-            DeclareModel model = await importer.LoadModelFromJsonStream(stream);
+            DeclareModel model = await jsonModelImporter.LoadModelAsync(stream);
 
             StateContainer.DeclareModels.Add(model);
         }

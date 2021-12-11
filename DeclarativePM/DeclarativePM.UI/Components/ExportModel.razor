@@ -21,8 +21,8 @@
             return;
         }
 
-        Exporter exporter = new Exporter();
-        string json = exporter.ExportModel(SelectedModel);
+        JsonModelExporter jsonModelExporter = new JsonModelExporter();
+        string json = jsonModelExporter.ExportModel(SelectedModel);
         await BlazorDownloadFileService.DownloadFileFromText($"{SelectedModel.Name}.json", json, System.Text.Encoding.UTF8, "application/octet-stream");
     }
 
