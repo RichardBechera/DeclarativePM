@@ -6,8 +6,6 @@
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
 
-<h3>Create</h3>
-
 @if (chooseMethod)
 {
     <MatButton OnClick="() => ChooseMethod(CreateMethod.Create)">Create DECLARE model</MatButton>
@@ -85,7 +83,7 @@ else
             else
             {
                 <span>
-                <MatTooltip Tooltip="PoI says how many instances (traces) a constraint must satisfy.
+                <!--<MatTooltip Tooltip="PoI says how many instances (traces) a constraint must satisfy.
                  If PoI is set to 95%, for a constraint to be discovered, a candidate must satisfy at least 95% of traces.">
                 <MatNumericUpDownField Label="Percentage of Instances"
                                        @bind-Value=@current.Poi
@@ -102,7 +100,7 @@ else
                                                            Minimum=0 Maximum=100
                                                            RefBack="@context">
                                     </MatNumericUpDownField>
-                                    </MatTooltip>
+                                    </MatTooltip>-->
                     @if (CurrentlyEditedTemplate.TemplateTypes == TemplateTypes.Existence)
                     {
                         <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event A"></MatSelectItem>
@@ -126,7 +124,6 @@ else
                     
                 </span>
             }
-            <MatButton OnClick="SaveModel">Save DECLARE MODEL</MatButton>
             <MatTable Items="currentTemplates" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
                 <MatTableHeader>
                     <th>Name</th>
@@ -143,6 +140,7 @@ else
             </MatTable>
             </div>
         <div class="Tree">
+            <MatButton OnClick="SaveModel">Save DECLARE MODEL</MatButton>
             <!-- TREE -->
             <MatTreeView TNode="TreeNodeModel"
                          RootNode="@treeTemplates"

@@ -31,7 +31,7 @@ namespace DeclarativePM.UI.Pages
         private TemplateEvaluation _templateEvaluation;
         private ConstraintEvaluation _constraintEvaluation;
         private MatChip selectedChip;
-        private ConformanceEvaluator _evaluator;
+        private ConformanceEvaluator _evaluator = new();
         public async Task AddCases()
         {
             var result = await MatDialogService.AskAsync("Would you like to:", new string[] {"Create new trace", "Import traces from log", "Close"});
