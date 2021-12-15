@@ -56,8 +56,7 @@ namespace DeclarativePM.Lib.Discovery
                 .Where(t => t.IsValueType && t.IsAssignableTo(typeof(ITemplate)))
                 .Select(t => new ParametrizedTemplate(t))
                 .ToList();
-            DiscoverModel(log, temp, true, poe, poi);
-            return new DeclareModel("Declare model", temp, log);
+            return DiscoverModel(log, temp, true, poe, poi);
         }
 
         /// <summary>
@@ -68,8 +67,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <returns>DECLARE model representing an event log.</returns>
         public DeclareModel DiscoverModel(EventLog log, List<ParametrizedTemplate> templates)
         {
-            DiscoverModel(log, templates, false);
-            return new DeclareModel("Declare model", templates, log);
+            return DiscoverModel(log, templates, false);
         }
 
         /// <summary>
@@ -81,8 +79,7 @@ namespace DeclarativePM.Lib.Discovery
         /// <returns>DECLARE model representing an event log.</returns>
         public async Task<DeclareModel> DiscoverModelAsync(EventLog log, List<ParametrizedTemplate> templates, CancellationToken ctk)
         {
-            await Task.Run(() => DiscoverModel(log, templates, false), ctk);
-            return new DeclareModel("Declare model", templates, log);
+            return await Task.Run(() => DiscoverModel(log, templates, false), ctk);
         }
 
         /// <summary>
@@ -100,7 +97,6 @@ namespace DeclarativePM.Lib.Discovery
         private DeclareModel DiscoverModel(EventLog log, List<ParametrizedTemplate> templates, 
             bool isGeneralPoX, decimal poe = 100, decimal poi = 100)
         {
-            //var importedEventLogs = log as ImportedEventLog[] ?? log.ToArray();
             var longestCase = log.Logs.GroupBy(e => e.CaseId, e => e.CaseId,
                 (_, v) => v.Count()).Max();
 

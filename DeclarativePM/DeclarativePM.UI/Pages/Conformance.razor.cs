@@ -229,6 +229,8 @@ namespace DeclarativePM.UI.Pages
             _traceEvaluation.TemplateEvaluations.AddRange(temp);
             showResults = true;
             _templateEvaluation = _traceEvaluation.TemplateEvaluations.FirstOrDefault();
+            if (_templateEvaluation is null)
+                await MatDialogService.AlertAsync("DECLARE model is empty");
             await InvokeAsync(StateHasChanged);
         }
         

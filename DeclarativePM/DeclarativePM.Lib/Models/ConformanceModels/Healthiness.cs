@@ -32,6 +32,14 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
 
         public Healthiness(ActivationBinaryTree tree)
         {
+            if (tree is null)
+            {
+                ActivationSparsity = 0;
+                FulfillmentRation = 0;
+                ViolationRation = 0;
+                ConflictRation = 0;
+                return;
+            }
             ConformanceEvaluator evaluator = new();
             int violations = evaluator.GetViolation(tree).Count;
             int fulfilments = evaluator.GetFulfillment(tree).Count;
@@ -51,6 +59,15 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
         
         public Healthiness(ActivationBinaryTree tree, int violations, int fulfillments, int conflicts)
         {
+            if (tree is null)
+            {
+                ActivationSparsity = 0;
+                FulfillmentRation = 0;
+                ViolationRation = 0;
+                ConflictRation = 0;
+                return;
+            }
+
             int na = violations + fulfillments + conflicts;
             int n = tree.Leaves
                 .SelectMany(x => x.Subtrace)
