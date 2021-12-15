@@ -11,10 +11,12 @@
             <span>
                 @if (!SelectedTraces.Contains(context))
                 {
-                    <MatIconButton OnClick="@(() => AddTrace(context))" Icon="add"/>                }
+                    <MatIconButton OnClick="@(() => AddTrace(context))" Icon="add"/>
+                }
                 else
                 {
-                    <MatIconButton OnClick="@(() => RemoveTrace(context))" Icon="remove"/>                }
+                    <MatIconButton OnClick="@(() => RemoveTrace(context))" Icon="remove"/>
+                }
             </span>
         </td>
         <td style="@Utilities.GetExpansionBackground(context, SelectedTraces)">@context.Case</td>

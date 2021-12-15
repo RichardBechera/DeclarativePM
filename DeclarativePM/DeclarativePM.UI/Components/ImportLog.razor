@@ -1,5 +1,5 @@
-@using DeclarativePM.UI.Enums
 @using DeclarativePM.UI.Data
+@using DeclarativePM.UI.Enums
 @using DeclarativePM.Lib.IO.Import
 @implements IDisposable
 
@@ -17,12 +17,14 @@
         @content
     </pre>
 
-    <MatTextField @bind-Value="@LogName" Label="Log name" ></MatTextField><br/>
+    <MatTextField @bind-Value="@LogName" Label="Log name"></MatTextField>
+    <br/>
     @foreach (var head in headersDict)
     {
         var key = head.Key;
         <MatSelectItem value="@headersDict[key]" Items="@value2Items" ValueChanged="@((HeaderType ht) => EnumChanged(ht, key))" HelperText="@key"
-                       HelperTextPersistent="true"></MatSelectItem>
+                       HelperTextPersistent="true">
+        </MatSelectItem>
     }
 
     <MatButton OnClick="Import">Import</MatButton>
@@ -39,6 +41,8 @@
         <td>@context.Name</td>
         <td>@context.Cases().Count.ToString()</td>
         <td>@context.Logs.Count.ToString()</td>
-        <td style="background: #ff0d00"><MatIconButton OnClick="@(() => RemoveLog(context))" Icon="remove"></MatIconButton></td>
+        <td style="background: #ff0d00">
+            <MatIconButton OnClick="@(() => RemoveLog(context))" Icon="remove"></MatIconButton>
+        </td>
     </MatTableRow>
 </MatTable>

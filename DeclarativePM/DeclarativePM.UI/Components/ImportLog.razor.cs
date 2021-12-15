@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DeclarativePM.Lib.IO.Import;
 using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.UI.Enums;
 using MatBlazor;
@@ -13,15 +12,20 @@ namespace DeclarativePM.UI.Components
 {
     public partial class ImportLog
     {
+        private ImportedEventLog _imported;
         private MemoryStream _stream;
-        string content;
-        ImportedEventLog _imported;
-        IMatFileUploadEntry file;
-        bool uploadMode = false;
-        string LogName;
+        private string content;
+        private IMatFileUploadEntry file;
 
-        Dictionary<string, HeaderType> headersDict;
-        HeaderType[] value2Items = Enum.GetValues(typeof(HeaderType)).Cast<HeaderType>().ToArray();
+        private Dictionary<string, HeaderType> headersDict;
+        private string LogName;
+        private bool uploadMode = false;
+        private HeaderType[] value2Items = Enum.GetValues(typeof(HeaderType)).Cast<HeaderType>().ToArray();
+
+        public void Dispose()
+        {
+            _stream?.Dispose();
+        }
 
         public async Task UploadLog(IMatFileUploadEntry[] files)
         {
@@ -33,10 +37,11 @@ namespace DeclarativePM.UI.Components
                 await MatDialogService.AlertAsync("Log has to be in csv");
                 return;
             }
+
             try
             {
                 _stream = new MemoryStream();
-                
+
                 await file.WriteToStreamAsync(_stream);
                 _stream.Seek(0, SeekOrigin.Begin);
                 GetUploadContent();
@@ -48,7 +53,8 @@ namespace DeclarativePM.UI.Components
             }
             catch
             {
-                await MatDialogService.AlertAsync("There was an error while uploading file. Check that file is .csv format");
+                await MatDialogService.AlertAsync(
+                    "There was an error while uploading file. Check that file is .csv format");
             }
             finally
             {
@@ -65,6 +71,7 @@ namespace DeclarativePM.UI.Components
                 await MatDialogService.AlertAsync("You need at least 1 activity and 1 case!");
                 return;
             }
+
             StateContainer.EventLogs.Add(_imported.BuildEventLog(LogName));
             await _stream.DisposeAsync();
             file = null;
@@ -124,7 +131,7 @@ namespace DeclarativePM.UI.Components
                     _imported.ChangeResource(key);
                     break;
             }
-            
+
             StateHasChanged();
         }
 
@@ -142,11 +149,6 @@ namespace DeclarativePM.UI.Components
             var time = timetmpList.Any() ? timetmpList[0] : null;
             var resources = headersDict.Where(x => x.Value == HeaderType.Resource).Select(x => x.Key).ToArray();
             _imported.ChooseTokens(act.FirstOrDefault().Key, caseId.FirstOrDefault().Key, time, resources);
-        }
-        
-        public void Dispose()
-        {
-            _stream?.Dispose();
         }
     }
 }

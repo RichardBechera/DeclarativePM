@@ -10,16 +10,18 @@
 {
     <MatButton OnClick="() => ChooseMethod(CreateMethod.Create)">Create DECLARE model</MatButton>
     <MatButton OnClick="() => ChooseMethod(CreateMethod.CreateWithLog)">Create DECLARE model from log</MatButton>
-    <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>    
+    <MatButton OnClick="() => ChooseMethod(CreateMethod.Edit)">Edit existing DECLARE model</MatButton>
 }
 else if (method == CreateMethod.CreateWithLog && chooseLog)
 {
     <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
-    <MatButton OnClick="LogContinueCreate" Disabled="@(_selectedLog is null)">Continue</MatButton>}
+    <MatButton OnClick="LogContinueCreate" Disabled="@(_selectedLog is null)">Continue</MatButton>
+}
 else if (method == CreateMethod.Edit && chooseModel)
 {
     <ChooseModel DeclareModels="@StateContainer.DeclareModels" @bind-SelectedModel="_declareModel"></ChooseModel>
-    <MatButton OnClick="ModelContinueCreate" Disabled="@(_declareModel is null)">Continue</MatButton>}
+    <MatButton OnClick="ModelContinueCreate" Disabled="@(_declareModel is null)">Continue</MatButton>
+}
 else
 {
     <MatChipSet Choice="true" SelectedChipChanged="SelectedPTemplateChanged">
@@ -32,7 +34,7 @@ else
                     @foreach (var tit in value2Items
                         .Where(x => x.GetTemplateBookType() == TemplateBookType.Existential))
                     {
-                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>                        
+                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>
                     }
                 </div>
 
@@ -43,7 +45,7 @@ else
                     @foreach (var tit in value2Items
                         .Where(x => x.GetTemplateBookType() == TemplateBookType.Relational))
                     {
-                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>                        
+                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>
                     }
                 </div>
 
@@ -54,7 +56,7 @@ else
                     @foreach (var tit in value2Items
                         .Where(x => x.GetTemplateBookType() == TemplateBookType.NotRelational))
                     {
-                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>                        
+                        <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit" Style="@GetChipBackground(tit)"></MatChip>
                     }
                 </div>
             </div>
@@ -87,10 +89,10 @@ else
                     {
                         <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event A"></MatSelectItem>
                         <MatNumericUpDownField Label="Occurrences"
-                                                                   @bind-Value=@CurrentlyEditedTemplate.Occurrences
-                                                                   DecimalPlaces=0
-                                                                   Minimum=1>
-                                            </MatNumericUpDownField>
+                                               @bind-Value=@CurrentlyEditedTemplate.Occurrences
+                                               DecimalPlaces=0
+                                               Minimum=1>
+                        </MatNumericUpDownField>
                     }
                     else if (CurrentlyEditedTemplate.TemplateTypes == TemplateTypes.BiTemplate)
                     {
@@ -101,9 +103,9 @@ else
                     {
                         <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event"></MatSelectItem>
                     }
-                    
+
                     <MatButton OnClick="SaveTemplate" Disabled="@DisableSave()">Save template</MatButton>
-                    
+
                 </span>
             }
             <MatTable Items="currentTemplates" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
@@ -117,10 +119,12 @@ else
                     <td>@current.TemplateDescription.TemplateType.ToString()</td>
                     <td>@GetValue1(context)</td>
                     <td>@GetValue2(context)</td>
-                    <td><MatIconButton Icon="remove" OnClick="@(() => RemoveTemplate(context))"></MatIconButton></td>
+                    <td>
+                        <MatIconButton Icon="remove" OnClick="@(() => RemoveTemplate(context))"></MatIconButton>
+                    </td>
                 </MatTableRow>
             </MatTable>
-            </div>
+        </div>
         <div class="Tree">
             <MatButton OnClick="SaveModel">Save DECLARE MODEL</MatButton>
             <!-- TREE -->

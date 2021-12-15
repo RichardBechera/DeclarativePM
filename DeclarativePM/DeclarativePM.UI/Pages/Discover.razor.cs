@@ -15,24 +15,30 @@ namespace DeclarativePM.UI.Pages
 {
     public partial class Discover
     {
+        private DeclareModel _declareModel;
         private EventLog _selectedLog;
-        bool selectLog = true;
-        bool selectParameters = false;
-        bool configureTemplates = false;
-        bool showDiscovered = false;
-        bool wait = false;
-        bool abort = false;
-
-        TemplateInstanceType[] value2Items = Enum.GetValues(typeof(TemplateInstanceType))
-            .Cast<TemplateInstanceType>().Where(x => x != TemplateInstanceType.None).ToArray();
 
         private List<TemplateDescription> _templateDescriptions;
+        private bool abort = false;
+        private bool configureTemplates;
 
-        MatChip[] selectedTemplates;
+        private MatChip[] selectedTemplates;
+        private bool selectLog = true;
+        private bool selectParameters;
+        private bool showDiscovered;
         private List<ParametrizedTemplate> templates;
+        private readonly CancellationTokenSource tokenSource = new();
         public TreeNodeModel treeTemplates;
-        private DeclareModel _declareModel;
-        CancellationTokenSource tokenSource = new();
+
+        private readonly TemplateInstanceType[] value2Items = Enum.GetValues(typeof(TemplateInstanceType))
+            .Cast<TemplateInstanceType>().Where(x => x != TemplateInstanceType.None).ToArray();
+
+        private bool wait;
+
+
+        public void Dispose()
+        {
+        }
 
         protected override void OnInitialized()
         {
@@ -86,37 +92,32 @@ namespace DeclarativePM.UI.Pages
         {
             configureTemplates = true;
             showDiscovered = false;
-            foreach (var pt in templates)
-            {
-                pt.TemplateInstances.Clear();
-            }
+            foreach (var pt in templates) pt.TemplateInstances.Clear();
             await InvokeAsync(StateHasChanged);
         }
 
         private void CreateTemplates()
         {
-            bool isNew = templates is null;
+            var isNew = templates is null;
             templates ??= new List<ParametrizedTemplate>();
             if (!isNew)
-            {
                 templates = templates
                     .Where(x => selectedTemplates
                         .Any(y => x.TemplateDescription.TemplateType == (TemplateInstanceType) y.Value))
                     .ToList();
-            }
 
             foreach (var tit in selectedTemplates.Select(x => x.Value).Cast<TemplateInstanceType>())
             {
                 if (!isNew && templates.Any(x => x.TemplateDescription.TemplateType == tit))
                     continue;
-                templates.Add(new(tit));
+                templates.Add(new ParametrizedTemplate(tit));
             }
         }
 
 
         public async Task ModelDiscoveryAsync()
         {
-            CancellationToken ctk = tokenSource.Token;
+            var ctk = tokenSource.Token;
             _declareModel = await Discovery.DiscoverModelAsync(_selectedLog, templates, ctk);
         }
 
@@ -129,11 +130,6 @@ namespace DeclarativePM.UI.Pages
         {
             if (_declareModel is not null && !StateContainer.DeclareModels.Contains(_declareModel))
                 StateContainer.DeclareModels.Add(_declareModel);
-        }
-
-
-        public void Dispose()
-        {
         }
     }
 }

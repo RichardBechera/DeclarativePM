@@ -16,35 +16,35 @@ using Microsoft.AspNetCore.Components;
 
 namespace DeclarativePM.UI.Pages
 {
-    public partial class Create : ComponentBase
+    public partial class Create
     {
-        
-        private CreateMethod method = CreateMethod.Undefined;
-        private bool chooseMethod = true;
-        private bool chooseLog = false;
-        private bool chooseModel = false;
+        private DeclareModel _declareModel;
         private EventLog _selectedLog;
+        public List<string> activities;
+        private bool chooseLog;
+        private bool chooseMethod = true;
+        private bool chooseModel;
+        private ParametrizedTemplate current;
+        public CreateTemplateWrap CurrentlyEditedTemplate;
+        private List<ITemplate> currentTemplates = new();
+
+        private CreateMethod method = CreateMethod.Undefined;
 
         public ITemplate SelectedTemplateInstance;
-        public CreateTemplateWrap CurrentlyEditedTemplate;
 
         private List<ParametrizedTemplate> templates;
-        private List<ITemplate> currentTemplates = new();
-        private ParametrizedTemplate current;
-        public List<string> activities;
         public TreeNodeModel treeTemplates;
-        private DeclareModel _declareModel;
-        
-        TemplateInstanceType[] value2Items = Enum.GetValues(typeof(TemplateInstanceType))
+
+        private readonly TemplateInstanceType[] value2Items = Enum.GetValues(typeof(TemplateInstanceType))
             .Cast<TemplateInstanceType>().Where(x => x != TemplateInstanceType.None).ToArray();
 
-        
+
         public async Task ChooseMethod(CreateMethod val)
         {
             if (val == CreateMethod.Create)
             {
-                templates = new();
-                activities = new();
+                templates = new List<ParametrizedTemplate>();
+                activities = new List<string>();
                 Utilities.CreateTreeNode(out treeTemplates, templates);
             }
 
@@ -56,17 +56,17 @@ namespace DeclarativePM.UI.Pages
                 chooseModel = true;
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public async Task LogContinueCreate()
         {
-
-            if (StateContainer.DeclareModels.Any(x => x.Log ==_selectedLog))
+            if (StateContainer.DeclareModels.Any(x => x.Log == _selectedLog))
             {
                 var result = await MatDialogService.AskAsync($"For {_selectedLog.Name} already existing" +
-                                                             $" DECLARE model was found, would you like to import it?", new[] {"YES", "NO", "CANCEL"});
+                                                             " DECLARE model was found, would you like to import it?",
+                    new[] {"YES", "NO", "CANCEL"});
                 if (result == "CANCEL")
                     return;
-                
+
                 if (result == "YES")
                 {
                     chooseLog = false;
@@ -79,20 +79,20 @@ namespace DeclarativePM.UI.Pages
 
             chooseLog = false;
             activities = _selectedLog.Logs.Select(x => x.Activity).Distinct().ToList();
-            templates = new();
+            templates = new List<ParametrizedTemplate>();
             Utilities.CreateTreeNode(out treeTemplates, templates);
-            currentTemplates = new();
-            
+            currentTemplates = new List<ITemplate>();
+
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public async Task ModelContinueCreate()
         {
             chooseModel = false;
             templates = _declareModel.Constraints.ToList();
             activities = _declareModel.GetAllActivities();
             Utilities.CreateTreeNode(out treeTemplates, templates);
-            
+
             await InvokeAsync(StateHasChanged);
         }
 
@@ -106,6 +106,7 @@ namespace DeclarativePM.UI.Pages
                 await MatDialogService.AlertAsync("Activity is already in the list");
                 return;
             }
+
             activities.Add(result.Trim());
             await InvokeAsync(StateHasChanged);
         }
@@ -116,13 +117,14 @@ namespace DeclarativePM.UI.Pages
                 activities.Remove(activity);
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public string GetChipBackground(TemplateInstanceType tit)
         {
             if (current is not null && current.TemplateDescription.TemplateType == tit)
                 return "background: #b6b6b6";
             return templates.Any(x => x.TemplateDescription.TemplateType == tit && x.TemplateInstances.Count > 0)
-                ? "background: #ffd5ff" : "background: #f3f3f3";
+                ? "background: #ffd5ff"
+                : "background: #f3f3f3";
         }
 
         public void SelectionChangedEvent(object row)
@@ -130,43 +132,47 @@ namespace DeclarativePM.UI.Pages
             if (row is null)
             {
                 SelectedTemplateInstance = null;
-                CurrentlyEditedTemplate = new(current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
+                CurrentlyEditedTemplate = new CreateTemplateWrap(current.TemplateDescription.TemplateType,
+                    current.TemplateDescription.TemplateParametersType);
             }
             else
             {
                 SelectedTemplateInstance = (ITemplate) row;
                 CurrentlyEditedTemplate = WrapSelection();
             }
+
             StateHasChanged();
         }
 
         public CreateTemplateWrap WrapSelection()
         {
-            switch(current.TemplateDescription.TemplateParametersType)
+            switch (current.TemplateDescription.TemplateParametersType)
             {
                 case TemplateTypes.Existence:
-                    ExistenceTemplate temp1 = (ExistenceTemplate) SelectedTemplateInstance;
-                    return new(temp1.GetEvent(), temp1.GetCount(), 
+                    var temp1 = (ExistenceTemplate) SelectedTemplateInstance;
+                    return new CreateTemplateWrap(temp1.GetEvent(), temp1.GetCount(),
                         current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
                 case TemplateTypes.BiTemplate:
-                    BiTemplate temp2 = (BiTemplate) SelectedTemplateInstance;
-                    return new(temp2.GetEventA(), temp2.GetEventB(),
+                    var temp2 = (BiTemplate) SelectedTemplateInstance;
+                    return new CreateTemplateWrap(temp2.GetEventA(), temp2.GetEventB(),
                         current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
                 case TemplateTypes.UniTemplate:
-                    UniTemplate temp3 = (UniTemplate) SelectedTemplateInstance;
-                    return new(temp3.GetEventA(), current.TemplateDescription.TemplateType,
+                    var temp3 = (UniTemplate) SelectedTemplateInstance;
+                    return new CreateTemplateWrap(temp3.GetEventA(), current.TemplateDescription.TemplateType,
                         current.TemplateDescription.TemplateParametersType);
                 default:
                     throw new ArgumentOutOfRangeException();
-            };
+            } ;
         }
 
         public async Task SelectedPTemplateChanged(MatChip selectedTemplate)
         {
-            current = templates.Find(x => x.TemplateDescription.TemplateType == (TemplateInstanceType)selectedTemplate.Value);
+            current = templates.Find(x =>
+                x.TemplateDescription.TemplateType == (TemplateInstanceType) selectedTemplate.Value);
             current ??= new ParametrizedTemplate((TemplateInstanceType) selectedTemplate.Value);
             currentTemplates = current.TemplateInstances;
-            CurrentlyEditedTemplate = new(current.TemplateDescription.TemplateType, current.TemplateDescription.TemplateParametersType);
+            CurrentlyEditedTemplate = new CreateTemplateWrap(current.TemplateDescription.TemplateType,
+                current.TemplateDescription.TemplateParametersType);
             await InvokeAsync(StateHasChanged);
         }
 
@@ -185,16 +191,16 @@ namespace DeclarativePM.UI.Pages
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
-        
+
         public string GetValue2(ITemplate template)
         {
             if (current is null)
                 return "";
             return current.TemplateDescription.TemplateParametersType switch
             {
-                TemplateTypes.Existence => 
+                TemplateTypes.Existence =>
                     ((ExistenceTemplate) template).GetCount().ToString(),
-                TemplateTypes.BiTemplate => 
+                TemplateTypes.BiTemplate =>
                     ((BiTemplate) template).GetEventB(),
                 TemplateTypes.UniTemplate => "",
                 _ => throw new ArgumentOutOfRangeException()
@@ -217,13 +223,12 @@ namespace DeclarativePM.UI.Pages
         public void RemoveTemplate(ITemplate template)
         {
             foreach (var templateInstance in current.TemplateInstances)
-            {
                 if (templateInstance.GetExpression().ToString() == template.GetExpression().ToString())
                 {
                     current.TemplateInstances.Remove(templateInstance);
                     break;
                 }
-            }
+
             Utilities.CreateTreeNode(out treeTemplates, templates);
             StateHasChanged();
         }
@@ -232,7 +237,7 @@ namespace DeclarativePM.UI.Pages
         {
             ITemplate template = CurrentlyEditedTemplate.TemplateTypes switch
             {
-                TemplateTypes.UniTemplate 
+                TemplateTypes.UniTemplate
                     => UniTemplateFactory.GetInstance(CurrentlyEditedTemplate.TemplateInstanceType,
                         CurrentlyEditedTemplate.EventA.Trim()),
                 TemplateTypes.BiTemplate
@@ -249,14 +254,15 @@ namespace DeclarativePM.UI.Pages
                 return;
             }
 
-            if (current.TemplateInstances.Exists(t => t.GetExpression().ToString() == template.GetExpression().ToString()))
+            if (current.TemplateInstances.Exists(t =>
+                t.GetExpression().ToString() == template.GetExpression().ToString()))
             {
                 await MatDialogService.AlertAsync("This template already exists in the list");
                 return;
             }
 
             current.TemplateInstances.Add(template);
-            if(!templates.Contains(current))
+            if (!templates.Contains(current))
                 templates.Add(current);
             Utilities.CreateTreeNode(out treeTemplates, templates);
             await InvokeAsync(StateHasChanged);
@@ -267,8 +273,8 @@ namespace DeclarativePM.UI.Pages
             return CurrentlyEditedTemplate.TemplateTypes switch
             {
                 TemplateTypes.Existence => !activities.Exists(x => CurrentlyEditedTemplate.EventA == x),
-                TemplateTypes.BiTemplate => !(activities.Exists(x => CurrentlyEditedTemplate.EventA == x) 
-                                            && activities.Exists(x => CurrentlyEditedTemplate.EventB == x)),
+                TemplateTypes.BiTemplate => !(activities.Exists(x => CurrentlyEditedTemplate.EventA == x)
+                                              && activities.Exists(x => CurrentlyEditedTemplate.EventB == x)),
                 TemplateTypes.UniTemplate => !activities.Exists(x => CurrentlyEditedTemplate.EventA == x),
                 _ => true
             };
@@ -276,10 +282,11 @@ namespace DeclarativePM.UI.Pages
 
         public async Task SaveModel()
         {
-            var result = await MatDialogService.PromptAsync("Name of the DECLARE model", _declareModel?.Name ?? "DEFAULT MODEL NAME");
+            var result = await MatDialogService.PromptAsync("Name of the DECLARE model",
+                _declareModel?.Name ?? "DEFAULT MODEL NAME");
             if (_declareModel is null)
             {
-                DeclareModel md = new DeclareModel(result.Trim(), templates);
+                var md = new DeclareModel(result.Trim(), templates);
                 _declareModel = md;
                 StateContainer.DeclareModels.Add(md);
             }

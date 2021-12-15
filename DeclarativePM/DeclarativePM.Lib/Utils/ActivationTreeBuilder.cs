@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.AbstractClasses;
-using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
@@ -10,14 +9,14 @@ using DeclarativePM.Lib.Models.LogModels;
 namespace DeclarativePM.Lib.Utils
 {
     /// <summary>
-    /// Class for building an activation trees for conformance checking.
+    ///     Class for building an activation trees for conformance checking.
     /// </summary>
     public class ActivationTreeBuilder
     {
         /// <summary>
-        /// Builds an ActivationBinaryTree from a trace and a constraint.
-        /// Idea behind this algorithm is taken from
-        /// https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6337271
+        ///     Builds an ActivationBinaryTree from a trace and a constraint.
+        ///     Idea behind this algorithm is taken from
+        ///     https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6337271
         /// </summary>
         /// <param name="trace">Trace</param>
         /// <param name="constraint">Constraint</param>
@@ -26,7 +25,7 @@ namespace DeclarativePM.Lib.Utils
         {
             trace = UtilMethods.PreprocessTraceForEvaluation(constraint, trace);
             ActivationBinaryTree tree = new(constraint);
-            int id = 1;
+            var id = 1;
             foreach (var e in trace)
             {
                 e.ActivityInTraceId = id;
@@ -41,7 +40,7 @@ namespace DeclarativePM.Lib.Utils
                         //left
                         ActivationNode left = new(leaf.Subtrace.ToList());
                         tree.AddNodeLeft(leaf, left);
-                        
+
                         //right
                         ActivationNode right = new(leaf.Subtrace.ToList());
                         right.Subtrace.Add(e);
@@ -53,15 +52,15 @@ namespace DeclarativePM.Lib.Utils
                     }
                 }
             }
-            
+
             AssignLeavesStatus(tree.Leaves, constraint);
 
             return tree;
         }
 
         /// <summary>
-        /// Checks a set of leaves whether they fulfill the constraint and
-        /// assigns them dead status. Dead if they do no fulfill the constraint, true otherwise. 
+        ///     Checks a set of leaves whether they fulfill the constraint and
+        ///     assigns them dead status. Dead if they do no fulfill the constraint, true otherwise.
         /// </summary>
         /// <param name="nodes"></param>
         /// <param name="constraint"></param>
@@ -81,15 +80,12 @@ namespace DeclarativePM.Lib.Utils
                     .EvaluateExpression(leaf.Subtrace, expr);
             }
 
-            List<ActivationNode> maxFulfillingSubtraces = GetMaximalFulfillingSubtraces(nodes);
-            foreach (var node in maxFulfillingSubtraces)
-            {
-                node.MaxFulfilling = true;
-            }
+            var maxFulfillingSubtraces = GetMaximalFulfillingSubtraces(nodes);
+            foreach (var node in maxFulfillingSubtraces) node.MaxFulfilling = true;
         }
 
         /// <summary>
-        /// From set of subtraces chooses those which are maximal fulfilling in the given set.
+        ///     From set of subtraces chooses those which are maximal fulfilling in the given set.
         /// </summary>
         /// <param name="nodes">Nodes containing subtraces</param>
         /// <returns>Nodes containing maximal fulfilling subtraces</returns>
@@ -99,17 +95,17 @@ namespace DeclarativePM.Lib.Utils
                 .Where(node => !node.IsDead)
                 .OrderByDescending(x => x.Subtrace.Count));
             if (fifo.Count == 0)
-                return new();
-            ActivationNode longest = fifo.Dequeue();
+                return new List<ActivationNode>();
+            var longest = fifo.Dequeue();
             List<ActivationNode> result = new();
-            int counter = fifo.Count;
-            
+            var counter = fifo.Count;
+
             while (fifo.Count > 0)
             {
-                ActivationNode candidate = fifo.Dequeue();
+                var candidate = fifo.Dequeue();
                 counter--;
-                
-                if (!IsSubtrace(new(longest.Subtrace), new(candidate.Subtrace)))
+
+                if (!IsSubtrace(new Stack<Event>(longest.Subtrace), new Stack<Event>(candidate.Subtrace)))
                     fifo.Enqueue(candidate);
 
                 if (counter == 0)
@@ -119,6 +115,7 @@ namespace DeclarativePM.Lib.Utils
                     counter = fifo.Count;
                 }
             }
+
             if (longest is not null && !result.Contains(longest))
                 result.Add(longest);
 
@@ -126,7 +123,7 @@ namespace DeclarativePM.Lib.Utils
         }
 
         /// <summary>
-        /// Returns bool whether b is subtrace of a.
+        ///     Returns bool whether b is subtrace of a.
         /// </summary>
         /// <param name="a">Trace a</param>
         /// <param name="b">Trace b</param>
@@ -135,7 +132,7 @@ namespace DeclarativePM.Lib.Utils
         {
             if (a.Count < b.Count)
                 return false;
-            
+
             while (a.Count > 0 && b.Count > 0)
             {
                 if (a.Peek().Activity.Equals(b.Peek().Activity) &&

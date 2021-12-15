@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,9 +5,9 @@ using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
-using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;
 using DeclarativePM.UI.Enums;
+using DeclarativePM.UI.Utils;
 using MatBlazor;
 using Microsoft.AspNetCore.Components;
 
@@ -16,33 +15,32 @@ namespace DeclarativePM.UI.Pages
 {
     public partial class Conformance : ComponentBase
     {
-        public List<TraceDTO> Traces = new();
-        public TraceDTO SelectedTrace;
+        private ConstraintEvaluation _constraintEvaluation;
         private DeclareModel _declareModel;
         private EventLog _selectedLog;
-        public TreeNodeModel TreeNodeModel;
         private List<TraceDTO> _selectedTraces = new();
-        public ConformancePageView View = ConformancePageView.Conformance;
-        public bool seeActivities = false;
+        private TemplateEvaluation _templateEvaluation;
+        private TraceEvaluation _traceEvaluation;
         public List<string> activities = new();
         public Event CurrentTraceEvent;
-        private TraceEvaluation _traceEvaluation;
-        private bool showResults = false;
-        private TemplateEvaluation _templateEvaluation;
-        private ConstraintEvaluation _constraintEvaluation;
+        public bool seeActivities;
         private MatChip selectedChip;
+        public TraceDTO SelectedTrace;
+        private bool showResults;
+        public List<TraceDTO> Traces = new();
+        public TreeNodeModel TreeNodeModel;
+        public ConformancePageView View = ConformancePageView.Conformance;
+
         public async Task AddCases()
         {
-            var result = await MatDialogService.AskAsync("Would you like to:", new string[] {"Create new trace", "Import traces from log", "Close"});
-            if (result == "Close")
-            {
-                return;
-            }
+            var result = await MatDialogService.AskAsync("Would you like to:",
+                new[] {"Create new trace", "Import traces from log", "Close"});
+            if (result == "Close") return;
 
             if (result == "Create new trace")
             {
-                SelectedTrace = new TraceDTO(new());
-                SelectedTrace.Case = String.Empty;
+                SelectedTrace = new TraceDTO(new List<Event>());
+                SelectedTrace.Case = string.Empty;
                 CurrentTraceEvent = new Event(activities?.FirstOrDefault(), SelectedTrace.Case);
                 seeActivities = true;
                 View = ConformancePageView.CreateTrace;
@@ -54,7 +52,7 @@ namespace DeclarativePM.UI.Pages
 
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public async Task ShowCase()
         {
             if (View == ConformancePageView.SelectedTrace)
@@ -73,14 +71,14 @@ namespace DeclarativePM.UI.Pages
             View = ConformancePageView.SelectedTrace;
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public async Task ChangeModel()
         {
             showResults = false;
             View = ConformancePageView.SelectModel;
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public async Task ChooseTrace(TraceDTO trace)
         {
             showResults = false;
@@ -103,28 +101,26 @@ namespace DeclarativePM.UI.Pages
             {
                 activities.AddRange(_declareModel.GetAllActivities());
                 activities = activities.Distinct().ToList();
-                Utils.Utilities.CreateTreeNode(out TreeNodeModel, _declareModel.Constraints);
+                Utilities.CreateTreeNode(out TreeNodeModel, _declareModel.Constraints);
             }
 
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public async Task OnLogSelected()
         {
             View = ConformancePageView.SelectTraces;
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public async Task OnTracesSelected()
         {
             View = ConformancePageView.Conformance;
             foreach (var trace in _selectedTraces)
-            {
-                if(!Traces.Contains(trace))
+                if (!Traces.Contains(trace))
                     Traces.Add(trace);
-            }
 
-            _selectedTraces = new();
+            _selectedTraces = new List<TraceDTO>();
             await InvokeAsync(StateHasChanged);
         }
 
@@ -144,20 +140,16 @@ namespace DeclarativePM.UI.Pages
         {
             if (e is not null && SelectedTrace.Events.Contains(e))
                 SelectedTrace.Events.Remove(e);
-            
+
             StateHasChanged();
         }
 
         public void SelectionChangedEvent(object e)
         {
             if (e is null)
-            {
-                CurrentTraceEvent = new(activities?.FirstOrDefault() ?? "", SelectedTrace.Case);
-            }
+                CurrentTraceEvent = new Event(activities?.FirstOrDefault() ?? "", SelectedTrace.Case);
             else
-            {
-                CurrentTraceEvent = (Event)e;
-            }
+                CurrentTraceEvent = (Event) e;
             StateHasChanged();
         }
 
@@ -166,7 +158,7 @@ namespace DeclarativePM.UI.Pages
             CurrentTraceEvent.CaseId = SelectedTrace.Case;
             SelectedTrace.Events.Add(CurrentTraceEvent);
 
-            CurrentTraceEvent = new(activities?.FirstOrDefault() ?? "", SelectedTrace.Case);
+            CurrentTraceEvent = new Event(activities?.FirstOrDefault() ?? "", SelectedTrace.Case);
 
             await InvokeAsync(StateHasChanged);
         }
@@ -174,13 +166,10 @@ namespace DeclarativePM.UI.Pages
         public void CaseChanged(string s)
         {
             SelectedTrace.Case = s;
-            
+
             //change this case in each event
-            foreach (var e in SelectedTrace.Events)
-            {
-                e.CaseId = s;
-            }
-            
+            foreach (var e in SelectedTrace.Events) e.CaseId = s;
+
             StateHasChanged();
         }
 
@@ -198,17 +187,18 @@ namespace DeclarativePM.UI.Pages
             seeActivities = !seeActivities;
             StateHasChanged();
         }
-        
+
         public async Task AddActivity()
         {
             var result = (await MatDialogService.PromptAsync("Name of activity: "))?.Trim();
-            if (result is null || result == String.Empty)
+            if (result is null || result == string.Empty)
                 return;
             if (activities.Contains(result))
             {
                 await MatDialogService.AlertAsync("Activity is already in the list");
                 return;
             }
+
             activities.Add(result);
             await InvokeAsync(StateHasChanged);
         }
@@ -233,10 +223,10 @@ namespace DeclarativePM.UI.Pages
                 await MatDialogService.AlertAsync("DECLARE model is empty");
             await InvokeAsync(StateHasChanged);
         }
-        
+
         public string GetConformanceChipBackground(Event e)
         {
-            WrappedEventActivation type = _constraintEvaluation.Activations.Find(w => w.Event == e);
+            var type = _constraintEvaluation.Activations.Find(w => w.Event == e);
 
             return type?.Activation switch
             {
@@ -258,13 +248,11 @@ namespace DeclarativePM.UI.Pages
         {
             _templateEvaluation = o;
             StateHasChanged();
-            
+
             if (_templateEvaluation.ConstraintEvaluations.Count == 1)
-            {
                 //unfortunately bug in matblazor, have to insert none until fixed: https://github.com/SamProf/MatBlazor/issues/651
                 _templateEvaluation.ConstraintEvaluations.Add(null);
-                //_constraintEvaluation = _templateEvaluation.ConstraintEvaluations.First();
-            }
+            //_constraintEvaluation = _templateEvaluation.ConstraintEvaluations.First();
 
             StateHasChanged();
         }

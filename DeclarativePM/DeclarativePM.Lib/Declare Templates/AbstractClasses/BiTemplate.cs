@@ -6,8 +6,8 @@ using DeclarativePM.Lib.Models.LogModels;
 namespace DeclarativePM.Lib.Declare_Templates.AbstractClasses
 {
     /// <summary>
-    /// Represents templates which take two events as parameters.
-    /// Those are relational and not relational templates.
+    ///     Represents templates which take two events as parameters.
+    ///     Those are relational and not relational templates.
     /// </summary>
     public abstract class BiTemplate : ITemplate, IVacuityDetection
     {
@@ -19,20 +19,26 @@ namespace DeclarativePM.Lib.Declare_Templates.AbstractClasses
             LogEventA = logEventA;
             LogEventB = logEventB;
         }
-        public abstract bool IsActivation(Event e);
+
+        public abstract LtlExpression GetExpression();
 
         public abstract LtlExpression GetVacuityCondition();
 
-        public LtlExpression GetWitnessExpression() =>
-            new LtlExpression(Operators.And, GetExpression(), GetVacuityCondition());
+        public LtlExpression GetWitnessExpression()
+        {
+            return new(Operators.And, GetExpression(), GetVacuityCondition());
+        }
+
+        public abstract bool IsActivation(Event e);
 
         public string GetEventA()
-            => LogEventA;
+        {
+            return LogEventA;
+        }
 
         public string GetEventB()
-            => LogEventB;
-        
-        public abstract LtlExpression GetExpression();
-        
+        {
+            return LogEventB;
+        }
     }
 }

@@ -1,24 +1,23 @@
-@using DeclarativePM.UI.Utils
 @using DeclarativePM.Lib.Models.DeclareModels
-    
-    <MatTable Items="DeclareModels" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionModel">
-                <MatTableHeader>
-                    <th>Name</th>
-                    <th>Event log</th>
-                    <th>Templates</th>
-                </MatTableHeader>
-                <MatTableRow>
-                    <td style="@Utilities.GetExpansionBackground(context, SelectedModel)">@context.Name</td>
-                    <td style="@Utilities.GetExpansionBackground(context, SelectedModel)">@(context.Log?.Name ?? "Model without event log")</td>
-                    <td style="@Utilities.GetExpansionBackground(context, SelectedModel)">@context.Constraints.Count.ToString()</td>
-                </MatTableRow>
-            </MatTable>
+@using DeclarativePM.UI.Utils
+<MatTable Items="DeclareModels" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionModel">
+    <MatTableHeader>
+        <th>Name</th>
+        <th>Event log</th>
+        <th>Templates</th>
+    </MatTableHeader>
+    <MatTableRow>
+        <td style="@Utilities.GetExpansionBackground(context, SelectedModel)">@context.Name</td>
+        <td style="@Utilities.GetExpansionBackground(context, SelectedModel)">@(context.Log?.Name ?? "Model without event log")</td>
+        <td style="@Utilities.GetExpansionBackground(context, SelectedModel)">@context.Constraints.Count.ToString()</td>
+    </MatTableRow>
+</MatTable>
 
 @code {
 
     [Parameter]
     public List<DeclareModel> DeclareModels { get; set; }
-    
+
 
     private DeclareModel _selectedModel;
 
@@ -34,15 +33,16 @@
             SelectedModelChanged.InvokeAsync(value);
         }
     }
-    
+
     [Parameter]
-    public EventCallback<DeclareModel> SelectedModelChanged { get; set; } 
-    
+    public EventCallback<DeclareModel> SelectedModelChanged { get; set; }
+
     public void SelectionModel(object md)
     {
         if (md is null)
             return;
-        SelectedModel = (DeclareModel)md;
+        SelectedModel = (DeclareModel) md;
         StateHasChanged();
     }
+
 }

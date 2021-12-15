@@ -1,7 +1,8 @@
 @using DeclarativePM.UI.Data
-@using DeclarativePM.Lib.Models.DeclareModels
-@using DeclarativePM.Lib.IO.Export
 @using BlazorDownloadFile
+@using DeclarativePM.Lib.IO.Export
+@using DeclarativePM.Lib.Models.DeclareModels
+@using System.Text
 @inject IMatDialogService MatDialogService
 @inject StateContainer StateContainer
 @inject IBlazorDownloadFileService BlazorDownloadFileService
@@ -23,8 +24,8 @@
         }
         try
         {
-            string json = await JsonModelExporter.ExportModelAsync(SelectedModel);
-            await BlazorDownloadFileService.DownloadFileFromText($"{SelectedModel.Name}.json", json, System.Text.Encoding.UTF8, "application/octet-stream");
+            var json = await JsonModelExporter.ExportModelAsync(SelectedModel);
+            await BlazorDownloadFileService.DownloadFileFromText($"{SelectedModel.Name}.json", json, Encoding.UTF8, "application/octet-stream");
         }
         catch
         {

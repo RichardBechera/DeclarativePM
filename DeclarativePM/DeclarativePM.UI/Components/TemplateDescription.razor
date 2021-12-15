@@ -1,16 +1,24 @@
 <div class="mat-layout-grid">
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2" style="text-align: center;">
-            <p><b>Type</b></p>
+            <p>
+                <b>Type</b>
+            </p>
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-5" style="text-align: center;">
-            <p><b>Description</b></p>
+            <p>
+                <b>Description</b>
+            </p>
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3" style="text-align: center;">
-            <p><b>LTL expression</b></p>
+            <p>
+                <b>LTL expression</b>
+            </p>
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2" style="text-align: center;">
-            <p><b>Activations</b></p>
+            <p>
+                <b>Activations</b>
+            </p>
         </div>
     </div>
     @foreach (var t in Items)
@@ -38,11 +46,11 @@
 @code {
 
     [Parameter]
-    public List<Lib.Models.DeclareModels.TemplateDescription> Items { get; set;}
+    public List<Lib.Models.DeclareModels.TemplateDescription> Items { get; set; }
 
     private string GetColour(int i, bool isHeader)
     {
-        if (!isHeader) 
+        if (!isHeader)
             return i % 2 == 0 ? "background: #ffd5ff" : "background: #f3f3f3";
         return i % 2 == 0 ? "background: #ffc0ff" : "background: #d8d8d8";
     }

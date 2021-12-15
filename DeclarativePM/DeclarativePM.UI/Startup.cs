@@ -3,14 +3,14 @@ using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.IO.Export;
 using DeclarativePM.Lib.IO.Import;
 using DeclarativePM.Lib.Utils;
+using DeclarativePM.UI.Data;
+using ElectronNET.API;
+using MatBlazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using DeclarativePM.UI.Data;
-using ElectronNET.API;
-using MatBlazor;
 
 namespace DeclarativePM.UI
 {
@@ -64,20 +64,14 @@ namespace DeclarativePM.UI
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-            
-            if (HybridSupport.IsElectronActive)  
-            {  
-                CreateWindow();  
-            }
-        }
-        
-        private async void CreateWindow()  
-        {  
-            var window = await Electron.WindowManager.CreateWindowAsync();  
-            window.OnClosed += () => {  
-                Electron.App.Quit();  
-            };  
-        }  
 
+            if (HybridSupport.IsElectronActive) CreateWindow();
+        }
+
+        private async void CreateWindow()
+        {
+            var window = await Electron.WindowManager.CreateWindowAsync();
+            window.OnClosed += () => { Electron.App.Quit(); };
+        }
     }
 }

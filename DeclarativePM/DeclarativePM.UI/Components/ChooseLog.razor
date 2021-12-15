@@ -1,21 +1,21 @@
-@using DeclarativePM.UI.Utils
 @using DeclarativePM.Lib.Models.LogModels
+@using DeclarativePM.UI.Utils
 <h3>Choose log</h3>
- <MatTable Items="EventLogs" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionLog">
-            <MatTableHeader>
-                <th>Name</th>
-                <th>Traces</th>
-                <th>Events</th>
-            </MatTableHeader>
-            <MatTableRow>
-                <td style="@Utilities.GetExpansionBackground(context, _selectedLog)">@context.Name</td>
-                <td style="@Utilities.GetExpansionBackground(context, _selectedLog)">@context.Cases().Count.ToString()</td>
-                <td style="@Utilities.GetExpansionBackground(context, _selectedLog)">@context.Logs.Count.ToString()</td>
-            </MatTableRow>
-        </MatTable>
+<MatTable Items="EventLogs" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionLog">
+    <MatTableHeader>
+        <th>Name</th>
+        <th>Traces</th>
+        <th>Events</th>
+    </MatTableHeader>
+    <MatTableRow>
+        <td style="@Utilities.GetExpansionBackground(context, _selectedLog)">@context.Name</td>
+        <td style="@Utilities.GetExpansionBackground(context, _selectedLog)">@context.Cases().Count.ToString()</td>
+        <td style="@Utilities.GetExpansionBackground(context, _selectedLog)">@context.Logs.Count.ToString()</td>
+    </MatTableRow>
+</MatTable>
 
 @code {
-        
+
     [Parameter]
     public List<EventLog> EventLogs { get; set; }
 
@@ -33,15 +33,16 @@
             SelectedLogChanged.InvokeAsync(value);
         }
     }
-    
+
     [Parameter]
-    public EventCallback<EventLog> SelectedLogChanged { get; set; } 
-    
+    public EventCallback<EventLog> SelectedLogChanged { get; set; }
+
     public void SelectionLog(object log)
     {
         if (log is null)
             return;
-        SelectedLog = (EventLog)log;
+        SelectedLog = (EventLog) log;
         StateHasChanged();
     }
+
 }

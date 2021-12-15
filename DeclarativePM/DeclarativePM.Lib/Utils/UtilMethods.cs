@@ -10,7 +10,7 @@ namespace DeclarativePM.Lib.Utils
     public static class UtilMethods
     {
         /// <summary>
-        /// Generates all the possible combinations of elements in the bag.
+        ///     Generates all the possible combinations of elements in the bag.
         /// </summary>
         /// <param name="rest">How many elements do we combine into one combination.</param>
         /// <param name="bag">All the possible elements.</param>
@@ -21,7 +21,7 @@ namespace DeclarativePM.Lib.Utils
         {
             var res = new List<List<T>>();
             List<List<T>> recursive = null;
-            
+
             if (rest != 1)
                 recursive = Combinations(rest - 1, bag, repeat);
 
@@ -29,24 +29,25 @@ namespace DeclarativePM.Lib.Utils
             {
                 if (rest == 1)
                 {
-                    res.Add(new List<T> {t} );
+                    res.Add(new List<T> {t});
                     continue;
                 }
 
                 if (!repeat)
                 {
-                    res.AddRange(recursive?.Where(c => !c.Contains(t)).Select(c => new List<T>(c) {t}) ?? new List<List<T>>());
+                    res.AddRange(recursive?.Where(c => !c.Contains(t)).Select(c => new List<T>(c) {t}) ??
+                                 new List<List<T>>());
                     continue;
                 }
 
                 res.AddRange(recursive?
                     .Select(c => new List<T>(c) {t}) ?? new List<List<T>>());
             }
+
             return res;
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="p"></param>
         /// <param name="min"></param>
@@ -58,7 +59,7 @@ namespace DeclarativePM.Lib.Utils
             p = p < min ? min : p;
             return p;
         }
-        
+
         public static List<Event> PreprocessTraceForEvaluation(ITemplate template, List<Event> events)
         {
             Event addition;
@@ -66,29 +67,29 @@ namespace DeclarativePM.Lib.Utils
             switch (template)
             {
                 case AlternatePrecedence ap:
-                    addition = new(ap.LogEventA + ap.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    addition = new Event(ap.LogEventA + ap.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
                     break;
                 case AlternateSuccession asu:
-                    addition = new(asu.LogEventA + asu.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    addition = new Event(asu.LogEventA + asu.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
                     break;
                 case ChainPrecedence cp:
-                    addition = new(cp.LogEventA + cp.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    addition = new Event(cp.LogEventA + cp.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
                     front = true;
                     break;
                 case ChainSuccession cs:
-                    addition = new(cs.LogEventA + cs.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
+                    addition = new Event(cs.LogEventA + cs.LogEventB, events.FirstOrDefault()?.CaseId ?? "0");
                     front = true;
                     break;
                 default:
                     return events;
             }
-            
-            List<Event> extended = events.ToList();
+
+            var extended = events.ToList();
             if (front)
                 extended.Insert(0, addition);
             else
                 extended.Add(addition);
-            
+
             return extended;
         }
 
@@ -104,13 +105,14 @@ namespace DeclarativePM.Lib.Utils
                 .ToList();
 
             List<List<string>> result = new();
-            for (int i = 0; i < ordered.Count; i += 2)
+            for (var i = 0; i < ordered.Count; i += 2)
             {
                 result.Add(ordered[i]);
                 if (ordered[i][0] == ordered[i + 1][0] || ordered[i][1] == ordered[i + 1][1]) continue;
                 ordered[i + 1].Reverse();
                 result.Add(ordered[i + 1]);
             }
+
             if (ordered.Count % 2 == 1)
                 result.Add(ordered.Last());
 

@@ -5,27 +5,12 @@ using DeclarativePM.Lib.Enums;
 namespace DeclarativePM.Lib.Models.DeclareModels
 {
     /// <summary>
-    /// Recursive Ltl (Linear temporal logic) expression
+    ///     Recursive Ltl (Linear temporal logic) expression
     /// </summary>
     public class LtlExpression
     {
-        public Operators Operator { get; }
-
         /// <summary>
-        /// Default expression when dealing with unary operator.
-        /// Null when atomic expression.
-        /// </summary>
-        public LtlExpression InnerLeft { get; set; }
-        
-        /// <summary>
-        /// Null when dealing with unary operator or atomic expression
-        /// </summary>
-        public LtlExpression InnerRight { get; set; }
-        
-        public string Atom { get; }
-        
-        /// <summary>
-        /// Constructor for Ltl expression for unary operators
+        ///     Constructor for Ltl expression for unary operators
         /// </summary>
         /// <param name="operator">Unary operator</param>
         /// <param name="inner"></param>
@@ -37,9 +22,9 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             Operator = @operator;
             InnerLeft = inner;
         }
-        
+
         /// <summary>
-        /// Constructor for Ltl expression for binary operators
+        ///     Constructor for Ltl expression for binary operators
         /// </summary>
         /// <param name="operator">Binary operator</param>
         /// <param name="innerLeft"></param>
@@ -50,12 +35,27 @@ namespace DeclarativePM.Lib.Models.DeclareModels
             InnerLeft = innerLeft;
             InnerRight = innerRight;
         }
-        
+
         public LtlExpression(string atom)
         {
             Operator = Operators.None;
             Atom = atom;
         }
+
+        public Operators Operator { get; }
+
+        /// <summary>
+        ///     Default expression when dealing with unary operator.
+        ///     Null when atomic expression.
+        /// </summary>
+        public LtlExpression InnerLeft { get; set; }
+
+        /// <summary>
+        ///     Null when dealing with unary operator or atomic expression
+        /// </summary>
+        public LtlExpression InnerRight { get; set; }
+
+        public string Atom { get; }
 
         public override string ToString()
         {

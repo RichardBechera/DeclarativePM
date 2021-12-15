@@ -1,12 +1,12 @@
 namespace DeclarativePM.Lib.Enums
 {
     /// <summary>
-    /// All different possible templates
+    ///     All different possible templates
     /// </summary>
     public enum TemplateInstanceType
     {
         None,
-        
+
         Absence,
         AlternatePrecedence,
         AlternateResponse,

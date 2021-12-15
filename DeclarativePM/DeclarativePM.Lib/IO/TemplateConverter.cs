@@ -9,12 +9,12 @@ using Newtonsoft.Json.Linq;
 namespace DeclarativePM.Lib.IO
 {
     /// <summary>
-    /// Specifies how to convert ITemplate - constraints
+    ///     Specifies how to convert ITemplate - constraints
     /// </summary>
-    public class TemplateConverter: JsonConverter<ITemplate>
+    public class TemplateConverter : JsonConverter<ITemplate>
     {
-        private readonly TemplateInstanceType _type = TemplateInstanceType.None;
         private readonly List<ITemplate> _optionals;
+        private readonly TemplateInstanceType _type = TemplateInstanceType.None;
 
         public TemplateConverter(TemplateInstanceType type)
         {
@@ -35,18 +35,19 @@ namespace DeclarativePM.Lib.IO
                 t.WriteTo(writer);
                 return;
             }
-            
+
             var jo = (JObject) t;
             jo.Add(new JProperty("Optional", _optionals.Contains(value)));
-            
-            
+
+
             jo.WriteTo(writer);
         }
 
-        public override ITemplate ReadJson(JsonReader reader, Type objectType, ITemplate existingValue, bool hasExistingValue,
+        public override ITemplate ReadJson(JsonReader reader, Type objectType, ITemplate existingValue,
+            bool hasExistingValue,
             JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
+            var jo = JObject.Load(reader);
             return _type switch
             {
                 TemplateInstanceType.Absence => jo.ToObject<Absence>(),

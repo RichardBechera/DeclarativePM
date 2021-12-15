@@ -1,11 +1,10 @@
 @page "/Conformance"
-
 @using DeclarativePM.UI.Data
 @using DeclarativePM.UI.Enums
 @using DeclarativePM.UI.Utils
-@using DeclarativePM.Lib.Enums
-@using DeclarativePM.Lib.Models.ConformanceModels
 @using DeclarativePM.Lib.Utils
+@using DeclarativePM.Lib.Models.ConformanceModels
+@using DeclarativePM.Lib.Enums
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
 @inject ConformanceEvaluator Evaluator;
@@ -42,7 +41,7 @@
                         <MatButton OnClick="@(() => ChooseTrace(context))" Style="@GetExpansionBackground(context)">
                             @context.Case
                         </MatButton>
-                        <MatIconButton OnClick="@(() => RemoveTrace(context))" Icon="remove"/>
+                        <MatButton OnClick="@(() => RemoveTrace(context))" Icon="remove" Label="Remove"/>
                     </ItemTemplate>
                 </MatVirtualScroll>
             }
@@ -107,7 +106,7 @@
                 <MatDatePicker @bind-Value="@CurrentTraceEvent.TimeStamp" EnableTime="true" Enable24hours="true"/>
                 <MatButton OnClick="AddEvent" Icon="add" Label="Add event"/>
                 <MatButton OnClick="SaveTrace" Icon="save" Label="Save trace"/>
-                        
+
                 <MatTable Items="SelectedTrace.Events" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
                     <MatTableHeader>
                         <th>Activity</th>
@@ -118,7 +117,7 @@
                     <MatTableRow>
                         <td>@context.Activity</td>
                         <td>@context.CaseId</td>
-                        @if (@context.TimeStamp is not null)
+                        @if (context.TimeStamp is not null)
                         {
                             <td>@context.TimeStamp</td>
                         }
@@ -127,11 +126,10 @@
                             <td>Undefined</td>
                         }
                         <td>
-                            <MatIconButton OnClick="@(() => RemoveEventFromSelectedTrace(@context))" Icon="remove"/>
+                            <MatIconButton OnClick="@(() => RemoveEventFromSelectedTrace(context))" Icon="remove"/>
                         </td>
                     </MatTableRow>
                 </MatTable>
-                
             }
             else if (View == ConformancePageView.SelectedTrace)
             {
@@ -155,15 +153,15 @@
                             <td>Undefined</td>
                         }
                         <td>
-                            <MatIconButton OnClick="@(() => RemoveEventFromSelectedTrace(@context))" Icon="remove"/>
+                            <MatIconButton OnClick="@(() => RemoveEventFromSelectedTrace(context))" Icon="remove"/>
                         </td>
                     </MatTableRow>
                 </MatTable>
             }
             else if (View == ConformancePageView.SelectLog)
             {
-                    <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
-                    <MatButton OnClick="OnLogSelected" Disabled="@(_selectedLog is null)">Continue</MatButton>
+                <ChooseLog EventLogs="@StateContainer.EventLogs" @bind-SelectedLog="_selectedLog"></ChooseLog>
+                <MatButton OnClick="OnLogSelected" Disabled="@(_selectedLog is null)">Continue</MatButton>
             }
             else if (View == ConformancePageView.SelectModel)
             {

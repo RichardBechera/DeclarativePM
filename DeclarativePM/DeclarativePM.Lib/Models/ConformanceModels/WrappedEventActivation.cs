@@ -4,17 +4,17 @@ using DeclarativePM.Lib.Models.LogModels;
 namespace DeclarativePM.Lib.Models.ConformanceModels
 {
     /// <summary>
-    /// Represents single event with its activation type
+    ///     Represents single event with its activation type
     /// </summary>
     public record WrappedEventActivation
     {
-        public EventActivationType Activation { get; }
-        public Event Event { get; }
-        
         public WrappedEventActivation(Event @event, EventActivationType activation)
         {
             Event = @event;
             Activation = activation;
         }
+
+        public EventActivationType Activation { get; }
+        public Event Event { get; }
     }
 }

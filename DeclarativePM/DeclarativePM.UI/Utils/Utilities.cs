@@ -13,20 +13,20 @@ namespace DeclarativePM.UI.Utils
     {
         public static void CreateTreeNode(out TreeNodeModel treeTemplates, List<ParametrizedTemplate> templates)
         {
-            treeTemplates = new()
+            treeTemplates = new TreeNodeModel()
             {
                 Name = "Discovered Constraints",
-                Nodes = new []
+                Nodes = new[]
                 {
                     GenerateInnerNodes(TemplateBookType.Existential, "Existential", templates),
                     GenerateInnerNodes(TemplateBookType.Relational, "Relational", templates),
                     GenerateInnerNodes(TemplateBookType.NotRelational, "Not Relational", templates)
-                        
                 }
             };
         }
 
-        private static TreeNodeModel GenerateInnerNodes(TemplateBookType tbt, string name, List<ParametrizedTemplate> templates)
+        private static TreeNodeModel GenerateInnerNodes(TemplateBookType tbt, string name,
+            List<ParametrizedTemplate> templates)
         {
             return new()
             {
@@ -34,24 +34,23 @@ namespace DeclarativePM.UI.Utils
                 Nodes = templates.Where(x => x.TemplateDescription.TemplateType.GetTemplateBookType() == tbt)
                     .Select(template =>
                     {
-                        return new TreeNodeModel()
+                        return new TreeNodeModel
                         {
                             Name = template.TemplateDescription.TemplateType.ToString(),
-                            Nodes = template.TemplateInstances.Select(instance => new TreeNodeModel()
+                            Nodes = template.TemplateInstances.Select(instance => new TreeNodeModel
                             {
                                 Name = instance.ToString()
                             }).ToArray()
                         };
                     }).ToArray()
-
             };
         }
-        
+
         public static string GetExpansionBackground<T>(T current, T selected)
         {
             return current.Equals(selected) ? "background: #ffd5ff" : "background: #f3f3f3";
         }
-        
+
         public static string GetExpansionBackground<T>(T current, List<T> from)
         {
             return from.Contains(current) ? "background: #ffd5ff" : "background: #f3f3f3";
@@ -65,9 +64,7 @@ namespace DeclarativePM.UI.Utils
                 .Where(c => c is not null)
                 .Any(y => y.Constraint.ToString()
                     .Equals(current) && Math.Abs(x.Healthiness.FulfillmentRation - 1) > 0.01)))
-            {
                 return "background: #ffd5ff";
-            }
             return "background: #ffffff";
         }
     }

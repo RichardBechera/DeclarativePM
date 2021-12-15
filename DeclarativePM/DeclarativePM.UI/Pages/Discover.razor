@@ -1,7 +1,7 @@
 @page "/Discover"
 @using DeclarativePM.UI.Data
-@using DeclarativePM.Lib.Enums
 @using DeclarativePM.Lib.Discovery
+@using DeclarativePM.Lib.Enums
 @implements IDisposable
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
@@ -21,10 +21,10 @@ else if (selectParameters)
             <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit"></MatChip>
         }
     </MatChipSet>
-    
+
     <MatButton OnClick="BackSelectionT">Back</MatButton>
     <MatButton OnClick="ContinueSelectionT">Continue</MatButton>
-    
+
     <TemplateDescription Items="@_templateDescriptions"/>
 }
 else if (configureTemplates)
@@ -43,27 +43,44 @@ else if (configureTemplates)
                 </MatExpansionPanelSummary>
                 <MatExpansionPanelDetails>
                     <MatTooltip Tooltip="PoI says how many instances (traces) a constraint must satisfy.
- If PoI is set to 95%, for a constraint to be discovered, a candidate must satisfy at least 95% of traces.">
-                    <MatNumericUpDownField Label="Percentage of Instances"
-                                           @bind-Value=@tit.Poi
-                                           DecimalPlaces=0
-                                           Minimum=0 Maximum=100
-                                           RefBack="@context">
-                    </MatNumericUpDownField>
+                            If
+                            PoI is set to
+                            95 %,
+                            for a constraint 
+                            to
+                            be discovered, a 
+                            candidate must 
+                            satisfy at 
+                            least
+                            95 % of
+                            traces.
+                            ">
+                        <MatNumericUpDownField Label="Percentage of Instances"
+                                               @bind-Value=@tit.Poi
+                                               DecimalPlaces=0
+                                               Minimum=0 Maximum=100
+                                               RefBack="@context">
+                        </MatNumericUpDownField>
                     </MatTooltip>
                     <MatTooltip Tooltip="PoE says how frequently events should occur in the log to be included in a resulting model. 
-                     With PoE = 30% only 30% of most common events are considered.">
-                    <MatNumericUpDownField Label="Percentage of Events"
-                                           @bind-Value=@tit.Poe
-                                           DecimalPlaces=0
-                                           Minimum=0 Maximum=100
-                                           RefBack="@context">
-                    </MatNumericUpDownField>
+                            With PoE = 30 % only
+                            30 % of
+                            most common 
+                            events are 
+                            considered.
+                            ">
+                        <MatNumericUpDownField Label="Percentage of Events"
+                                               @bind-Value=@tit.Poe
+                                               DecimalPlaces=0
+                                               Minimum=0 Maximum=100
+                                               RefBack="@context">
+                        </MatNumericUpDownField>
                     </MatTooltip>
                     <MatTooltip Tooltip="Constraints which were not triggered will not be included in the resulting model">
                         <MatCheckbox @bind-Value=@tit.CheckVacuously Label="Check Vacuously"
                                       Disabled="@(tit.TemplateDescription.TemplateParametersType == TemplateTypes.UniTemplate)"
-                                      RefBack="@context"></MatCheckbox>
+                                      RefBack="@context">
+                        </MatCheckbox>
                     </MatTooltip>
                 </MatExpansionPanelDetails>
             </MatExpansionPanel>
@@ -71,7 +88,7 @@ else if (configureTemplates)
     </MatAccordion>
     @if (wait)
     {
-        <MatProgressCircle Indeterminate="true" Size="MatProgressCircleSize.Large" />
+        <MatProgressCircle Indeterminate="true" Size="MatProgressCircleSize.Large"/>
         //<MatButton OnClick="AbortDiscovery">Abort</MatButton>
     }
 }
@@ -80,12 +97,13 @@ else if (showDiscovered && treeTemplates is not null && _declareModel is not nul
     <h3>Discovered model</h3>
     <MatTreeView TNode="TreeNodeModel"
                  RootNode="@treeTemplates"
-                 GetChildNodesCallback="@((n)=>n.Nodes)">
+                 GetChildNodesCallback="@(n => n.Nodes)">
         <NodeTemplate>
             @context.Name
         </NodeTemplate>
     </MatTreeView>
-    <MatTextField @bind-Value="@_declareModel.Name" Label="Model name" ></MatTextField><br/>
+    <MatTextField @bind-Value="@_declareModel.Name" Label="Model name"></MatTextField>
+    <br/>
     <MatButton OnClick="SaveModel">Save</MatButton>
     <MatButton OnClick="BackDiscover">Back</MatButton>
 }

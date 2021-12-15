@@ -4,22 +4,17 @@ using System.Linq;
 namespace DeclarativePM.Lib.Models.LogModels
 {
     /// <summary>
-    /// Represents an event log
+    ///     Represents an event log
     /// </summary>
     public class EventLog
     {
-        public List<string> Headers { get; }
-        public List<Event> Logs { get; }
-
-        public string Name { get; set; }
-
         public EventLog(List<Event> logs, string name = null)
         {
             Name = name ?? DefaultName;
             if (!logs.Any())
             {
-                Headers = new();
-                Logs = new();
+                Headers = new List<string>();
+                Logs = new List<Event>();
                 return;
             }
 
@@ -34,38 +29,45 @@ namespace DeclarativePM.Lib.Models.LogModels
             Name = name ?? DefaultName;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>All unique cases in the log</returns>
-        public List<string> Cases()
-            => Logs.Select(e => e.CaseId).Distinct().ToList();
+        public List<string> Headers { get; }
+        public List<Event> Logs { get; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="case">search case</param>
-        /// <returns>the trace under specific case</returns>
-        public List<Event> SpecificCase(string @case)
-            => Logs.Where(e => e.CaseId.Equals(@case)).ToList();
-        
+        public string Name { get; set; }
+
         private string DefaultName
             => "DEFAULT LOG NAME";
 
         /// <summary>
-        /// 
+        /// </summary>
+        /// <returns>All unique cases in the log</returns>
+        public List<string> Cases()
+        {
+            return Logs.Select(e => e.CaseId).Distinct().ToList();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="case">search case</param>
+        /// <returns>the trace under specific case</returns>
+        public List<Event> SpecificCase(string @case)
+        {
+            return Logs.Where(e => e.CaseId.Equals(@case)).ToList();
+        }
+
+        /// <summary>
         /// </summary>
         /// <returns>All unique activities in the log</returns>
         public List<string> GetAllActivities()
-            => Logs.Select(x => x.Activity).Distinct().ToList();
+        {
+            return Logs.Select(x => x.Activity).Distinct().ToList();
+        }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns>List of all traces in the log</returns>
         public List<List<Event>> GetAllTraces()
-            => Logs.GroupBy(x => x.CaseId, x => x, (_, events) => events.ToList()).ToList();
-
-
+        {
+            return Logs.GroupBy(x => x.CaseId, x => x, (_, events) => events.ToList()).ToList();
+        }
     }
 }

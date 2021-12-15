@@ -8,7 +8,7 @@ namespace DeclarativePM.Lib.Utils
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Assigns template type if Type is assignable to its corresponding class.
+        ///     Assigns template type if Type is assignable to its corresponding class.
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Concrete template type</returns>
@@ -54,7 +54,6 @@ namespace DeclarativePM.Lib.Utils
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="template"></param>
         /// <returns>Template type of specific instance type</returns>
@@ -87,9 +86,8 @@ namespace DeclarativePM.Lib.Utils
                     return TemplateTypes.None;
             }
         }
-        
+
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="template"></param>
         /// <returns>Return category into which template belongs.</returns>
@@ -123,9 +121,9 @@ namespace DeclarativePM.Lib.Utils
                     throw new Exception("Wrong enum type");
             }
         }
-        
+
         /// <summary>
-        /// Returns amount of events a single template concerns
+        ///     Returns amount of events a single template concerns
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Number of events template takes</returns>
@@ -143,9 +141,9 @@ namespace DeclarativePM.Lib.Utils
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
-        
+
         /// <summary>
-        /// Returns detailed template description based on on template instance type.
+        ///     Returns detailed template description based on on template instance type.
         /// </summary>
         /// <param name="template">Template type</param>
         /// <returns>Template description</returns>
@@ -174,7 +172,7 @@ namespace DeclarativePM.Lib.Utils
                     return new TemplateDescription(
                         "Existence(n, B)",
                         "Existential",
-                        "A occurs at least n times" ,
+                        "A occurs at least n times",
                         "◇(A && ◯(Existence(n-1, A)))\n◇(A)",
                         "A",
                         template);

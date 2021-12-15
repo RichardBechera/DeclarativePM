@@ -4,19 +4,14 @@ namespace DeclarativePM.UI.Data
 {
     public class CreateTemplateWrap
     {
-        public string EventA { get; set; } = "";
-        public string EventB { get; set; } = "";
-        public int Occurrences { get; set; } = 1;
-        public TemplateInstanceType TemplateInstanceType { get; set; }
-        public TemplateTypes TemplateTypes { get; set; }
-
         public CreateTemplateWrap(TemplateInstanceType templateInstanceType, TemplateTypes templateTypes)
         {
             TemplateInstanceType = templateInstanceType;
             TemplateTypes = templateTypes;
         }
 
-        public CreateTemplateWrap(string eventA, int occurrences, TemplateInstanceType templateInstanceType, TemplateTypes templateTypes)
+        public CreateTemplateWrap(string eventA, int occurrences, TemplateInstanceType templateInstanceType,
+            TemplateTypes templateTypes)
         {
             EventA = eventA;
             Occurrences = occurrences;
@@ -24,7 +19,8 @@ namespace DeclarativePM.UI.Data
             TemplateTypes = templateTypes;
         }
 
-        public CreateTemplateWrap(string eventA, string eventB, TemplateInstanceType templateInstanceType, TemplateTypes templateTypes)
+        public CreateTemplateWrap(string eventA, string eventB, TemplateInstanceType templateInstanceType,
+            TemplateTypes templateTypes)
         {
             EventA = eventA;
             EventB = eventB;
@@ -38,8 +34,11 @@ namespace DeclarativePM.UI.Data
             TemplateInstanceType = templateInstanceType;
             TemplateTypes = templateTypes;
         }
-    }
-        
 
-    
+        public string EventA { get; set; } = "";
+        public string EventB { get; set; } = "";
+        public int Occurrences { get; set; } = 1;
+        public TemplateInstanceType TemplateInstanceType { get; set; }
+        public TemplateTypes TemplateTypes { get; set; }
+    }
 }

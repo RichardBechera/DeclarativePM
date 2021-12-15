@@ -5,18 +5,23 @@ using System.Linq;
 namespace DeclarativePM.Lib.Models.LogModels
 {
     /// <summary>
-    /// Represents single row in an event log
+    ///     Represents single row in an event log
     /// </summary>
     public record Event
     {
+        public Event(string activity, string caseId, params string[] res)
+        {
+            Activity = activity;
+            CaseId = caseId;
+            Resources = res.ToList();
+        }
+
         public string Activity { get; set; }
 
         public int ActivityInTraceId { get; set; } = 0;
         public string CaseId { get; set; }
         public DateTime? TimeStamp { get; set; }
         public List<string> Resources { get; set; }
-
-        public int Count() => 2 + Resources.Count;
 
         public string this[int index]
         {
@@ -34,13 +39,9 @@ namespace DeclarativePM.Lib.Models.LogModels
             }
         }
 
-        public Event(string activity, string caseId, params string[] res)
+        public int Count()
         {
-            Activity = activity;
-            CaseId = caseId;
-            Resources = res.ToList();
+            return 2 + Resources.Count;
         }
-        
-        
     }
 }
