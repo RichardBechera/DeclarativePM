@@ -141,10 +141,12 @@ namespace DeclarativePM.Lib.Utils
         public double LocalLikelihood(ActivationBinaryTree tree,
             ActivationNode conflictResolution)
         {
-            ActivationTreeBuilder treeBuilder = new();
-            ActivationBinaryTree tree2 = treeBuilder.BuildTree(conflictResolution.Subtrace, tree.Constraint);
-            int nf = GetFulfillment(tree2).Count(e => conflictResolution.Subtrace.Contains(e));
-            int na = conflictResolution.Subtrace.Count(tree.Constraint.IsActivation);
+            List<Event> trace = tree.Leaves.Where(n => n.MaxFulfilling)
+                .SelectMany(n => n.Subtrace)
+                .Distinct(new EventEqualityComparer())
+                .ToList();
+            int nf = conflictResolution.Subtrace.Count(tree.Constraint.IsActivation);
+            int na = trace.Count(tree.Constraint.IsActivation);
 
             return nf / (double) na;
         }
@@ -152,7 +154,6 @@ namespace DeclarativePM.Lib.Utils
         private double LocalLikelihoodNode(ActivationNode node, int na, BiTemplate constraint)
             => node.Subtrace.Count(constraint.IsActivation) / (double)na;
 
-        //TODO
         public double GlobalLikelihood(ActivationBinaryTree tree,
             List<ParametrizedTemplate> model, ActivationNode conflictResolution)
         {

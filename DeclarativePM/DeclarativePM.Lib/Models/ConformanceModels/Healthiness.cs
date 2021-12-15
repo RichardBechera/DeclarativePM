@@ -43,7 +43,7 @@ namespace DeclarativePM.Lib.Models.ConformanceModels
                 .Count();
             
 
-            ActivationSparsity = 1 - na / n;
+            ActivationSparsity = 1 - na / (double)n;
             FulfillmentRation = fulfilments / (double)na;
             ViolationRation = violations / (double)na;
             ConflictRation = conflicts / (double)na;

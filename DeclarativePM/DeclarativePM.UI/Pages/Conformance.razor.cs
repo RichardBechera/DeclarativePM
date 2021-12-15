@@ -260,7 +260,7 @@ namespace DeclarativePM.UI.Pages
             
             if (_templateEvaluation.ConstraintEvaluations.Count == 1)
             {
-                //:( unfortunately bug in matblazor, have to insert none until fixed: https://github.com/SamProf/MatBlazor/issues/651
+                //unfortunately bug in matblazor, have to insert none until fixed: https://github.com/SamProf/MatBlazor/issues/651
                 _templateEvaluation.ConstraintEvaluations.Add(null);
                 //_constraintEvaluation = _templateEvaluation.ConstraintEvaluations.First();
             }

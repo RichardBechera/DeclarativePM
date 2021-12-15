@@ -1,31 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.AbstractClasses;
-using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
-using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
-using DeclarativePM.Lib.IO.Export;
-using DeclarativePM.Lib.IO.Import;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
 using Xunit;
 
-namespace TestRunning
+namespace DeclarativePM.Tests
 {
-    public class UnitTests
+    public class TemplatesAndEvaluationTests
     {
-        private Discovery _disco = new();
-        private CsvLogImporter _csvLogImporter = new();
-        private JsonModelImporter _jsonModelImporter = new();
-        private JsonModelExporter _jsonModelExporter = new();
-        private ActivationTreeBuilder _builder = new();
-        private ConstraintEvaluator _constraintEvaluator = new();
-        private ConformanceEvaluator _conformanceEvaluator = new();
-        
-        
+        private readonly ConstraintEvaluator _constraintEvaluator = new();
+
         private readonly List<Event> _eventsNotActivated = new()
         {
             new("c", "1"),
@@ -71,140 +59,6 @@ namespace TestRunning
                 Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
                 Assert.False(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetWitnessExpression()));
             }
-        }
-
-        [Fact]
-        public void Test1()
-        {
-            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample1.csv";
-            var third = _csvLogImporter.LoadLog(path4);
-            var log2 = third.BuildEventLog();
-            var tree = _builder.BuildTree(log2.Logs, 
-                new Response("C", "S"));
-            
-            var ful = _conformanceEvaluator.GetFulfillment(tree);
-            Assert.True(ful.Exists(x => x.Activity == "C" && x.ActivityInTraceId == 1));
-            
-            var vio = _conformanceEvaluator.GetViolation(tree);
-            Assert.True(vio.Exists(x => x.Activity == "C" && x.ActivityInTraceId == 3));
-            
-            var conf = _conformanceEvaluator.GetConflict(tree);
-            Assert.Empty(conf);
-        }
-        
-        [Fact]
-        public void Test2()
-        {
-            //TODO relative path
-            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample2.csv";
-            var third = _csvLogImporter.LoadLog(path4);
-            var log2 = third.BuildEventLog();
-            var tree = _builder.BuildTree(log2.Logs, 
-                new AlternateResponse("H", "M"));
-            
-            var ful = _conformanceEvaluator.GetFulfillment(tree);
-            Assert.True(ful.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 1));
-            
-            var vio = _conformanceEvaluator.GetViolation(tree);
-            Assert.Empty(vio);
-            
-            var conf = _conformanceEvaluator.GetConflict(tree);
-            Assert.True(conf.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 3));
-            Assert.True(conf.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 4));
-        }
-        
-        [Fact]
-        public void Test3()
-        {
-            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = _csvLogImporter.LoadLog(path4);
-            var log2 = third.BuildEventLog();
-            var tree = _builder.BuildTree(log2.Logs, 
-                new NotCoexistence("L", "H"));
-            
-            var ful = _conformanceEvaluator.GetFulfillment(tree);
-            Assert.Empty(ful);
-            
-            var vio = _conformanceEvaluator.GetViolation(tree);
-            Assert.Empty(vio);
-            
-            var conf = _conformanceEvaluator.GetConflict(tree);
-            Assert.True(conf.Exists(x => x.Activity == "H" && x.ActivityInTraceId == 1));
-            Assert.True(conf.Exists(x => x.Activity == "L" && x.ActivityInTraceId == 3));
-            Assert.True(conf.Exists(x => x.Activity == "L" && x.ActivityInTraceId == 4));
-        }
-
-        [Fact]
-        public void Test4()
-        {
-            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            var third = _csvLogImporter.LoadLog(path4);
-            var log2 = third.BuildEventLog();
-            var tree = _builder.BuildTree(log2.Logs, 
-                new NotCoexistence("L", "H"));
-
-            var result = _conformanceEvaluator.LocalLikelihood(tree);
-            Assert.Equal(2, result.Count);
-            Assert.Equal(result.First().Value, 2/(double)3);
-            Assert.Equal(result.Last().Value, 1/(double)3);
-
-            var cr = _conformanceEvaluator.GetConflictNodes(tree);
-            Assert.Equal(2/(double)3, _conformanceEvaluator.LocalLikelihood(tree, cr.First()));
-            Assert.Equal(1/(double)3, _conformanceEvaluator.LocalLikelihood(tree, cr.Last()));
-            
-        }
-        
-        [Fact]
-        public void Test5()
-        {
-            Assert.True(true);
-            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            
-            var third = _csvLogImporter.LoadLog(path4);
-            var log2 = third.BuildEventLog();
-            NotCoexistence nc = new NotCoexistence("L", "H"); 
-            var tree = _builder.BuildTree(log2.Logs, nc);
-
-            List<ParametrizedTemplate> templates = new List<ParametrizedTemplate>()
-            {
-                new(TemplateInstanceType.AlternateResponse, new List<ITemplate>()
-                {
-                    new AlternateResponse("H", "M"),
-                }),
-                new(TemplateInstanceType.NotCoexistence, new List<ITemplate>(){nc})
-            };
-            var cr = _conformanceEvaluator.GetConflictNodes(tree);
-
-            Assert.Equal(2, cr.Count);
-            
-            var gl1 = _conformanceEvaluator.GlobalLikelihood(tree, templates, cr.First());
-            //Assert.Equal(0, gl1);
-            
-            var gl2 = _conformanceEvaluator.GlobalLikelihood(tree, templates, cr.Last());
-            //Assert.Equal(1/(double)6, gl2);
-        }
-        
-        [Fact]
-        public void Test6()
-        {
-            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            
-            var third = _csvLogImporter.LoadLog(path4);
-            var log = third.BuildEventLog();
-            var model = _disco.DiscoverModel(log, new List<ParametrizedTemplate>()
-            {
-                new ParametrizedTemplate(TemplateInstanceType.Coexistence),
-                new ParametrizedTemplate(TemplateInstanceType.ChainPrecedence),
-                new ParametrizedTemplate(TemplateInstanceType.NotCoexistence),
-                new ParametrizedTemplate(TemplateInstanceType.Precedence),
-                new ParametrizedTemplate(TemplateInstanceType.AlternatePrecedence),
-                new ParametrizedTemplate(TemplateInstanceType.ChainSuccession),
-                new ParametrizedTemplate(TemplateInstanceType.ChainResponse),
-                new ParametrizedTemplate(TemplateInstanceType.AlternateSuccession),
-            });
-            Assert.Equal(6, model.Constraints[0].TemplateInstances.Count);
-            Assert.Equal(6, model.Constraints[0].TemplateInstances.Count);
-
         }
         
         [Fact]
@@ -350,7 +204,7 @@ namespace TestRunning
 
             Assert.True(_constraintEvaluator.EvaluateExpression(eventsHolds, template.GetExpression()));
             Assert.False(_constraintEvaluator.EvaluateExpression(eventsNotHolds, template.GetExpression()));
-            //This is true as there really was no other "a" until "c". => postprocessing later
+            //This is true as there really was no other "a" until "b". => postprocessing later
             Assert.True(_constraintEvaluator.EvaluateExpression(_eventsBNotOccurs, template.GetExpression()));
             
             CheckVacuity(template, 1);
@@ -885,72 +739,5 @@ namespace TestRunning
             Assert.False(_constraintEvaluator.EvaluateExpression(eventsOnce, templateOne.GetExpression()));
             Assert.True(_constraintEvaluator.EvaluateExpression(eventsOnce, templateTwo.GetExpression()));
         }
-
-        [Fact]
-        public void ExportTest()
-        {
-            var coexistenceP = new ParametrizedTemplate(TemplateInstanceType.Coexistence, new List<ITemplate>()
-            {
-                new Coexistence("A", "B"),
-                new Coexistence("B", "C")
-            });
-            var notCoexistenceP = new ParametrizedTemplate(TemplateInstanceType.NotCoexistence, new List<ITemplate>()
-            {
-                new NotCoexistence("A", "B"),
-                new NotCoexistence("B", "C")
-            });
-            var responseP = new ParametrizedTemplate(TemplateInstanceType.Response, new List<ITemplate>()
-            {
-                new Response("A", "B"),
-                new Response("B", "C")
-            });
-            DeclareModel model = new DeclareModel("Default name", new()
-            {
-                coexistenceP,
-                notCoexistenceP,
-                responseP
-            });
-            responseP.OptionalConstraints.Add(responseP.TemplateInstances[0]);
-            coexistenceP.OptionalConstraints.Add(coexistenceP.TemplateInstances[0]);
-            coexistenceP.OptionalConstraints.Add(coexistenceP.TemplateInstances[1]);
-
-            //string json = _jsonModelExporter.ExportModel(model);
-            //var m = _jsonModelImporter.LoadModelFromString(json);
-
-            _jsonModelExporter.ExportSaveModelAsync(model, "/home/richard/Documents/bakalarka/garbage", "testmodel");
-            var m = _jsonModelImporter.LoadModel("/home/richard/Documents/bakalarka/garbage/testmodel.json");
-            
-            Assert.Equal(model.Name, m.Name);
-            Assert.Equal(model.Constraints.Count, m.Constraints.Count);
-            for (int i = 0;  i < model.Constraints.Count;  i++)
-            {
-                ParametrizedTemplate c1 = model.Constraints[i];
-                ParametrizedTemplate c2 = m.Constraints[i];
-                
-                Assert.Equal(c1.Poe, c2.Poe);
-                Assert.Equal(c1.Poi, c2.Poi);
-                Assert.Equal(c1.CheckVacuously, c2.CheckVacuously);
-                Assert.Equal(c1.TemplateDescription.TemplateType, c2.TemplateDescription.TemplateType);
-                
-                Assert.Equal(c1.TemplateInstances.Count, c1.TemplateInstances.Count);
-                for (int j = 0; j < c1.TemplateInstances.Count; j++)
-                {
-                    ITemplate t1 = c1.TemplateInstances[j];
-                    ITemplate t2 = c2.TemplateInstances[j];
-                    
-                    Assert.Equal(t1.GetExpression().ToString(), t2.GetExpression().ToString());
-                }
-                
-                Assert.Equal(c1.OptionalConstraints.Count, c1.OptionalConstraints.Count);
-                for (int j = 0; j < c1.OptionalConstraints.Count; j++)
-                {
-                    ITemplate t1 = c1.OptionalConstraints[j];
-                    ITemplate t2 = c2.OptionalConstraints[j];
-                    
-                    Assert.Equal(t1.GetExpression().ToString(), t2.GetExpression().ToString());
-                }
-            }
-        }
-
     }
 }

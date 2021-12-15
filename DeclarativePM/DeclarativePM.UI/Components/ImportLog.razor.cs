@@ -120,7 +120,6 @@ namespace DeclarativePM.UI.Components
                 case HeaderType.Timestamp:
                     _imported.ChangeTimestamp(key);
                     break;
-                //TODO remove from log ?
                 case HeaderType.Unused:
                 case HeaderType.Resource:
                     _imported.ChangeResource(key);

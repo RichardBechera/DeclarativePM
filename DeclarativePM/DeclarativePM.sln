@@ -2,9 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativePM.Lib", "DeclarativePM.Lib\DeclarativePM.Lib.csproj", "{51BAFE94-C0E1-4CAE-8E52-3E200F97D92E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRunning", "TestRunning\TestRunning.csproj", "{C0F1C8B8-73AE-4C3D-AC72-3E986D349BB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativePM.Tests", "DeclarativePM.Tests\DeclarativePM.Tests.csproj", "{C0F1C8B8-73AE-4C3D-AC72-3E986D349BB5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativePM.UI", "DeclarativePM.UI\DeclarativePM.UI.csproj", "{558E274C-888D-4D78-A3D4-E5718219C6D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativePM.Demo", "DeclarativePM.Demo\DeclarativePM.Demo.csproj", "{2CC7DFBC-B167-4640-8885-5AD98F7CC6CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +26,9 @@ Global
 		{558E274C-888D-4D78-A3D4-E5718219C6D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{558E274C-888D-4D78-A3D4-E5718219C6D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{558E274C-888D-4D78-A3D4-E5718219C6D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CC7DFBC-B167-4640-8885-5AD98F7CC6CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC7DFBC-B167-4640-8885-5AD98F7CC6CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CC7DFBC-B167-4640-8885-5AD98F7CC6CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC7DFBC-B167-4640-8885-5AD98F7CC6CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

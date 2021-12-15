@@ -16,7 +16,6 @@ else if (selectParameters)
     <MatChipSet Filter="true" @bind-SelectedChips="@selectedTemplates">
         @foreach (var tit in value2Items)
         {
-            //TODO own onCLick instead filter to keep state
             <MatChip Label="@tit.ToString()" IsCheckable="true" Value="@tit"></MatChip>
         }
     </MatChipSet>

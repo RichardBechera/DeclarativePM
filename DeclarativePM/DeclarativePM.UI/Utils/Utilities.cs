@@ -49,13 +49,11 @@ namespace DeclarativePM.UI.Utils
         
         public static string GetExpansionBackground<T>(T current, T selected)
         {
-            //TODO colours into constants ?
             return current.Equals(selected) ? "background: #ffd5ff" : "background: #f3f3f3";
         }
         
         public static string GetExpansionBackground<T>(T current, List<T> from)
         {
-            //TODO colours into constants ?
             return from.Contains(current) ? "background: #ffd5ff" : "background: #f3f3f3";
         }
 
@@ -63,7 +61,10 @@ namespace DeclarativePM.UI.Utils
         {
             if (evaluations is null)
                 return "background: #ffffff";
-            if (evaluations.Any(x => x.ConstraintEvaluations.Where(c => c is not null).Any(y => y.Constraint.ToString().Equals(current) && Math.Abs(x.Healthiness.FulfillmentRation - 1) > 0.01)))
+            if (evaluations.Any(x => x.ConstraintEvaluations
+                .Where(c => c is not null)
+                .Any(y => y.Constraint.ToString()
+                    .Equals(current) && Math.Abs(x.Healthiness.FulfillmentRation - 1) > 0.01)))
             {
                 return "background: #ffd5ff";
             }
