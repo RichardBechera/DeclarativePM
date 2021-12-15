@@ -28,6 +28,26 @@ namespace DeclarativePM.Lib.IO.Import
             stream.Dispose();
             return result;
         }
+        
+        /// <summary>
+        /// Imports a Declare model from json file specified by path
+        /// </summary>
+        /// <param name="path">Path to the file</param>
+        /// <returns>Declare model</returns>
+        public async Task<DeclareModel> LoadModelAsync(string path)
+        {
+            if (!File.Exists(path))
+                return null;
+
+            var stream = File.OpenRead(path);
+            using var jsonReader = new StreamReader(stream);
+            string json = await jsonReader.ReadToEndAsync();
+
+            var result = await LoadModelFromStringAsync(json);
+            
+            await stream.DisposeAsync();
+            return result;
+        }
 
         /// <summary>
         /// Imports a Declare model from json file stream
@@ -40,7 +60,7 @@ namespace DeclarativePM.Lib.IO.Import
 
             string json = await jsonReader.ReadToEndAsync();
 
-            return LoadModelFromString(json);
+            return await LoadModelFromStringAsync(json);
         }
         
         /// <summary>
@@ -60,7 +80,7 @@ namespace DeclarativePM.Lib.IO.Import
         /// <summary>
         /// Imports a Declare model from json string
         /// </summary>
-        /// <param name="json">string containing json/param>
+        /// <param name="json">string containing json</param>
         /// <returns>Declare model</returns>
         public DeclareModel LoadModelFromString(string json)
         {
@@ -80,6 +100,16 @@ namespace DeclarativePM.Lib.IO.Import
                 }
             }
             return result;
+        }
+        
+        /// <summary>
+        /// Imports a Declare model from json string
+        /// </summary>
+        /// <param name="json">string containing json</param>
+        /// <returns>Declare model</returns>
+        public async Task<DeclareModel> LoadModelFromStringAsync(string json)
+        {
+            return await Task.Run(() => LoadModelFromString(json));
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using DeclarativePM.Lib.Declare_Templates;
 using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Enums;
@@ -70,13 +71,13 @@ namespace DeclarativePM.Tests
         }
         
         [Fact]
-        public void ExportImportModelWithSaveTest()
+        public async Task ExportImportModelWithSaveTest()
         {
-            _jsonModelExporter.ExportSaveModelAsync(_model, _sampleDataLocation, "testmodel");
+            await _jsonModelExporter.ExportSaveModelAsync(_model, _sampleDataLocation, "testmodel");
             
             Assert.True(File.Exists($"{_sampleDataLocation}/testmodel.json"));
             
-            var model = _jsonModelImporter.LoadModel($"{_sampleDataLocation}/testmodel.json");
+            var model = await _jsonModelImporter.LoadModelAsync($"{_sampleDataLocation}/testmodel.json");
             
             Assert.NotNull(model);
             

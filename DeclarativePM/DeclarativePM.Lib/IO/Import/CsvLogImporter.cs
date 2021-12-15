@@ -17,13 +17,16 @@ namespace DeclarativePM.Lib.IO.Import
         /// </summary>
         /// <param name="stream">stream of file with the log</param>
         /// <param name="hasHeaders">File contains headers</param>
-        /// <param name="missing">How is missing value in the csv specified</param>
+        /// <param name="missing">How is missing value in the csv specified
+        /// By default "none", "null", "nan", "na", "-" and empty string are
+        /// considered as missing values in the .csv file</param>
         /// <param name="separator">csv separator</param>
         /// <returns>Configurable log class</returns>
         public ImportedEventLog LoadLog(Stream stream, bool hasHeaders, string[] missing = null, char separator = ',')
         {
             var logs = new List<string[]>();
             string[] headers = null;
+            //Which values in csv can be interpreted as missing
             missing ??= new[] {"none", "null", "nan", "na", "-"};
             using var csv = new StreamReader(stream);
             

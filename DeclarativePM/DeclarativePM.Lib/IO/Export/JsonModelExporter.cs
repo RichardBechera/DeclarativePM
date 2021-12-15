@@ -21,6 +21,17 @@ namespace DeclarativePM.Lib.IO.Export
         {
             return JsonConvert.SerializeObject(model, new ParametrizedTemplateConverter());
         }
+        
+        /// <summary>
+        /// Exports Declare model into json string
+        /// </summary>
+        /// <param name="model">Declare model</param>
+        /// <returns>json string</returns>
+        public async Task<string> ExportModelAsync(DeclareModel model)
+        {
+            return await Task.Run(() => 
+                JsonConvert.SerializeObject(model, new ParametrizedTemplateConverter()));
+        }
 
         /// <summary>
         /// Exports and saves declare model into file as json

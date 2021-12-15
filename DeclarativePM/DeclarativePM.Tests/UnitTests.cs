@@ -3,14 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using DeclarativePM.Lib.Declare_Templates;
-using DeclarativePM.Lib.Declare_Templates.AbstractClasses;
-using DeclarativePM.Lib.Declare_Templates.TemplateInterfaces;
 using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.IO.Import;
-using DeclarativePM.Lib.Models.ConformanceModels;
 using DeclarativePM.Lib.Models.DeclareModels;
-using DeclarativePM.Lib.Models.LogModels;
 using DeclarativePM.Lib.Utils;
 using Xunit;
 
@@ -35,7 +31,7 @@ namespace DeclarativePM.Tests
         }
         
         [Fact]
-        public void Test1()
+        public void ConformanceTestResponse()
         {
             string path = $"{_sampleDataLocation}{_pathSeparator}bookExample1.csv";
             var third = _csvLogImporter.LoadLog(path);
@@ -54,7 +50,7 @@ namespace DeclarativePM.Tests
         }
         
         [Fact]
-        public void Test2()
+        public void ConformanceTestAlternateResponse()
         {
             //setup
             string path = $"{_sampleDataLocation}{_pathSeparator}bookExample2.csv";
@@ -78,7 +74,7 @@ namespace DeclarativePM.Tests
         }
         
         [Fact]
-        public void Test3()
+        public void ConformanceTestNotCoexistence()
         {
             string path = $"{_sampleDataLocation}{_pathSeparator}bookExample3.csv";
             var third = _csvLogImporter.LoadLog(path);
@@ -99,7 +95,7 @@ namespace DeclarativePM.Tests
         }
 
         [Fact]
-        public void Test4()
+        public void LocalLikelihoodTest()
         {
             var path = $"{_sampleDataLocation}{_pathSeparator}bookExample3.csv";
             var third = _csvLogImporter.LoadLog(path);
@@ -119,37 +115,7 @@ namespace DeclarativePM.Tests
         }
         
         [Fact]
-        public void Test5()
-        {
-            Assert.True(true);
-            var path4 = "/home/richard/Documents/bakalarka/sampleData/bookExample3.csv";
-            
-            var third = _csvLogImporter.LoadLog(path4);
-            var log2 = third.BuildEventLog();
-            NotCoexistence nc = new NotCoexistence("L", "H"); 
-            var tree = _builder.BuildTree(log2.Logs, nc);
-
-            List<ParametrizedTemplate> templates = new List<ParametrizedTemplate>()
-            {
-                new(TemplateInstanceType.AlternateResponse, new List<ITemplate>()
-                {
-                    new AlternateResponse("H", "M"),
-                }),
-                new(TemplateInstanceType.NotCoexistence, new List<ITemplate>(){nc})
-            };
-            var cr = _conformanceEvaluator.GetConflictNodes(tree);
-
-            Assert.Equal(2, cr.Count);
-            
-            var gl1 = _conformanceEvaluator.GlobalLikelihood(tree, templates, cr.First());
-            //Assert.Equal(0, gl1);
-            
-            var gl2 = _conformanceEvaluator.GlobalLikelihood(tree, templates, cr.Last());
-            //Assert.Equal(1/(double)6, gl2);
-        }
-        
-        [Fact]
-        public void Test6()
+        public void DiscoveryTest()
         {
             string path = $"{_sampleDataLocation}{_pathSeparator}bookExample3.csv";
             
@@ -173,33 +139,5 @@ namespace DeclarativePM.Tests
             }
 
         }
-
-        [Fact]
-        public void responsetree()
-        {
-            List<Event> log = new()
-            {
-                new("A", "0"),
-                new("B", "0"),
-                new("A", "0"),
-                new("A", "0"),
-                new("B", "0"),
-                
-                new("A", "0"),
-                new("A", "0"),
-                new("B", "0"),
-
-            };
-
-            BiTemplate template = new ChainResponse("A", "B");
-
-            ActivationBinaryTree tree = _builder.BuildTree(log, template);
-
-            var allmaxFulfilling = tree.Leaves.Where(l => l.MaxFulfilling).ToList();
-
-            Healthiness h = new Healthiness(tree);
-
-        }
-
     }
 }
