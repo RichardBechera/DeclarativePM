@@ -9,40 +9,24 @@ namespace DeclarativePM.Lib.Declare_Templates.Factories
     {
         public static BiTemplate GetInstance(TemplateInstanceType type, string evnt1, string evnt2)
         {
-            switch (type)
+            return type switch
             {
-                case TemplateInstanceType.AlternatePrecedence:
-                    return new AlternatePrecedence(evnt1, evnt2);
-                case TemplateInstanceType.AlternateResponse:
-                    return new AlternateResponse(evnt1, evnt2);
-                case TemplateInstanceType.AlternateSuccession:
-                    return new AlternateSuccession(evnt1, evnt2);
-                case TemplateInstanceType.ChainPrecedence:
-                    return new ChainPrecedence(evnt1, evnt2);
-                case TemplateInstanceType.ChainResponse:
-                    return new ChainResponse(evnt1, evnt2);
-                case TemplateInstanceType.ChainSuccession:
-                    return new ChainSuccession(evnt1, evnt2);
-                case TemplateInstanceType.Coexistence:
-                    return new Coexistence(evnt1, evnt2);
-                case TemplateInstanceType.NotChainSuccession:
-                    return new NotChainSuccession(evnt1, evnt2);
-                case TemplateInstanceType.NotCoexistence:
-                    return new NotCoexistence(evnt1, evnt2);
-                case TemplateInstanceType.NotSuccession:
-                    return new NotSuccession(evnt1, evnt2);
-                case TemplateInstanceType.Precedence:
-                    return new Precedence(evnt1, evnt2);
-                case TemplateInstanceType.RespondedExistence:
-                    return new RespondedExistence(evnt1, evnt2);
-                case TemplateInstanceType.Response:
-                    return new Response(evnt1, evnt2);
-                case TemplateInstanceType.Succession:
-                    return new Succession(evnt1, evnt2);
-                
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+                TemplateInstanceType.AlternatePrecedence => new AlternatePrecedence(evnt1, evnt2),
+                TemplateInstanceType.AlternateResponse => new AlternateResponse(evnt1, evnt2),
+                TemplateInstanceType.AlternateSuccession => new AlternateSuccession(evnt1, evnt2),
+                TemplateInstanceType.ChainPrecedence => new ChainPrecedence(evnt1, evnt2),
+                TemplateInstanceType.ChainResponse => new ChainResponse(evnt1, evnt2),
+                TemplateInstanceType.ChainSuccession => new ChainSuccession(evnt1, evnt2),
+                TemplateInstanceType.Coexistence => new Coexistence(evnt1, evnt2),
+                TemplateInstanceType.NotChainSuccession => new NotChainSuccession(evnt1, evnt2),
+                TemplateInstanceType.NotCoexistence => new NotCoexistence(evnt1, evnt2),
+                TemplateInstanceType.NotSuccession => new NotSuccession(evnt1, evnt2),
+                TemplateInstanceType.Precedence => new Precedence(evnt1, evnt2),
+                TemplateInstanceType.RespondedExistence => new RespondedExistence(evnt1, evnt2),
+                TemplateInstanceType.Response => new Response(evnt1, evnt2),
+                TemplateInstanceType.Succession => new Succession(evnt1, evnt2),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
     }
 }

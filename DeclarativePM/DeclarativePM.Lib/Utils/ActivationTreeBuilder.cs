@@ -16,6 +16,8 @@ namespace DeclarativePM.Lib.Utils
     {
         /// <summary>
         /// Builds an ActivationBinaryTree from a trace and a constraint.
+        /// Idea behind this algorithm is taken from
+        /// https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6337271
         /// </summary>
         /// <param name="trace">Trace</param>
         /// <param name="constraint">Constraint</param>

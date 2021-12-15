@@ -9,14 +9,11 @@ namespace DeclarativePM.Lib.Declare_Templates.Factories
     {
         public static UniTemplate GetInstance(TemplateInstanceType type, string evnt)
         {
-            switch (type)
+            return type switch
             {
-                case TemplateInstanceType.Init:
-                    return new Init(evnt);
-                
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+                TemplateInstanceType.Init => new Init(evnt),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
     }
 }

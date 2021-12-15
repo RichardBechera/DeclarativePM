@@ -12,6 +12,7 @@ namespace DeclarativePM.Lib.Utils
     {
         /// <summary>
         /// Evaluates whether expression holds for the case.
+        /// The main idea taken from https://link.springer.com/content/pdf/10.1007%2F11575771_11.pdf
         /// </summary>
         /// <param name="events">Sorted list of event in a case.</param>
         /// <param name="expression">Expression to be evaluated.</param>

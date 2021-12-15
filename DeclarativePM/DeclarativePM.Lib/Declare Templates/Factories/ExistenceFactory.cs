@@ -9,18 +9,13 @@ namespace DeclarativePM.Lib.Declare_Templates.Factories
     {
         public static ExistenceTemplate GetInstance(TemplateInstanceType type, int amount, string evnt)
         {
-            switch (type)
+            return type switch
             {
-                case TemplateInstanceType.Absence:
-                    return new Absence(amount, evnt);
-                case TemplateInstanceType.Exactly:
-                    return new Exactly(amount, evnt);
-                case TemplateInstanceType.Existence:
-                    return new Existence(amount, evnt);
-                
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+                TemplateInstanceType.Absence => new Absence(amount, evnt),
+                TemplateInstanceType.Exactly => new Exactly(amount, evnt),
+                TemplateInstanceType.Existence => new Existence(amount, evnt),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
     }
 }

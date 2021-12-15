@@ -18,10 +18,11 @@ namespace DeclarativePM.Lib.Discovery
     {
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
+        /// The main idea from: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5949297
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="poe">Percentage of events. 100 for discovery on every event in an event log.
-        /// For n where 0 &lt; = n &lt; 100, = n% of most frequent events in the log.</param>
+        /// For n from 0 to 100, n% of most frequent events in the log.</param>
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
@@ -32,6 +33,7 @@ namespace DeclarativePM.Lib.Discovery
 
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
+        /// The main idea from: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5949297
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <returns>DECLARE model representing an event log.</returns>
@@ -42,11 +44,12 @@ namespace DeclarativePM.Lib.Discovery
         
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
+        /// The main idea from: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5949297
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
         /// <param name="poe">Percentage of events. 100 for discovery on every event in an event log.
-        /// For n where 0 &lt; =n &lt; 100, =n% of most frequent events in the log.</param>
+        /// For n from 0 to 100, n% of most frequent events in the log.</param>
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>
@@ -61,6 +64,7 @@ namespace DeclarativePM.Lib.Discovery
 
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
+        /// The main idea from: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5949297
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
@@ -72,6 +76,7 @@ namespace DeclarativePM.Lib.Discovery
 
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
+        /// The main idea from: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5949297
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
@@ -84,13 +89,14 @@ namespace DeclarativePM.Lib.Discovery
 
         /// <summary>
         /// Method discovers DECLARE model on top of an event log.
+        /// The main idea from: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5949297
         /// </summary>
         /// <param name="log">Event log.</param>
         /// <param name="templates">List of desired templates which will be in the resulting DECLARE model.</param>
         /// <param name="isGeneralPoX">States whether POE and POI are used in general on on each template the same or
         /// whether each template has it's own poe and poi</param>
         /// <param name="poe">Percentage of events. 100 for discovery on every event in an event log.
-        /// For n where 0 &lt;= n &lt; 100, n% of most frequent events in the log. </param>
+        /// For n from 0 to 100, n% of most frequent events in the log. </param>
         /// <param name="poi">Percentage of instances. Defines percentage on how many instances does
         /// template has to hold to be considered in the resulting DECLARE model.</param>
         /// <returns>DECLARE model representing an event log.</returns>

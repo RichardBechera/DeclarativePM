@@ -214,7 +214,6 @@ namespace DeclarativePM.Lib.Utils
         public TemplateEvaluation EvaluateTrace(ParametrizedTemplate template, List<Event> trace)
         {
             if (template.TemplateDescription.TemplateParametersType != TemplateTypes.BiTemplate)
-                //TODO evaluate others ?
                 return null;
 
             List<ConstraintEvaluation> constraintEvaluations = new List<ConstraintEvaluation>();
