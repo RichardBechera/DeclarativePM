@@ -241,9 +241,14 @@ namespace DeclarativePM.UI.Pages
                 TemplateTypes.Existence
                     => ExistenceFactory.GetInstance(CurrentlyEditedTemplate.TemplateInstanceType,
                         CurrentlyEditedTemplate.Occurrences, CurrentlyEditedTemplate.EventA),
-                _ => throw new ArgumentOutOfRangeException()
+                _ => null
             };
-            
+            if (template is null)
+            {
+                await MatDialogService.AlertAsync("Wrong template configuration.");
+                return;
+            }
+
             if (current.TemplateInstances.Exists(t => t.GetExpression().ToString() == template.GetExpression().ToString()))
             {
                 await MatDialogService.AlertAsync("This template already exists in the list");
@@ -265,7 +270,7 @@ namespace DeclarativePM.UI.Pages
                 TemplateTypes.BiTemplate => !(activities.Exists(x => CurrentlyEditedTemplate.EventA == x) 
                                             && activities.Exists(x => CurrentlyEditedTemplate.EventB == x)),
                 TemplateTypes.UniTemplate => !activities.Exists(x => CurrentlyEditedTemplate.EventA == x),
-                _ => throw new ArgumentOutOfRangeException()
+                _ => true
             };
         }
 

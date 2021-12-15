@@ -83,24 +83,6 @@ else
             else
             {
                 <span>
-                <!--<MatTooltip Tooltip="PoI says how many instances (traces) a constraint must satisfy.
-                 If PoI is set to 95%, for a constraint to be discovered, a candidate must satisfy at least 95% of traces.">
-                <MatNumericUpDownField Label="Percentage of Instances"
-                                       @bind-Value=@current.Poi
-                                       DecimalPlaces=0
-                                       Minimum=0 Maximum=100
-                                       RefBack="@context">
-                </MatNumericUpDownField>
-                                    </MatTooltip>
-                                    <MatTooltip Tooltip="PoE says how frequently events should occur in the log to be included in a resulting model. 
-                                                         With PoE = 30% only 30% of most common events are considered.">
-                                    <MatNumericUpDownField Label="Percentage of Events"
-                                                           @bind-Value=@current.Poe
-                                                           DecimalPlaces=0
-                                                           Minimum=0 Maximum=100
-                                                           RefBack="@context">
-                                    </MatNumericUpDownField>
-                                    </MatTooltip>-->
                     @if (CurrentlyEditedTemplate.TemplateTypes == TemplateTypes.Existence)
                     {
                         <MatSelectItem @bind-Value="@CurrentlyEditedTemplate.EventA" Items="@activities" Label="Event A"></MatSelectItem>

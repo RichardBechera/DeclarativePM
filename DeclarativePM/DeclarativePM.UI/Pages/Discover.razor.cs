@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DeclarativePM.Lib.Discovery;
 using DeclarativePM.Lib.Enums;
 using DeclarativePM.Lib.Models.DeclareModels;
 using DeclarativePM.Lib.Models.LogModels;
@@ -11,11 +10,10 @@ using DeclarativePM.Lib.Utils;
 using DeclarativePM.UI.Data;
 using DeclarativePM.UI.Utils;
 using MatBlazor;
-using Microsoft.AspNetCore.Components;
 
 namespace DeclarativePM.UI.Pages
 {
-    public partial class Discover : ComponentBase
+    public partial class Discover
     {
         private EventLog _selectedLog;
         bool selectLog = true;
@@ -40,12 +38,6 @@ namespace DeclarativePM.UI.Pages
         {
             _templateDescriptions = value2Items.Select(e => e.GetTemplateDescription()).ToList();
             base.OnInitialized();
-        }
-
-        public void Selection(EventLog log)
-        {
-            _selectedLog = log;
-            StateHasChanged();
         }
 
         public async Task ContinueSelection()
@@ -101,11 +93,6 @@ namespace DeclarativePM.UI.Pages
             await InvokeAsync(StateHasChanged);
         }
 
-        public string GetExpansionBackground(EventLog el)
-        {
-            return el.Equals(_selectedLog) ? "background: #ffd5ff" : "background: #f3f3f3";
-        }
-
         private void CreateTemplates()
         {
             bool isNew = templates is null;
@@ -129,10 +116,8 @@ namespace DeclarativePM.UI.Pages
 
         public async Task ModelDiscoveryAsync()
         {
-            ManualResetEventSlim mrs = new ManualResetEventSlim(false);
             CancellationToken ctk = tokenSource.Token;
-            var disco = new Discovery();
-            _declareModel = await disco.DiscoverModelAsync(_selectedLog, templates, ctk);
+            _declareModel = await Discovery.DiscoverModelAsync(_selectedLog, templates, ctk);
         }
 
         public void AbortDiscovery()
@@ -144,26 +129,6 @@ namespace DeclarativePM.UI.Pages
         {
             if (_declareModel is not null && !StateContainer.DeclareModels.Contains(_declareModel))
                 StateContainer.DeclareModels.Add(_declareModel);
-        }
-
-        public bool IsSelectedTit(TemplateInstanceType tit)
-        {
-            return selectedTemplates?.Any(x => ((TemplateInstanceType) x.Value) == tit) ?? false;
-        }
-
-        public bool GetDefaultCheckValue(TemplateInstanceType tit)
-        {
-            switch (tit)
-            {
-                case TemplateInstanceType.Response:
-                case TemplateInstanceType.Succession:
-                case TemplateInstanceType.NotCoexistence:
-                case TemplateInstanceType.Precedence:
-                case TemplateInstanceType.Coexistence:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
 

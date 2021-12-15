@@ -5,6 +5,7 @@
 @inject IMatDialogService MatDialogService
 @inject StateContainer StateContainer
 @inject IBlazorDownloadFileService BlazorDownloadFileService
+@inject JsonModelExporter JsonModelExporter
 
 <MatButton Label="Export selected model" Disabled="@(SelectedModel is null)" OnClick="Export"></MatButton>
 
@@ -20,10 +21,15 @@
             await MatDialogService.AlertAsync("Model has not been selected.");
             return;
         }
-
-        JsonModelExporter jsonModelExporter = new JsonModelExporter();
-        string json = jsonModelExporter.ExportModel(SelectedModel);
-        await BlazorDownloadFileService.DownloadFileFromText($"{SelectedModel.Name}.json", json, System.Text.Encoding.UTF8, "application/octet-stream");
+        try
+        {
+            string json = await JsonModelExporter.ExportModelAsync(SelectedModel);
+            await BlazorDownloadFileService.DownloadFileFromText($"{SelectedModel.Name}.json", json, System.Text.Encoding.UTF8, "application/octet-stream");
+        }
+        catch
+        {
+            await MatDialogService.AlertAsync("Export has failed, model might be corrupted.");
+        }
     }
 
 }

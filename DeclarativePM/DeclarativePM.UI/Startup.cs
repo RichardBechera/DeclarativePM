@@ -1,4 +1,8 @@
 using BlazorDownloadFile;
+using DeclarativePM.Lib.Discovery;
+using DeclarativePM.Lib.IO.Export;
+using DeclarativePM.Lib.IO.Import;
+using DeclarativePM.Lib.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +33,11 @@ namespace DeclarativePM.UI
             services.AddHttpClient();
             services.AddScoped<StateContainer>();
             services.AddBlazorDownloadFile();
+            services.AddSingleton<JsonModelImporter>();
+            services.AddSingleton<JsonModelExporter>();
+            services.AddSingleton<CsvLogImporter>();
+            services.AddSingleton<Discovery>();
+            services.AddSingleton<ConformanceEvaluator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

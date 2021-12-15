@@ -1,9 +1,11 @@
 @page "/Discover"
 @using DeclarativePM.UI.Data
 @using DeclarativePM.Lib.Enums
+@using DeclarativePM.Lib.Discovery
 @implements IDisposable
 @inject StateContainer StateContainer
 @inject IMatDialogService MatDialogService
+@inject Discovery Discovery
 
 @if (selectLog)
 {

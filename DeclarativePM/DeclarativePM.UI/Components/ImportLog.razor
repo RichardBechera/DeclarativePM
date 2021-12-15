@@ -1,9 +1,11 @@
 @using DeclarativePM.UI.Enums
 @using DeclarativePM.UI.Data
+@using DeclarativePM.Lib.IO.Import
 @implements IDisposable
 
 @inject IMatDialogService MatDialogService
 @inject StateContainer StateContainer
+@inject CsvLogImporter CsvLogImporter
 
 <MatFileUpload OnChange="@UploadLog" AllowMultiple="false" Label="Drop files here or Browse"></MatFileUpload>
 
